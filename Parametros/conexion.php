@@ -107,7 +107,7 @@ class Consultas extends Conexion{
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
-
+        echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
         $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
@@ -184,6 +184,7 @@ class Consultas extends Conexion{
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
         */
         echo "<tbody id='datosPanel'>";
+
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
             echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
             array_shift($datos);

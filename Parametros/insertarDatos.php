@@ -5,6 +5,7 @@ $campos=$_POST['campos'];
 $tabla=$_POST['tabla'];
 $valores=$_POST['valores'];
 $val="";
+print_r($valores);
 foreach ($valores as $key => $value) {
     $val.="'".$value."',";
 }

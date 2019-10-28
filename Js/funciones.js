@@ -6,7 +6,7 @@ function incluirJQuery(){
 function seleccionarFila(id){
     if((document.getElementById('seleccionado').value!='')&&(document.getElementById('seleccionado').value!=0)){
         var anterior=document.getElementById('seleccionado').value;
-        document.getElementById(anterior).style.backgroundColor="#669ee8";
+        document.getElementById(anterior).style.backgroundColor="white";
     }
     document.getElementById(id).style.backgroundColor= "#669ee8";
     document.getElementById("seleccionado").value=id;

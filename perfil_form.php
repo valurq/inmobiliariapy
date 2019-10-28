@@ -8,28 +8,24 @@
         */
         include("Parametros/conexion.php");
 
-        $inserta_Datos=new Consultas();
+        $consulta=new Consultas();
         $id=0;
         $resultado="" ;
-        $eliminaDoc="" ;
-        $modificaDoc="" ;
         /*
             VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('perfil','comentario','elimina_doc','modifica_doc');
+            $campos=array('perfil','tipo','obs');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
-            $resultado=$inserta_Datos->consultarDatos($campos,'perfil',"","id",$id );
+            $resultado=$consulta->consultarDatos($campos,'perfil',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
-            $eliminaDoc= $resultado[2];
-            $modificaDoc= $resultado[3];
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('perfil,nota');
+            $camposIdForm=array('perfil','tipo','observacion');
         }
     ?>
     <title>VALURQ_SRL</title>
@@ -55,11 +51,11 @@
       <tbody>
         <tr>
           <td><label for="">Perfil</label></td>
-          <td><input type="text" name="perfil" id="perfil" value="" placeholder="Ingrese nombre moneda" class="campos-ingreso"></td>
+          <td><input type="text" name="perfil" id="perfil" value="" placeholder="Ingrese nombre de perfil" class="campos-ingreso"></td>
         </tr>
         <tr>
           <td><label for="">Tipo</label></td>
-          <td><select name="tipo" class="campos-ingreso" >
+          <td><select name="tipo" id='tipo' class="campos-ingreso" >
             <option value="Regional">Regional</option>
             <option value="Broker">Broker</option>
             <option value="Agente">Agente</option>
@@ -95,38 +91,26 @@ if(($id!=0 )){
     echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
 }
 
-    //include("Parametros/conexion.php");
-    if(($id!=0 )){
-        /*
-            CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
-        */
-        $valores=implode(",",$resultado);
-        $camposIdForm=implode(",",$camposIdForm);
-        //LLAMADA A LA FUNCION JS
-        echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
-    }
-
 if(isset( $_POST['perfil'] )) {
 
     //======================================================================================
     // NUEVO REGISTRO
     //======================================================================================
-    $perfil          =trim($_POST['perfil']);
-    $elimina_doc     =trim($_POST['elimina']);
-    $modifica_doc    =trim($_POST['modifica']);
-    $obs             =trim($_POST['nota']);
-    $creador         ="UsuarioLogin" ;
-    $idForm          = $_POST['Idformulario'];
+    $perfil =trim($_POST['perfil']);
+    $tipo=$_POST['tipo'];
+    $obs=trim($_POST['observacion']);
+    $creador="UsuarioLogin" ;
+    $idForm= $_POST['Idformulario'];
 
-    $campos = array( 'perfil','elimina_doc','modifica_doc','creador','comentario' );
-    $valores="'".$perfil."','".$elimina_doc."','".$modifica_doc."','".$creador."','".$obs."'";
+    $campos = array( 'perfil','tipo','obs','creador' );
+    $valores="'".$perfil."','".$tipo."','".$obs."','".$creador."'";
   /*
     VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
   */
   if(isset($idForm)&&($idForm!=0)){
-      $inserta_Datos->modificarDato('perfil',$campos,$valores,'id',$idForm);
+      $consulta->modificarDato('perfil',$campos,$valores,'id',$idForm);
   }else{
-      $inserta_Datos->insertarDato('perfil',$campos,$valores);
+      $consulta->insertarDato('perfil',$campos,$valores);
   }
 }
 ?>
@@ -139,7 +123,7 @@ if(isset( $_POST['perfil'] )) {
 	function verificar()
 	{
 
-		if( (document.getElementById('perfil').value !='')){
+		if((document.getElementById('perfil').value !='')){
 		      return true ;
 
 		}	else{

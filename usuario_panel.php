@@ -6,8 +6,8 @@ $consultas=new Consultas();
 // ========================================================================
 //Seteo de cabecera y campos en el mismo orden para tomar de la $tabla
 // ========================================================================
-$cabecera=['Perfil','Tipo','Observaciones'];
-$campos=['perfil','tipo','obs'];
+$cabecera=['Usuario','Nombre','Apellido','Cargo','Perfil','F. Creacion'];
+$campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion'];
 
 ?>
 <html lang="en" dir="ltr">
@@ -24,7 +24,7 @@ $campos=['perfil','tipo','obs'];
 
       <script type="text/javascript">
       // para busqueda en paneles
-          var campos=['perfil','elimina_doc','modifica_doc','substr(comentario,1,40)','fecreacion'];
+          var campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion'];
       </script>
 
         <meta charset="utf-8">
@@ -49,36 +49,16 @@ $campos=['perfil','tipo','obs'];
       <!--============================================================================= -->
   <div class="menu-panel" >
       <!--campo buscador en el panel -->
-        <h2 class='titulo-panel'>PANEL PERFILES</h2>
+        <h2 class='titulo-panel'>PANEL DE USUARIOS</h2>
 
 
-            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='perfil_form.php';" value="Nuevo">
-            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('perfil_form.php')" >
-            <input type="button" class="boton_panel" name="EditarAcceso" value="Asignar Menu" onclick="editar('accesos_form.php')" >
-            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('perfil')" >
+            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='usuario_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('usuario_form.php')" >
+            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('usuario')},'usuario')" >
         </div>
 
         <div class="mostrar-tabla">
-            <table id='tablaPanel' cellspacing='0' style='width:100%'>
-                <?php
-                    $consultas->crearCabeceraTabla($cabecera);
-                    array_unshift($campos,'id');
-                    $resultadoConsulta=$consultas->consultarDatos($campos,'perfil');
-                    echo "<tbody id='datosPanel'>";
-
-                    while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-                        $id=$datos[0];
-                        echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
-                        array_shift($datos);
-                        foreach( $datos as $valor ){
-                            echo "<td>".$valor." </td>";
-                        }
-                        echo "</tr>";
-                    }
-                    echo"</tbody>";
-
-                 ?>
-         </table>
+            <?php  $consultas->crearTabla($cabecera,$campos,'usuario');?>
         </div>
 
     </body>
