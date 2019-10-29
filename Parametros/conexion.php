@@ -1,21 +1,23 @@
 <?php
-/*$direccion = "127.0.0.1";
-$bd = "gestordoc";
-$usuario ="root";
-$pass = "";
-$con = $mysqli = new mysqli($direccion, $usuario, $pass, $bd);
-$infoHost;
-$error;
-if ($mysqli->connect_errno) {
-    $error="Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-}
-$infoHost=$mysqli->host_info . "\n";*/
+/*Catch de error de conexion{
+    $direccion = "127.0.0.1";
+    $bd = "gestordoc";
+    $usuario ="root";
+    $pass = "";
+    $con = $mysqli = new mysqli($direccion, $usuario, $pass, $bd);
+    $infoHost;
+    $error;
+    if ($mysqli->connect_errno) {
+        $error="Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+    }
+    $infoHost=$mysqli->host_info . "\n";
+}*/
 
 class Conexion{
     private $user="root";
     private $ip="localhost";
     private $bd="remax";
-    private $pass="";
+    private $pass="valurq123";
     public $conexion;
 
 
@@ -27,15 +29,19 @@ class Conexion{
         $this->conexion= new mysqli($this->ip,$this->user,$this->pass,$this->bd);
 
     }
-    public function __construct1($user,$ip,$bd,$pass){
-        /*
-            FUNCION UTILIZADA PARA PODER INSTANCIAR LA CLASE (CREAR EL OBJETO) CON LA DIFERENCIA QUE SE INICIA CON LOS DATOS PROPORCIONADOS EN EL ARGUMENTO
-            $variable=new Conexion(<USUARIO>,<ip del servidor>,<base de datos>,<contraseña>)
-        */
-        $conexion=mysql_connect($ip,$user,$pass,$bd);
-        if ($this->conexion == 0) DIE("Lo sentimos, no se ha podido conectar con MySQL: " . mysql_error());
-       return true;
-    }
+
+    /*Constructor de la clase en deshuso (consultar){
+        public function __construct1($user,$ip,$bd,$pass){
+
+                FUNCION UTILIZADA PARA PODER INSTANCIAR LA CLASE (CREAR EL OBJETO) CON LA DIFERENCIA QUE SE INICIA CON LOS DATOS PROPORCIONADOS EN EL ARGUMENTO
+                $variable=new Conexion(<USUARIO>,<ip del servidor>,<base de datos>,<contraseña>)
+
+            $conexion=mysql_connect($ip,$user,$pass,$bd);
+            if ($this->conexion == 0) DIE("Lo sentimos, no se ha podido conectar con MySQL: " . mysql_error());
+            return true;
+        }
+    }*/
+
 }
 
 //CLASE HEREDADA DE CONEXION
@@ -48,33 +54,52 @@ class Consultas extends Conexion{
         parent::__construct();
     }
 
-
-
-
-    function consultarDatos($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion=""){
-	 /*
+    public function consultarDatos($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion="",$tipo=""){
+        /*
             METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
             $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
             Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
         */
 
         $texto=(implode(",", $campos));
-        $query="SELECT ".$texto." FROM ".$tabla." ";
-        if(is_array($campoCondicion)==TRUE){
-            $query.="WHERE ";
-            for ($i=0; $i <count($campoCondicion)-1 ; $i++) {
-                $query.=$campoCondicion[$i]." = '".$valorCondicion[$i]."' && ";
-            }
-            $query.=$campoCondicion[$i]." = '".$valorCondicion[$i]."' ";
-        }else{
-            if(($campoCondicion!="")&&($valorCondicion!="")){
-                $query.="WHERE ".$campoCondicion." = '".$valorCondicion."' ";
-            }
+        $query="SELECT ".$texto." FROM ".$tabla." ".$orden;
+        if(($campoCondicion!="")&&($valorCondicion!="")){
+          if($tipo==""){
+            $query.="WHERE ".$campoCondicion." = '".$valorCondicion."'";
+          }else{
+            $query.="WHERE ".$campoCondicion." != '".$valorCondicion."'";
+
+          }
+           //echo $query;
+        //    echo "<script>alert(".$query.")</script>" ;
         }
-        //echo "$query";
-        $query.=$orden;
+        //echo $query;
         return $this->conexion->query($query);
     }
+
+    public function consultarDatos_muebles($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion="",$tipo=""){
+        /*
+            METODO PARA PODER OBTENER VIAUALIZACION DE MUEBLE... respetando su propietario
+
+            SELECT id,mueble FROM ubi_mueble
+            WHERE id IN(SELECT objeto_id FROM propietarios WHERE propietario_id = 9) OR
+            id IN(SELECT objeto_id FROM propietarios WHERE propietario_id  IN(SELECT grupos_id FROM usuario_grupo WHERE usuario_id = 9))
+        */
+
+        $texto=(implode(",", $campos));
+        $query="SELECT ".$texto." FROM ".$tabla." ".$orden;
+        if(($campoCondicion!="")&&($valorCondicion!="")){
+            $query.="WHERE ".$campoCondicion.
+            " IN(SELECT objeto_id FROM propietarios WHERE propietario_id ='".$valorCondicion."') OR ".
+            "id IN(SELECT objeto_id FROM propietarios WHERE propietario_id  IN(SELECT grupos_id FROM usuario_grupo WHERE usuario_id = '".$valorCondicion."'))";
+
+           //echo $query;
+           //echo "<script>alert(".$query.")</script>" ;
+        }
+        //echo $query;
+        return $this->conexion->query($query);
+    }
+
     public function buscarDato($campos,$tabla,$campoCondicion,$valorCondicion){
          /*
             METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
@@ -84,10 +109,19 @@ class Consultas extends Conexion{
         //$texto=(implode(",", $campos));
         $campos=implode(",",$campos);
         $query="SELECT ".$campos." FROM ".$tabla." WHERE ".$campoCondicion." LIKE '%".$valorCondicion."%' ";
-            //echo $query;
+        //echo $query;
         return $this->conexion->query($query);
     }
 
+    //la clausula where se pasa por parametro
+    public function buscarDatoCustom($campos,$tabla,$where){
+       $campos = implode(",",$campos);
+
+       $query = "SELECT ".$campos." FROM ".$tabla." ".$where;
+
+       //echo $query;
+       return $this->conexion->query($query);
+   }
 
     public function eliminarDato($tabla,$campo,$identificador){
         /*
@@ -107,14 +141,14 @@ class Consultas extends Conexion{
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
-        echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
+
         $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
 
     private function crearPaqueteModificacion($campos,$valores){
         $datos=explode(',',$valores);
-        $campos=explode(',',implode($campos,','));
+        $campos=explode(',',implode(',',$campos));
         $resultado="";
         for($i=0;$i<count($campos)-1;$i++){
             $resultado.= "".$campos[$i]."=".$datos[$i]." , ";
@@ -122,6 +156,7 @@ class Consultas extends Conexion{
         $resultado.= "".$campos[$i]."=".$datos[$i]." ";
         return $resultado;
     }
+
     public function modificarDato($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
         /*
             METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
@@ -130,24 +165,12 @@ class Consultas extends Conexion{
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
         //$this->crearPaqueteModificacion($campos,$valores);
-        //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
-        $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
-
-    }
-    public function modificarDatoQ($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
-        /*
-            METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
-            $objetoConsultas->insertarDato(<tablade la bd>,<Array de campos>,<string de valores>)
-            $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
-            NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
-        */
-        //$this->crearPaqueteModificacion($campos,$valores);
-        echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
+      //  echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
         $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
 
     }
 
-    public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$tamanhos=['*']){
+    public function crearTabla_mueble($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
         /*
             METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
             $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
@@ -156,10 +179,130 @@ class Consultas extends Conexion{
         echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
         array_unshift($camposBD,"id");
         $this->crearCabeceraTabla($cabecera,$tamanhos);
-        $res=$this->consultarDatos($camposBD,$tabla,$condicion);
+        if($tipo!="") {
+            $res=$this->consultarDatos_muebles($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
+          }else{
+            $res=$this->consultarDatos_muebles($camposBD,$tabla,'',$condicion,$valorCond);
+          }
+
         $this->crearContenidoTabla($res);
+
     }
 
+    public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
+        /*
+            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
+            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
+            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
+        */
+        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
+        array_unshift($camposBD,"id");
+        $this->crearCabeceraTabla($cabecera,$tamanhos);
+        if($tipo!="") {
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
+          }else{
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
+          }
+
+        $this->crearContenidoTabla($res);
+
+    }
+
+    public function crearTablaCheck_marca($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
+        /*
+            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
+            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
+            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
+        */
+        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
+        array_unshift($camposBD,"id");
+        $this->crearCabeceraTabla($cabecera,$tamanhos);
+
+        if($tipo!="") {
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
+          }else{
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
+          }
+
+        $this->crearContenidoTablaCheck_marca($res);
+    }
+
+    private function crearContenidoTablaCheck_marca($resultadoConsulta){
+        /*
+            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA CON UN CHECK POR CADA FILA
+            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+        */
+        echo "<tbody id='datosPanel'>";
+        $sec=1 ;
+        while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+
+            echo "<tr class='datos-tabla' >";
+
+            if($datos[3]!="SI"){
+            echo "<td><input type='checkbox' id='check_".$sec."'  name='check'  value='".$datos[0]."' ></td>" ;
+            }else {
+            echo "<td><input type='checkbox' id='check_".$sec."'  name='check'  value='".$datos[0]."' checked ></td>" ;
+            }
+
+            $sec=$sec+1 ;
+            array_shift($datos);
+            array_pop($datos) ;
+            $m=0 ;
+            foreach( $datos as $valor ){
+            if($m==1){
+                // empieza a imprimir a partir del 2do elemento del array
+                echo "<td>".$valor." </td>";
+            }else{$m=1;}
+
+            }
+            echo "</tr>";
+        }
+        echo"</tbody>";
+    }
+
+    public function crearTablaCheck($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
+        /*
+            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
+            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
+            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
+        */
+        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
+        array_unshift($camposBD,"id");
+        $this->crearCabeceraTabla($cabecera,$tamanhos);
+        if($tipo!="") {
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
+          }else{
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
+          }
+
+        $this->crearContenidoTablaCheck($res);
+    }
+
+    private function crearContenidoTablaCheck($resultadoConsulta){
+         /*
+             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA CON UN CHECK POR CADA FILA
+             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+         */
+         echo "<tbody id='datosPanel'>";
+         $sec=1 ;
+         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+
+             echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
+             echo "<td><input type='checkbox' id='check_".$sec."'  name='check'  value='".$datos[0]."'></td>" ;
+             $sec=$sec+1 ;
+             array_shift($datos);
+             $m=0 ;
+             foreach( $datos as $valor ){
+               if($m==1){
+                 // empieza a imprimir a partir del 2do elemento del array
+                 echo "<td>".$valor." </td>";
+               }else{$m=1;}
+
+             }
+             echo "</tr>";
+         }
+         echo"</tbody>";
+    }
 
     public function crearCabeceraTabla($titulos,$tamanhos=['*']){
         /*
@@ -178,23 +321,24 @@ class Consultas extends Conexion{
         echo "</tr>";
         echo"</thead>";
     }
-   private function crearContenidoTabla($resultadoConsulta){
+
+    private function crearContenidoTabla($resultadoConsulta){
         /*
             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
         */
         echo "<tbody id='datosPanel'>";
-
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
+            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
             array_shift($datos);
             foreach( $datos as $valor ){
                 echo "<td>".$valor." </td>";
             }
             echo "</tr>";
         }
-        echo"</tbody>";
+        echo"</tbody> </table>";
     }
+
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
        // MODIFICA REGISTRO
@@ -215,9 +359,9 @@ class Consultas extends Conexion{
            $opcion_sino.="</select>";
          }
 
-
       echo $opcion_sino;
     }
+
     public function consultarMenu($usuario){
         /*
             METODO PARA PODER CONSULTAR DATOS REFERENTES AL MENU
@@ -251,7 +395,7 @@ class Consultas extends Conexion{
             METODO PARA CREAR UN MENU DESPLEGALBE CON LOS CAMPOS DE DESCRIPCION COMO VALOR MOSTRADO Y EL ID EN EL VALOR DE CADA OPCION/
             $obj->crearMenuDesplegable("nombre_para_el_select","nombre_de_campo_id_en_tabla","nombre_de_campo_descripcion_o_nombre_a_mostrar","tabla_donde_consultar")
         */
-        $lista="<select name='".$nombreLista."' class='campos-ingreso'>";
+        $lista="<select name='".$nombreLista."'>";
         $campos= array($campoID,$campoDescripcion );
         $resultado=$this->consultarDatos($campos,$tabla);
         $lista.=$this->crearOpciones($resultado);
@@ -259,15 +403,14 @@ class Consultas extends Conexion{
         echo $lista;
     }
 
-
     public function crearOpciones($resultadoConsulta){
-
         $opciones="";
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
                 $opciones.="<option value='".$datos[0]."'>".$datos[1]."</option>";
         }
         return $opciones;
     }
+
     public function DesplegableElegido($idElegido, $nombreLista,$campoID,$campoDescripcion,$tabla){
         /*
             Metodo que permite mostrar una opcion seleccionada y grabada
@@ -289,7 +432,6 @@ class Consultas extends Conexion{
     }
 
     public function OpcionesElegidas($resultadoConsulta,$idelegido){
-
         $opciones="";
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
               if ($datos[0]==$idelegido ){
@@ -300,6 +442,7 @@ class Consultas extends Conexion{
       }
         return $opciones;
     }
+
 }
 
 ?>
