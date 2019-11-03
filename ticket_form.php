@@ -94,7 +94,7 @@
             <label for="solicitante">Fecha:</label>
             <input class="form-control" name="fecha" id="fecha" type="date">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Por favor, rellene este campo.</div>
+            <div class="invalid-feedback">Por favor, ingrese una fecha valida.</div>
           </div>
         </div>
         <?php if($btn_label=="Modificar Ticket"): ?>
@@ -182,60 +182,52 @@
         var explicacion = document.getElementById("explica");
         var solicitante = document.getElementById("solicitante");
         var email = document.getElementById("solic_mail");
+        var fecha = document.getElementById("fecha");
 
         //validacion del asunto del ticket
         if( (asunto.value =='' || asunto.length>=100)  ){
-          asunto.classList.add("is-invalid");
-          asunto.classList.remove("is-valid");
+          esInvalido(asunto);
           ok = false;
         }else{
-          asunto.classList.add("is-valid");
-          asunto.classList.remove("is-invalid");
+          esValido(asunto);
         }	
 
         //validacion de la explicación del ticket
         if( (explicacion.value =='')  ){
-          explicacion.classList.add("is-invalid");
-          explicacion.classList.remove("is-valid");
+          esInvalido(explicacion);
           ok = false;
         }else{
-          explicacion.classList.add("is-valid");
-          explicacion.classList.remove("is-invalid");
+          esValido(explicacion);
         }	
 
         //validacion del nombre de solicitante
         if( (solicitante.value =='')  ){
-          solicitante.classList.add("is-invalid");
-          solicitante.classList.remove("is-valid");
+          esInvalido(solicitante);
           ok = false;
         }else{
-          solicitante.classList.add("is-valid");
-          solicitante.classList.remove("is-invalid");
+          esValido(solicitante);
         }	
 
         //validacion del correo del solicitante
         if( !validateEmail(email.value) || email.value == '' ){
-          email.classList.add("is-invalid");
-          email.classList.remove("is-valid");
+          esInvalido(email)
           ok = false;
         }else{
-          email.classList.add("is-valid");
-          email.classList.remove("is-invalid");
+          esValido(email)
         }	
 
-        if(ok){
-          return true ;
+        //validacion de la fecha
+        if( fecha.value == '' ){
+          esInvalido(fecha)
+          ok = false;
         }else{
-          return false;
-        }
+          esValido(fecha)
+        }	
+
+        return ok;
 
       }
 
-      //valida el mail con patterns, no hacer salto de linea en el pattern ya que no es tratado como string
-      function validateEmail(email) {
-        var p = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return p.test(email);
-      }
   </script>
 
 </html>
@@ -267,6 +259,7 @@ if(isset($_POST['submit_ticket'])){
       $criticidad  = $_POST["criticidad"];
       $estado = "Nuevo";
       $creador  = 'usuarioLogin';
+      $usuario_id = 1;
       $solicitante  = $_POST["solicitante"];
       $solic_mail = $_POST['solic_mail'];
       
@@ -281,9 +274,9 @@ if(isset($_POST['submit_ticket'])){
       //echo "Nuevo formato: ".$fecha;
 
       $campos = array( 'fecha','asunto','explica','tipo','criticidad','estado','creador',
-      'solicitante','solic_mail');
+      'solicitante','solic_mail','usuario_id');
       $valores="'$fecha','$asunto','$explica','$tipo','$criticidad','$estado','$creador',".
-      "'$solicitante','$solic_mail'";
+      "'$solicitante','$solic_mail',$usuario_id";
       
       //update o insert dependiend de las circunstancias
       if( isset($idForm) && ($idForm!=0) ){

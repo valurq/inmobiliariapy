@@ -183,7 +183,7 @@
 
             //Depuracion{
                 //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
-                console.log(where);
+                //console.log(where);
             //}
             
             buscarTablaPanelesCustom(campos,'ticket',where);
