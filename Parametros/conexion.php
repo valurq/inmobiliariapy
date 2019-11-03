@@ -1,5 +1,5 @@
 <?php
-/*Catch de error de conexion{
+/*Catch de error de conexion{ 
     $direccion = "127.0.0.1";
     $bd = "gestordoc";
     $usuario ="root";
@@ -17,7 +17,7 @@ class Conexion{
     private $user="root";
     private $ip="localhost";
     private $bd="remax";
-    private $pass="valurq123";
+    private $pass="";
     public $conexion;
 
 
@@ -29,19 +29,19 @@ class Conexion{
         $this->conexion= new mysqli($this->ip,$this->user,$this->pass,$this->bd);
 
     }
-
+ 
     /*Constructor de la clase en deshuso (consultar){
         public function __construct1($user,$ip,$bd,$pass){
-
+            
                 FUNCION UTILIZADA PARA PODER INSTANCIAR LA CLASE (CREAR EL OBJETO) CON LA DIFERENCIA QUE SE INICIA CON LOS DATOS PROPORCIONADOS EN EL ARGUMENTO
                 $variable=new Conexion(<USUARIO>,<ip del servidor>,<base de datos>,<contraseña>)
-
+            
             $conexion=mysql_connect($ip,$user,$pass,$bd);
             if ($this->conexion == 0) DIE("Lo sentimos, no se ha podido conectar con MySQL: " . mysql_error());
             return true;
         }
     }*/
-
+    
 }
 
 //CLASE HEREDADA DE CONEXION
@@ -70,12 +70,14 @@ class Consultas extends Conexion{
             $query.="WHERE ".$campoCondicion." != '".$valorCondicion."'";
 
           }
-           //echo $query;
+        //echo "--> ".$query;
         //    echo "<script>alert(".$query.")</script>" ;
         }
         //echo $query;
         return $this->conexion->query($query);
     }
+
+    
 
     public function consultarDatos_muebles($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion="",$tipo=""){
         /*
@@ -119,7 +121,6 @@ class Consultas extends Conexion{
 
        $query = "SELECT ".$campos." FROM ".$tabla." ".$where;
 
-       //echo $query;
        return $this->conexion->query($query);
    }
 
@@ -141,7 +142,7 @@ class Consultas extends Conexion{
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
-
+        echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
         $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
@@ -156,7 +157,7 @@ class Consultas extends Conexion{
         $resultado.= "".$campos[$i]."=".$datos[$i]." ";
         return $resultado;
     }
-
+    
     public function modificarDato($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
         /*
             METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
@@ -198,12 +199,12 @@ class Consultas extends Conexion{
         echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
         array_unshift($camposBD,"id");
         $this->crearCabeceraTabla($cabecera,$tamanhos);
-        if($tipo!="") {
+        if($tipo!=""){
             $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
           }else{
             $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
           }
-
+        //var_dump($res);
         $this->crearContenidoTabla($res);
 
     }
@@ -327,16 +328,20 @@ class Consultas extends Conexion{
             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
         */
-        echo "<tbody id='datosPanel'>";
-        while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
-            array_shift($datos);
-            foreach( $datos as $valor ){
-                echo "<td>".$valor." </td>";
+        if(gettype($resultadoConsulta)!="boolean"){
+            echo "<tbody id='datosPanel'>";
+            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
+                array_shift($datos);
+                foreach( $datos as $valor ){
+                    echo "<td>".$valor." </td>";
+                }
+                echo "</tr>";
             }
-            echo "</tr>";
+            echo"</tbody> </table>";
+        }else{
+            echo "Sin resultados";
         }
-        echo"</tbody> </table>";
     }
 
     public function opciones_sino($nombreOpcion,$valor) {
@@ -375,7 +380,7 @@ class Consultas extends Conexion{
         WHERE id IN( SELECT menu_opcion_id FROM acceso
             WHERE perfil_id = ( SELECT perfil_id FROM usuario
                 WHERE id= '".$usuario."' ) ) order by posicion asc";
-
+        
         $resultado=$this->conexion->query($sql);
         return $resultado;
     }

@@ -21,8 +21,10 @@
             $where = "";
         }
         $datos=$consultas->buscarDatoCustom($camposRes,$tabla,$where);
-        while ($fila=$datos->fetch_row()) {
-            array_push($resultado,$fila);
+        if(gettype($datos)!="boolean"){
+            while ($fila=$datos->fetch_row()) {
+                array_push($resultado,$fila);
+            }
         }
     }else{
         $datos=$consultas->buscarDato($camposRes,$tabla,$campo,$valor);
@@ -30,8 +32,10 @@
             array_push($resultado,$fila);
         }
     }
+
     //$resultado=$resultado->fetch_assoc();
     //$resultado=array_shift($resultado);
+
     echo json_encode(array_values($resultado),JSON_PRETTY_PRINT);
 
     /*switch (json_last_error()) {
