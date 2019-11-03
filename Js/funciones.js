@@ -58,6 +58,13 @@ function buscarTablaPanelesCustom(camposResultado,tabla,where) {
      });
 }
 
+//a diferencia de las demas funciones de busqueda, esta retorna los datos buscados sin cargarlos
+function busquedaLibre(camposResultado,tabla,where,callback) {
+    $.post("Parametros/buscador.php", {camposResultado: camposResultado ,tabla:tabla,where:where}, function(resultado) {
+        resultado = JSON.parse(resultado);
+        callback(resultado);
+     });
+}
 
 function cargarTabla(datos,tablaId){
     var i,columna="";
@@ -298,12 +305,13 @@ function crearMenu(dir,imagen,titulo,permiso){
                 campo.value=valores[i];
             }
             //para el caso de los SELECT, el indice de los options comienza en 0
+            //este codigo solo es util para algunos casos... (ahora utilizado por el modulo de tickets)
             if(campo.tagName=="SELECT"){
                 var options = campo.options;
                 var size = options.length;
                 var c = 0;
                 while(c<size){
-                    if(options[c].text==valores[i]){
+                    if(options[c].value==valores[i]){
                         campo.selectedIndex = c;
                     }
                     c++;
@@ -311,4 +319,23 @@ function crearMenu(dir,imagen,titulo,permiso){
             }
         }
     }
+
+    /* Estas funciones de validacion se podrian mejorar pasando el texto de validacion como parametro 
+    y instanciando dicho texto via ids especificas al div de validacion... pero ñe, no por ahora*/
+    //necesita bootstrap css y js para funcionar
+    function esValido(input){
+        input.classList.add("is-valid");
+        input.classList.remove("is-invalid");
+    }
+    //necesita bootstrap css y js para funcionar
+    function esInvalido(input){
+        input.classList.add("is-invalid");
+        input.classList.remove("is-valid");
+    }
+
+    //valida el mail con patterns, no hacer salto de linea en el pattern ya que no es tratado como string (creo)
+    function validateEmail(email) {
+        var p = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return p.test(email);
+      }
 
