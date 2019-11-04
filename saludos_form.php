@@ -18,16 +18,16 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'titulo','condiciones' );
+            $campos= array( 'texto','tipo','estado');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
-            $resultado=$inserta_Datos->consultarDatos($campos,'condiciones',"","id",$id );
+            $resultado=$inserta_Datos->consultarDatos($campos,'texto_saludos',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('titulo','condiciones');
+            $camposIdForm= array( 'texto','tipo','estado');
         }
     ?>
 
@@ -44,32 +44,34 @@
         <script type="text/javascript" src="Js/funciones.js"></script>
 </head>
 <body style="background-color:white">
-  <h2>CONDICIONES</h2>
+  <h2>SALUDOS</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
-
-
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-        <td><label for="">Titulo</label></td>
-        <td><input type="text" name="titulo" id="titulo" value="" placeholder="Ingrese el titulo de la condición" class="campos-ingreso"></td>
+        <td><label for="">Tipo</label></td>
+        <td>
+            <?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[1],'tipo',array('Cumpleaños','Aniversario'))?>
+        </td>
       </tr>
       <tr>
-        <td><label for="">Condición</label></td>
-        <td><textarea name="condiciones" id="condiciones" rows="5" cols="80" class="campos-ingreso"></textarea></td>
+        <td><label for="">Estado</label></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[2],'estado',array('Activo','Inactivo'))?></td>
       </tr>
       <tr>
-        <td colspan="2"><p><b>OBS:</b> No ingresar estos caracteres (<b>*</b> <b>,</b> <b>/</b> <b>-</b> ) </p></td>
+        <td><label for="">Texto</label></td>
+        <td><textarea name="texto" id= "texto" rows="8" cols="80" class="campos-ingreso"></textarea></td>
+
       </tr>
     </tbody>
   </table>
 <!-- moneda,tipo,simbolo -->
   <!-- BOTONES -->
   <input name="guardar" type="submit" value="Guardar" class="boton-formulario guardar">
-  <input name="volver" type="button" value="Volver" onclick = "location='condiciones_panel.php';"  class="boton-formulario">
+  <input name="volver" type="button" value="Volver" onclick = "location='saludos_panel.php';"  class="boton-formulario">
 </form>
 
 
@@ -90,24 +92,25 @@
     }
 
 
-if (isset($_POST['titulo'])) {
+if (isset($_POST['tipo'])) {
     //======================================================================================
     // NUEVO REGISTRO
     //======================================================================================
-    if(isset($_POST['titulo'])){
-        $titulo =trim($_POST['titulo']);
-        $condiciones =trim($_POST['condiciones']);
+    if(isset($_POST['tipo'])){
+        $tipo =trim($_POST['tipo']);
+        $estado   =trim($_POST['estado']);
+        $texto =trim($_POST['texto']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'titulo','condiciones');
-        $valores="'".$titulo."','".$condiciones."'";
+        $campos = array( 'texto','tipo','estado','creador');
+        $valores="'".$texto."','".$tipo."','".$estado."','".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
         if(isset($idForm)&&($idForm!=0)){
-            $inserta_Datos->modificarDato('condiciones',$campos,$valores,'id',$idForm);
+            $inserta_Datos->modificarDato('texto_saludos',$campos,$valores,'id',$idForm);
         }else{
-            $inserta_Datos->insertarDato('condiciones',$campos,$valores);
+            $inserta_Datos->insertarDato('texto_saludos',$campos,$valores);
         }
     }
 }
@@ -119,12 +122,12 @@ if (isset($_POST['titulo'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('titulo').value !='') && (document.getElementById('condiciones').value !='')){
+		if( (document.getElementById('tipo').value !='')&&(document.getElementById('estado').value !='')  ){
 		    return true ;
 
 		}else{
         // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar todos los campos') ;
+            popup('Advertencia','Es necesario el tipo y el estado') ;
             return false ;
 		}
 	}

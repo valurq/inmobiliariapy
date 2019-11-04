@@ -9,6 +9,9 @@
         include("Parametros/conexion.php");
         $consultas=new Consultas();
         $id=$_POST['seleccionado'];
+        $perfil=$consultas->consultarDatos(array('perfil'),'perfil','','id',$id);
+        $perfil=$perfil->fetch_array(MYSQL_NUM);
+        $perfil=$perfil[0];
         $cabecera=['Titulo','Grupo','Habilita'];
         $campos=['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_id) as Grupo',"(SELECT habilita FROM acceso WHERE menu_opcion_id=menu_opcion.id AND perfil_id = $id ) as Habilita"];
     ?>
@@ -25,7 +28,8 @@
         <script type="text/javascript" src="Js/funciones.js"></script>
 </head>
 <body style="background-color:white" >
-<h2 class="titulo-formulario">PERFIL</h2>
+<h2 class="titulo-formulario">CONTROL DE ACCESO</h2>
+<h5 class="titulo-formulario">PERFIL: <?php echo $perfil;?></h5>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 <form name="perfilForm" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
@@ -44,7 +48,7 @@
                     echo "<tr class='datos-tabla' id='".$datos[0]."'>";
                     echo "<td>".$datos[1]."</td>";
                     echo "<td>".$datos[2]."</td>";
-                    echo "<td>"."<input type='checkbox' ".(($datos[3]!="NO")?"":"checked='on'")."</td>";
+                    echo "<td>"."<input type='checkbox' ".(($datos[3]=="NO")?"":"checked='on'")."</td>";
 
                     echo "</tr>";
                 }
@@ -89,8 +93,10 @@
         for (var filaReal of tabla) {
             var fila=filaReal.slice();
             console.log(fila+"\n");
+
             insertar('acceso',new Array('menu_opcion_id','perfil_id','habilita'),fila);
         }},500);
+        location='perfil_panel.php'
     }
 
     function insertar(tabla,campos,valores){

@@ -12,13 +12,17 @@
         include("Parametros/verificarConexion.php");
         $id=0;
         $resultado="";
+        $cantidadContratos=0;
 
         /*
             VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'duracion', 'cobro_fee_desde');
+            $cantidadContratos=$inserta_Datos->consultarDatos(array("count(*)"),'contratos',"","oficina_id",$id);
+            $cantidadContratos=$cantidadContratos->fetch_array(MYSQLI_NUM);
+            $cantidadContratos=$cantidadContratos[0];
+            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'duracion', 'cobro_fee_desde','pais_id','ciudad_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -42,10 +46,27 @@
 			  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
 			  crossorigin="anonymous"></script>
         <script type="text/javascript" src="Js/funciones.js"></script>
+        <style>
+          #contrato{
+            cursor: pointer;
+            border: 1px solid black;
+            border-radius: 20px;
+            padding: 5px 10px;
+          }
+          #contrato:hover{
+            color: white;
+            background-color: #16156f;
+          }
+        </style>
 </head>
 <body style="background-color:white">
   <h2>DEFINICIÓN DE OFICINA</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
+<form action=<?php echo (($cantidadContratos>0)?"'contrato_panel.php'": "'contrato_form.php'");?> 
+target="_blank" method="POST" id='form_contrato'>
+  <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
+</form>
+
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
@@ -59,21 +80,28 @@
         <td><input type="text" name="ruc" id="ruc" value="" placeholder="Ingrese el RUC" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">País</label></td>
-        <td>
-          <?php
-          //name, campoId, campoDescripcion, tabla
-            $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
-          ?>
-        </td>
+          <td><label for="">País</label></td>
+          <td>
+            <?php
+            //name, campoId, campoDescripcion, tabla
+              if(!(count($resultado)>0)){
+                  $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
+              }else{
+                  $inserta_Datos->DesplegableElegido(@$resultado[15],'pais','id','dsc_pais','pais');
+              }
+            ?>
+          </td>
 
-        <td><label for="">Ciudad</label></td>
-        <td>
-          <?php
-          //name, campoId, campoDescripcion, tabla
-            $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
-          ?>
-        </td>
+          <td><label for="">Ciudad</label></td>
+          <td>
+            <?php
+              if(!(count($resultado)>0)){
+                  $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
+              }else{
+                  $inserta_Datos->DesplegableElegido(@$resultado[16],'ciudad', 'id', 'dsc_ciudad', 'ciudad');
+              }
+
+            ?>
       </tr>
       <tr>
         <td><label for="">Manager</label></td>
@@ -102,10 +130,9 @@
 
         <td><label for="">Tipo</label></td>
         <td>
-          <select name="tipo" id="tipo">
-            <option value="REMAX">REMAX</option>
-            <option value="OTROS">OTROS</option>
-          </select>
+          <?php
+            $inserta_Datos->DesplegableElegidoFijo(@$resultado[10],'tipo',array('REMAX','OTROS'));
+          ?>
         </td>
       </tr>
       <tr>
@@ -125,6 +152,7 @@
       <tr>
         <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
+        <td><a id="contrato" target="_blank" onclick="document.getElementById('form_contrato').submit();">Contrato</a></td>
       </tr>
     </tbody>
   </table>

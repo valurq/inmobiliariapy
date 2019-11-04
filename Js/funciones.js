@@ -25,6 +25,7 @@ function buscarTablaPaneles(camposResultado,valor,tabla,campo) {
         }
      });
 }
+
 function cargarTabla(datos,tablaId){
     var i,columna="";
     var fila=document.createElement('tr');
@@ -49,13 +50,16 @@ function eliminar(tabla){
    }else {
            //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
            $.post("Parametros/eliminador.php", {id : sel , tabla : tabla}, function(msg) {
-               console.log(msg);
-               if(msg==1){
+                console.log(msg);
+                if(msg==0){
                    document.getElementById('seleccionado').value="";
                    location.reload();
-               }else{
+                //COD 1451 = CONSTRAINT ERROR
+                }else if(msg==1451){
+                   popup('Error',"OTROS REGISTROS UTILIZAN ESTOS DATOS")
+                }else{
                    popup('Error',"ERROR EN LA ELIMINACION DEL REGISTRO");
-               }
+                }
             });
    }
 }
@@ -129,7 +133,7 @@ function popupC(simbolo,mensaje,funcionConfirmar,parametro){
     document.getElementById("imagenPopupC").style.backgroundImage="url('"+seleccionarImagen(simbolo)+"')";
     document.getElementById("mensajePopupC").value=mensaje;
     //document.getElementById("btPopupAceptar").addEventListener("click",function(){funcfuncionConfirmar(parametro)});
-    document.getElementById("btPopupAceptarC").addEventListener("click",function(){funcionConfirmar(parametro)});
+    document.getElementById("btPopupAceptarC").addEventListener("click",function(){funcionConfirmar(parametro) ; cerrarPopupC();});
 }
 function cerrarPopupC(){
     document.getElementById('popupConfirmacion').style.display="none";

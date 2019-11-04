@@ -49,7 +49,7 @@ $campos=['descripcion','obs'];
             <!--campo buscador en el panel -->
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE MONEDA</B></font>
+                <font color="#808080" class="ws12"><B>PANEL DE GRUPO MENU</B></font>
             </div>
 
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='grupo_menu_form.php';" value="Nuevo">
