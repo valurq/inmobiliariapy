@@ -87,6 +87,30 @@ class Consultas extends Conexion{
             //echo $query;
         return $this->conexion->query($query);
     }
+    public function buscarDatoQ($campos,$tabla,$campoCondicion,$valorCondicion,$campoC='',$valorC=''){
+         /*
+            METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
+            $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
+            Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
+        */
+        //$texto=(implode(",", $campos));
+        $campos=implode(",",$campos);
+        $query="SELECT ".$campos." FROM ".$tabla." WHERE ".$campoCondicion." LIKE '%".$valorCondicion."%' ";
+
+        if(is_array($campoC)==TRUE){
+            for ($i=0; $i <count($campoC)-1 ; $i++) {
+                $query.="&& ".$campoC[$i]." = '".$valorC[$i]."' && ";
+            }
+            $query.=$campoC[$i]." = '".$valorC[$i]."' ";
+        }else{
+            if(($campoC!="")&&($valorC!="")){
+                $query.="&& ".$campoC." = '".$valorC."' ";
+            }
+        }
+            //echo $query;
+        return $this->conexion->query($query);
+    }
+
 
 
     public function eliminarDato($tabla,$campo,$identificador){
@@ -96,6 +120,7 @@ class Consultas extends Conexion{
             Ej:$objetoConsultas->eliminarDato('categorias','id','1');
 
         */
+        //echo "Delete from ".$tabla." where ".$campo."= '".$identificador."'";
         $this->conexion->query("Delete from ".$tabla." where ".$campo."= '".$identificador."'");
 
     }
@@ -107,7 +132,7 @@ class Consultas extends Conexion{
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
-        echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
+        //echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
         $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
@@ -123,16 +148,24 @@ class Consultas extends Conexion{
         return $resultado;
     }
     public function modificarDato($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
-        /*
-            METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
-            $objetoConsultas->insertarDato(<tablade la bd>,<Array de campos>,<string de valores>)
-            $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
-            NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
-        */
-        //$this->crearPaqueteModificacion($campos,$valores);
-        //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
+            /*
+                METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
+                $objetoConsultas->insertarDato(<tablade la bd>,<Array de campos>,<string de valores>)
+                $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
+                NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
+            */
+            //$this->crearPaqueteModificacion($campos,$valores);
+            //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
         $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
 
+    }
+    private function crearPaqueteModificacionQ($campos,$valores){
+        $resultado="";
+        for($i=0;$i<count($campos)-1;$i++){
+            $resultado.= "".$campos[$i]."='".$valores[$i]."' , ";
+        }
+        $resultado.= "".$campos[$i]."='".$valores[$i]."' ";
+        return $resultado;
     }
     public function modificarDatoQ($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
         /*
@@ -142,12 +175,26 @@ class Consultas extends Conexion{
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
         //$this->crearPaqueteModificacion($campos,$valores);
-        echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
-        $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
+    //    echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
+    $query="UPDATE ".$tabla." SET ".$this->crearPaqueteModificacionQ($campos,$valores);
+    if(is_array($campoIdentificador)==TRUE){
+            $query.="WHERE ";
+            for ($i=0; $i <count($campoIdentificador)-1 ; $i++) {
+                $query.=$campoIdentificador[$i]." = '".$valorIdentificador[$i]."' && ";
+            }
+            $query.=$campoIdentificador[$i]." = '".$valorIdentificador[$i]."' ";
+        }else{
+            if(($campoIdentificador!="")&&($valorIdentificador!="")){
+                $query.="WHERE ".$campoIdentificador." = '".$valorIdentificador."' ";
+
+            }
+        }
+
+        $this->conexion->query($query);
 
     }
 
-    public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$tamanhos=['*']){
+    public function crearTabla($cabecera,$camposBD,$tabla,$campoCondicion="",$valorCondicion="",$tamanhos=['*']){
         /*
             METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
             $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
@@ -156,7 +203,7 @@ class Consultas extends Conexion{
         echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
         array_unshift($camposBD,"id");
         $this->crearCabeceraTabla($cabecera,$tamanhos);
-        $res=$this->consultarDatos($camposBD,$tabla,$condicion);
+        $res=$this->consultarDatos($camposBD,$tabla,"",$campoCondicion,$valorCondicion);
         $this->crearContenidoTabla($res);
     }
 
@@ -251,7 +298,7 @@ class Consultas extends Conexion{
             METODO PARA CREAR UN MENU DESPLEGALBE CON LOS CAMPOS DE DESCRIPCION COMO VALOR MOSTRADO Y EL ID EN EL VALOR DE CADA OPCION/
             $obj->crearMenuDesplegable("nombre_para_el_select","nombre_de_campo_id_en_tabla","nombre_de_campo_descripcion_o_nombre_a_mostrar","tabla_donde_consultar")
         */
-        $lista="<select name='".$nombreLista."' class='campos-ingreso'>";
+        $lista="<select name='".$nombreLista."' id='".$nombreLista."' class='campos-ingreso'>";
         $campos= array($campoID,$campoDescripcion );
         $resultado=$this->consultarDatos($campos,$tabla);
         $lista.=$this->crearOpciones($resultado);
@@ -280,19 +327,40 @@ class Consultas extends Conexion{
             $campoDescripcion : nombre del campo de la descrip.en la tabla
             $tabla : nombre de la tabla
         */
-        $lista="<select name='".$nombreLista."'>";
+        $lista="<select name='".$nombreLista."' class='campos-ingreso'>";
         $campos= array($campoID,$campoDescripcion );
         $resultado=$this->consultarDatos($campos,$tabla);
         $lista.=$this->OpcionesElegidas($resultado, $idElegido);
         $lista.="</select>";
         echo $lista;
     }
+    public function DesplegableElegidoFijo($idElegido, $nombreLista,$datos){
+        /*
+            Metodo que permite mostrar una opcion seleccionada y grabada
+            previamente. Utilizado par EDICION / MODIFICA y que traiga el valor
+            de la tabla.
+            parametros :
+            $idElegido : identificador del registro a buscar
+            $nombreLista : nombre del select, objeto de $lista
+            $datos :Datos a mostrar en la lista
+        */
+        $lista="<select name='".$nombreLista."' id='".$nombreLista."' class='campos-ingreso'>";
+        foreach ($datos as $value) {
+            if($value==$idElegido){
+                $lista.="<option selected >".$value."</option>";
+            }else{
+                $lista.="<option>".$value."</option>";
+            }
+        }
+        $lista.="</select>";
+        echo $lista;
+    }
 
-    public function OpcionesElegidas($resultadoConsulta,$idelegido){
+    public function OpcionesElegidas($resultadoConsulta,$idElegido){
 
         $opciones="";
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-              if ($datos[0]==$idelegido ){
+              if ($datos[0]==$idElegido ){
                 $opciones.="<option selected  value='".$datos[0]."'>".$datos[1]."</option>";
               }else{
                 $opciones.="<option value='".$datos[0]."'>".$datos[1]."</option>";

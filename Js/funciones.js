@@ -4,10 +4,11 @@ function incluirJQuery(){
     document.head.appendChild(script);
 }
 function seleccionarFila(id){
-    if((document.getElementById('seleccionado').value!='')&&(document.getElementById('seleccionado').value!=0)){
-        var anterior=document.getElementById('seleccionado').value;
-        document.getElementById(anterior).style.backgroundColor="white";
-    }
+    $("#datosPanel > tr").each(
+        function(){
+            this.style = "";
+        }
+    );
     document.getElementById(id).style.backgroundColor= "#669ee8";
     document.getElementById("seleccionado").value=id;
 }
@@ -24,6 +25,51 @@ function buscarTablaPaneles(camposResultado,valor,tabla,campo) {
             cargarTabla(resultado[i],"datosPanel");
         }
      });
+}
+function buscarTablaPanelesQ(camposResultado,valor,tabla,campo,campoC,valorC) {
+    $.post("Parametros/buscadorGenerico.php", {camposResultado: camposResultado,dato:valor,tabla:tabla,campoBusqueda:campo,campoCondicion:campoC,valorCondicion:valorC}, function(resultado) {
+        //$("#resultadoBusqueda").html(resultado);
+        var i;
+        console.log(resultado);
+        $("#datosPanel tr").remove();
+        resultado=JSON.parse(resultado);
+        for(i=1 ; i<resultado.length;i++){
+            cargarTabla(resultado[i],"datosPanel");
+        }
+     });
+}
+
+function obtenerDatos(campos,tabla,campoC,valorC) {
+    $.ajaxSetup({async:false});
+     var res="";
+    $.post("Parametros/obtenerDatos.php", {campos: campos,tabla:tabla,campoCondicion:campoC,valores:valorC}, function(resultado) {
+        var i;
+        console.log(resultado);
+        resultado=JSON.parse(resultado);
+        res=resultado;
+    });
+     $.ajaxSetup({async:true});
+     pausa(1000);
+     return res;
+}
+
+function insertarDatos(campos,tabla,valores){
+    $.post("Parametros/insertarDatos.php", {campos: campos,tabla:tabla,valores:valores}, function(resultado) {
+        console.log(resultado);
+        if(resultado==1){
+            popup("Error","Error al guardar");
+        }else{
+            popup("Informacion","Realizado con éxito");
+        }
+    } );
+}
+
+
+function pausa(milisegundos){
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < milisegundos);
 }
 function cargarTabla(datos,tablaId){
     var i,columna="";
@@ -49,13 +95,16 @@ function eliminar(tabla){
    }else {
            //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
            $.post("Parametros/eliminador.php", {id : sel , tabla : tabla}, function(msg) {
-               console.log(msg);
-               if(msg==1){
+                console.log(msg);
+                if(msg==0){
                    document.getElementById('seleccionado').value="";
                    location.reload();
-               }else{
+                //COD 1451 = CONSTRAINT ERROR
+                }else if(msg==1451){
+                   popup('Error',"OTROS REGISTROS UTILIZAN ESTOS DATOS")
+                }else{
                    popup('Error',"ERROR EN LA ELIMINACION DEL REGISTRO");
-               }
+                }
             });
    }
 }
@@ -129,7 +178,7 @@ function popupC(simbolo,mensaje,funcionConfirmar,parametro){
     document.getElementById("imagenPopupC").style.backgroundImage="url('"+seleccionarImagen(simbolo)+"')";
     document.getElementById("mensajePopupC").value=mensaje;
     //document.getElementById("btPopupAceptar").addEventListener("click",function(){funcfuncionConfirmar(parametro)});
-    document.getElementById("btPopupAceptarC").addEventListener("click",function(){funcionConfirmar(parametro)});
+    document.getElementById("btPopupAceptarC").addEventListener("click",function(){funcionConfirmar(parametro) ; cerrarPopupC();});
 }
 function cerrarPopupC(){
     document.getElementById('popupConfirmacion').style.display="none";
@@ -240,4 +289,30 @@ function cargarCampos(camposform,valores){
             campo.value=valores[i];
         }
     }
+}
+function buscarLista(camposResultado,valor,tabla,campo, idLista, idListaAux) {
+    $.post("Parametros/buscador.php", {camposResultado: camposResultado ,dato:valor,tabla:tabla,campoBusqueda:campo}, function(resultado) {
+        //$("#resultadoBusqueda").html(resultado);
+        var i;
+        //console.log(resultado);
+
+        $("#"+idLista).empty();
+
+        console.log(resultado);
+        resultado=JSON.parse(resultado);
+        for(i=1 ; i<resultado.length;i++){
+            cargarData(resultado[i],idLista, idListaAux);
+        }
+     });
+}
+
+function cargarData(datos, listaID, listaIDAux){
+    let lista = document.getElementById(listaID);
+    console.log(lista);
+    let option = document.createElement('option');
+    option.setAttribute('value',datos[1]);
+    let data = document.createTextNode(datos[1]);
+    option.appendChild(data);
+    lista.appendChild(option);
+    document.getElementById(listaIDAux).setAttribute('value', datos[0]);
 }
