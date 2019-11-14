@@ -17,14 +17,14 @@
       <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
       <link rel="stylesheet" href="CSS/popup.css">
       <link rel="stylesheet" href="CSS/paneles.css">
-      <script src="Js/jquery-3.4.0.js"></script>
-      <script src="Js/funciones.js"></script>
+      <script src="JS/jquery-3.4.0.js"></script>
+      <script src="JS/funciones.js"></script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
       <script type="text/javascript">
          // para busqueda en paneles
          var campos=['id','fecha','asunto','tipo','criticidad','solicitante','estado'];
-      </script>
+      </script> 
       <style media="screen">
          .menu-panel{
              width: 100%
@@ -51,12 +51,12 @@
             <font color="#808080" class="ws12"><B>PANEL DE TICKETS</B></font>
         </div>
         <div class="row mb-3">
-            <!--FILTROS DEL PANEL-->
-            <div class="col-sm-2">
-                <label for="asunto">Buscar:</label>
+            <!--FILTROS DEL PANEL-->   
+            <div class="col-sm-2">        
+                <label for="asunto">Buscar:</label>     
                 <input class="form-control" type="text" name="asunto" id="asunto" onkeyup="buscar();">
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2">    
                 <label for="tipo">Tipos:</label>
                 <select class="form-control" name="tipo" id="tipo" onchange="buscar();">
                     <option value="Todos">Todos</option>
@@ -68,7 +68,7 @@
                     <option value="Otros">Otros</option>
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2">    
                 <label for="criticidad">Criticidad:</label>
                 <select class="form-control" name="criticidad" id="criticidad" onchange="buscar();">
                     <option value="Todos">Todos</option>
@@ -78,10 +78,10 @@
                     <option value="Urgente">Urgente</option>
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2">    
                 <label for="estado">Estados:</label>
                 <select class="form-control" name="estado" id="estado" onchange="buscar();">
-                    <option value="Todos">Todos</option>
+                    <option value="Todos">Todos</option>    
                     <option value="Nuevo">Nuevo</option>
                     <option value="Asignado">Asignado</option>
                     <option value="Pendiente">Pendiente</option>
@@ -89,11 +89,11 @@
                     <option value="Cerrado">Cerrado</option>
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2">    
                 <label for="fecha_desde">Desde:</label>
                 <input class="form-control" name="fecha_desde" id="fecha_desde" type="date" onchange="buscar();" onkeydown="buscar();">
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2"> 
                 <label for="fecha_hasta">Hasta:</label>
                 <input class="form-control" name="fecha_hasta" id="fecha_hasta" type="date" onchange="buscar();" onkeydown="buscar();">
             </div>
@@ -112,7 +112,6 @@
             <?php  $consultas->crearTabla($cabecera,$campos,'ticket');?>
         </div>
     </body>
-
     <script>
         function buscar(){
             //Inicializacion de Variables{
@@ -136,7 +135,7 @@
                         where += " AND tipo='"+tipo.value+"'";
                     }else{
                         where += " tipo='"+tipo.value+"'";
-                    }
+                    } 
                     c++;
                 }
                 if(criticidad.value != "Todos"){
@@ -145,7 +144,7 @@
                     }else{
                         where += " criticidad='"+criticidad.value+"'";
                     }
-                    c++;
+                    c++; 
                 }
                 if(estado.value != "Todos"){
                     if(c > 0){
@@ -153,7 +152,7 @@
                     }else{
                         where += " estado='"+estado.value+"'";
                     }
-                    c++;
+                    c++; 
                 }
                 if(fecha_desde.value != null && fecha_desde.value != ""){
                     //if(validarFechaPattern(fecha_desde)){
@@ -161,7 +160,8 @@
                             where += " AND fecha>='"+fecha_desde.value+"'";
                         }else{
                             where += " fecha>='"+fecha_desde.value+"'";
-                        }
+                        } 
+
                     /*}else{
                         console.log("Fecha desde es invalida --> "+fecha_desde.value);
                     }*/
@@ -173,26 +173,24 @@
                             where += " AND fecha<='"+fecha_hasta.value+"'";
                         }else{
                             where += " fecha<='"+fecha_hasta.value+"'";
-                        }
+                        } 
                     /*}else{
                         console.log("Fecha hasta es invalida --> "+fecha_hasta.value);
                     }*/
                 }
-
             //}
 
             //Depuracion{
                 //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
                 //console.log(where);
             //}
-
             buscarTablaPanelesCustom(campos,'ticket',where);
 
         }
 
-        //esto puede ser riesgoso ya que no estoy seguro si el formate default
+        //esto puede ser riesgoso ya que no estoy seguro si el formate default 
         //devuelto por los input date es igual en todos los navegadores - tener presente
-        function validarFechaPattern(dateString){
+        function validarFechaPattern(dateString){  
             var pattern = /^\d{4}-\d{2}-\d{2}$/;
             if(!pattern.match(pattern)){
                 return false;

@@ -110,6 +110,67 @@ class Consultas extends Conexion{
             //echo $query;
         return $this->conexion->query($query);
     }
+  public function buscarDato($campos,$tabla,$campoCondicion,$valorCondicion){
+         /*
+            METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
+            $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
+            Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
+        */
+        //$texto=(implode(",", $campos));
+        $campos=implode(",",$campos);
+        $query="SELECT ".$campos." FROM ".$tabla." WHERE ".$campoCondicion." LIKE '%".$valorCondicion."%' ";
+        //echo $query;
+        return $this->conexion->query($query);
+    }
+
+    //la clausula where se pasa por parametro
+    public function buscarDatoCustom($campos,$tabla,$where){
+       $campos = implode(",",$campos);
+
+       $query = "SELECT ".$campos." FROM ".$tabla." ".$where;
+
+       return $this->conexion->query($query);
+   }
+   public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
+        /*
+            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
+            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
+            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
+        */
+        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
+        array_unshift($camposBD,"id");
+        $this->crearCabeceraTabla($cabecera,$tamanhos);
+        if($tipo!=""){
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
+          }else{
+            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
+          }
+        //var_dump($res);
+        $this->crearContenidoTabla($res);
+
+    }
+
+    private function crearContenidoTabla($resultadoConsulta){
+        /*
+            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
+            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+        */
+        if(gettype($resultadoConsulta)!="boolean"){
+            echo "<tbody id='datosPanel'>";
+            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
+                array_shift($datos);
+                foreach( $datos as $valor ){
+                    echo "<td>".$valor." </td>";
+                }
+                echo "</tr>";
+            }
+            echo"</tbody> </table>";
+        }else{
+            echo "Sin resultados";
+        }
+    }
+
 
 
 
@@ -225,23 +286,6 @@ class Consultas extends Conexion{
         echo "</tr>";
         echo"</thead>";
     }
-   private function crearContenidoTabla($resultadoConsulta){
-        /*
-            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
-            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
-        */
-        echo "<tbody id='datosPanel'>";
-
-        while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
-            array_shift($datos);
-            foreach( $datos as $valor ){
-                echo "<td>".$valor." </td>";
-            }
-            echo "</tr>";
-        }
-        echo"</tbody>";
-    }
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
        // MODIFICA REGISTRO
@@ -268,7 +312,8 @@ class Consultas extends Conexion{
     public function consultarMenu($usuario){
         /*
             METODO PARA PODER CONSULTAR DATOS REFERENTES AL MENU
-            $objetoConsultas->consultarMenu(<ID de usuario>)
+            $objetoConsultas->
+            enu(<ID de usuario>)
         */
         $sql="SELECT link_acceso,icono,titulo_menu,(SELECT habilita FROM acceso
              WHERE menu_opcion_id = menu_opcion.id AND
@@ -308,7 +353,6 @@ class Consultas extends Conexion{
 
 
     public function crearOpciones($resultadoConsulta){
-
         $opciones="";
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
                 $opciones.="<option value='".$datos[0]."'>".$datos[1]."</option>";

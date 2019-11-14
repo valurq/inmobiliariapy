@@ -1,7 +1,7 @@
 <?php
 
 $consulta= new Consultas();
- $campos=array('id','perfil_id','usuario','pass');
+$campos=array('id','perfil_id','usuario','pass');
 
 // echo "*id ".$_SESSION['idUsu']."*<br>" ;
 // echo "*perfil ".$_SESSION['perfil']."*<br>" ;
@@ -11,6 +11,7 @@ $consulta= new Consultas();
 $resultado=$consulta->consultarDatos($campos,'usuario',"","id",$_SESSION['idUsu'] );
 $resultado=$resultado->fetch_array(MYSQLI_NUM);
 //echo $resultado[1]."/".$_SESSION['perfil']."--".$_SESSION['usuario']."/".$resultado[2]."--".$_SESSION['contra']."/".$resultado[3] ;
+
 
 
 if((($_SESSION['perfil']!=$resultado[1]) || ($_SESSION['usuario']!=$resultado[2]) || ($_SESSION['contra']!=$resultado[3]))){
