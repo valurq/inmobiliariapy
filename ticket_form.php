@@ -28,11 +28,11 @@
           }else{
             //echo "Vacio como el corazon de ella";
           }
-          
       }
 
       //para el label del boton
       if(isset($_POST['seleccionado'])){
+
         if($_POST['seleccionado']!=0){ 
           $btn_label = "Modificar Ticket";
         }
@@ -153,7 +153,7 @@
         </div>
       </div>
       <!--Fin campos de formulario-->
-      
+
       <!--Botones del formulario-->
       <div class="row ml-1 mt-2">
         <div class="col-sm-6 mt-3 text-center">
@@ -163,7 +163,7 @@
           <button type="button" class="btn btn-sm btn-info">Volver</button>
         </div>
       </div>
-      
+
       <!--Fin Botones del formulario-->
 
     </form>
@@ -228,6 +228,7 @@
 
       }
 
+
   </script>
 
 </html>
@@ -262,7 +263,6 @@ if(isset($_POST['submit_ticket'])){
       $usuario_id = 1;
       $solicitante  = $_POST["solicitante"];
       $solic_mail = $_POST['solic_mail'];
-      
       //solo usado para las modificaciones
       $idForm = $_POST['idformulario'];
       if(isset($idForm) and $idForm!=0){
@@ -282,8 +282,10 @@ if(isset($_POST['submit_ticket'])){
       if( isset($idForm) && ($idForm!=0) ){
         $consultas->modificarDato('ticket',$campos,$valores,'id',$idForm);
       }else{
+
         $consultas->insertarDato('ticket',$campos,$valores);
       }
   //echo "<script>window.location='ticket_panel.php'</script>" ;
 }
 ?>
+

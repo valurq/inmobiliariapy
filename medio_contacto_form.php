@@ -94,8 +94,8 @@ if (isset($_POST['medio_contacto'])) {
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'medio','obs');
-        $valores="'".$medio_contacto."','".$obs."'";
+        $campos = array( 'medio','obs', 'creador');
+        $valores="'".$medio_contacto."','".$obs."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

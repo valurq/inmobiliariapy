@@ -112,7 +112,6 @@
             <?php  $consultas->crearTabla($cabecera,$campos,'ticket');?>
         </div>
     </body>
-     
     <script>
         function buscar(){
             //Inicializacion de Variables{
@@ -162,6 +161,7 @@
                         }else{
                             where += " fecha>='"+fecha_desde.value+"'";
                         } 
+
                     /*}else{
                         console.log("Fecha desde es invalida --> "+fecha_desde.value);
                     }*/
@@ -178,14 +178,12 @@
                         console.log("Fecha hasta es invalida --> "+fecha_hasta.value);
                     }*/
                 }
-                   
             //}
 
             //Depuracion{
                 //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
                 //console.log(where);
             //}
-            
             buscarTablaPanelesCustom(campos,'ticket',where);
 
         }

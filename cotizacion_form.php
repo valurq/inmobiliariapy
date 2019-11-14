@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'moneda_id','fecha','cotiz_compra','cotiz_venta');
+            $campos=array( 'fecha','cotiz_compra','cotiz_venta','moneda_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('moneda','fecha','compra','venta');
+            $camposIdForm=array('fecha','compra','venta','moneda');
         }
     ?>
 
@@ -53,7 +53,14 @@
     <tbody>
       <tr>
         <td><label for="">Moneda</label></td>
-        <td><?php $inserta_Datos->crearMenuDesplegable('moneda','id','dsc_moneda','moneda') ?></td>
+        <td><?php
+         if(!(count($resultado)>0)){
+             $inserta_Datos->crearMenuDesplegable('moneda','id','dsc_moneda','moneda');
+         }else{
+             $inserta_Datos->DesplegableElegido(@$resultado[3],'moneda','id','dsc_moneda','moneda');
+         }
+
+         ?></td>
       </tr>
       <tr>
         <td><label for="">Fecha</label></td>
@@ -113,6 +120,7 @@ if (isset($_POST['moneda'])) {
             $inserta_Datos->modificarDato('cotizacion',$campos,$valores,'id',$idForm);
         }else{
             $inserta_Datos->insertarDato('cotizacion',$campos,$valores);
+            $inserta_Datos->modificarDato('moneda',array('ultcotiz_co','ultcotiz_v'),"'".$compra."','".$venta."'",'id',$moneda);
         }
     }
 }

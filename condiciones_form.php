@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('titulo','condicion');
+            $camposIdForm=array('titulo','condiciones');
         }
     ?>
 
@@ -49,6 +49,8 @@
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
+
+
   <table class="tabla-fomulario">
     <tbody>
       <tr>
@@ -57,7 +59,10 @@
       </tr>
       <tr>
         <td><label for="">Condición</label></td>
-        <td><textarea name="condicion" id="condicion" class="campos-ingreso"></textarea></td>
+        <td><textarea name="condiciones" id="condiciones" rows="5" cols="80" class="campos-ingreso"></textarea></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p><b>OBS:</b> No ingresar estos caracteres (<b>*</b> <b>,</b> <b>/</b> <b>-</b> ) </p></td>
       </tr>
     </tbody>
   </table>
@@ -91,11 +96,11 @@ if (isset($_POST['titulo'])) {
     //======================================================================================
     if(isset($_POST['titulo'])){
         $titulo =trim($_POST['titulo']);
-        $condicion =trim($_POST['condicion']);
+        $condiciones =trim($_POST['condiciones']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'titulo','condiciones');
-        $valores="'".$titulo."','".$condicion."'";
+        $campos = array( 'titulo','condiciones', 'creador');
+        $valores="'".$titulo."','".$condiciones."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
@@ -114,7 +119,7 @@ if (isset($_POST['titulo'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('titulo').value !='') && (document.getElementById('condicion').value !='')){
+		if( (document.getElementById('titulo').value !='') && (document.getElementById('condiciones').value !='')){
 		    return true ;
 
 		}else{

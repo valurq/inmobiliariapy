@@ -94,8 +94,8 @@ if (isset($_POST['forma_pago'])) {
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'dsc_medio','obs');
-        $valores="'".$forma_pago."','".$obs."'";
+        $campos = array( 'dsc_medio','obs', 'creador');
+        $valores="'".$forma_pago."','".$obs."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

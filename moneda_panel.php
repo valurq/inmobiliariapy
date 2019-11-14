@@ -7,7 +7,7 @@ session_start();
 
 // DATOS
 $cabecera=['Moneda','Compra','Venta','Simbolo'];
-$campos=['dsc_moneda','ultcotiz_co','ultcotiz_co','simbolo'];
+$campos=['dsc_moneda','ultcotiz_co','ultcotiz_v','simbolo'];
 
 
 ?>

@@ -7,7 +7,7 @@ session_start();
 
 // DATOS
 $cabecera=['Fecha','Moneda','Compra','Venta'];
-$campos=['fecha','moneda_id','cotiz_compra','cotiz_venta'];
+$campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_compra','cotiz_venta'];
 
 
 ?>

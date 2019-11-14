@@ -104,8 +104,8 @@ if (isset($_POST['banco'])) {
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'dsc_banco','direccion','telefono','obs');
-        $valores="'".$banco."', '".$direccion."', '".$telefono."', '".$obs."'";
+        $campos = array( 'dsc_banco','direccion','telefono','obs', 'creador');
+        $valores="'".$banco."', '".$direccion."', '".$telefono."', '".$obs."', ".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

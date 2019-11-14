@@ -94,8 +94,8 @@ if (isset($_POST['concepto'])) {
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'dsc_concepto','obs');
-        $valores="'".$concepto."','".$obs."'";
+        $campos = array( 'dsc_concepto','obs', 'creador');
+        $valores="'".$concepto."','".$obs."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

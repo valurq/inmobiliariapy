@@ -5,6 +5,7 @@
     $tabla=$_POST['tabla'];
     if((isset($id))&&(isset($tabla))){
         $consultas->eliminarDato($tabla,'id',$id);
+        echo $consultas->conexion->errno;
     }
-    echo 1;
  ?>
+
