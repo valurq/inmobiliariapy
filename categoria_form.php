@@ -125,8 +125,8 @@ if (isset($_POST['categoria'])) {
         $obs       =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'categoria','creador','obs' );
-        $valores="'".$categoria."','".$creador."','".$obs."'";
+        $campos = array( 'categoria','creador','obs', 'creador' );
+        $valores="'".$categoria."','".$creador."','".$obs."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

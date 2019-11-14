@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'dsc_moneda','simbolo','ultcotiz_co','ultcotiz_v' );
+            $campos=array( 'dsc_moneda','tipo','simbolo','ultcotiz_co','ultcotiz_v' );
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('moneda','simbolo','compra','venta');
+            $camposIdForm=array('moneda','tipo','simbolo','compra','venta');
         }
     ?>
 
@@ -57,10 +57,7 @@
       </tr>
       <tr>
         <td><label for="">Tipo</label></td>
-        <td><select name="tipo" class="campos-ingreso" >
-          <option value="Local">Local</option>
-          <option value="Extranjero">Extranjero</option>
-        </select></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[1],'tipo',array('Local','Extranjero'))?></td>
       </tr>
       <tr>
         <td><label for="">Simbolo</label></td>
@@ -135,7 +132,7 @@ if (isset($_POST['moneda'])) {
 
 		}else{
         // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar la descripcion de la categoria') ;
+            popup('Advertencia','Es necesario ingresar el nombre moneda y simbolo') ;
             return false ;
 		}
 	}

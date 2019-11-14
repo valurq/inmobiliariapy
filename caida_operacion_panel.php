@@ -2,13 +2,12 @@
 <?php
 session_start();
     include("Parametros/conexion.php");
-    $consulta= new Consultas();
+    $consultas= new Consultas();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Fecha','Moneda','Compra','Venta'];
-$campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_compra','cotiz_venta'];
-
+$cabecera=['Fecha','Motivo','Autorizado por'];
+$campos=['fecha', 'motivo', 'autoriza_por'];
 
 ?>
 <html lang="en" dir="ltr">
@@ -22,6 +21,7 @@ $campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_co
   			  crossorigin="anonymous">
       </script>
         <script type="text/javascript" src="Js/funciones.js"></script>
+
 
 
         <meta charset="utf-8">
@@ -51,15 +51,19 @@ $campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_co
             <!--campo buscador en el panel -->
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE COTIZACION</B></font>
+                <font color="#808080" class="ws12"><B>PANEL DE CAIDAS</B></font>
             </div>
 
-            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='cotizacion_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='caida_operacion_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('caida_operacion_form.php')">
+           <!--  <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('ciudad')},'ciudad')"> -->
+            <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
         <div class="mostrar-tabla">
             <?php
-             $consulta->crearTabla($cabecera,$campos,'cotizacion');
+             $consultas->crearTabla($cabecera,$campos,'caida_operacion');
 
             ?>
         </div>

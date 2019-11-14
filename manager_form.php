@@ -18,16 +18,16 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'medio','obs' );
+            $campos=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina_id','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
-            $resultado=$inserta_Datos->consultarDatos($campos,'medio_contacto',"","id",$id );
+            $resultado=$inserta_Datos->consultarDatos($campos,'manager',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('medio_contacto','obs');
+            $camposIdForm=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina','oficinaLista');
         }
     ?>
 
@@ -44,7 +44,7 @@
         <script type="text/javascript" src="Js/funciones.js"></script>
 </head>
 <body style="background-color:white">
-  <h2>MEDIO DE CONTACTO</h2>
+  <h2>MANAGER</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
@@ -52,11 +52,29 @@
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-        <td><label for="">Medio de contacto</label></td>
-        <td><input type="text" name="medio_contacto" id="medio_contacto" value="" placeholder="Ingrese el medio de contacto que se utilizó" class="campos-ingreso"></td>
+        <td><label for="">Nombre full</label></td>
+        <td><input type="text" name="nombrefull" id="nombrefull" value="" placeholder="Ingrese su nombre" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Observación</label></td>
+        <td><label for="">Oficina</label></td>
+         <td>
+        <input list="ofiLista" id="oficinaLista" name="propiedades" autocomplete="off" onkeyup="buscarLista(['dsc_oficina'], this.value,'oficina', 'dsc_oficina', 'ofiLista', 'oficina') " class="campos-ingreso">
+        <datalist id="ofiLista">
+          <option value=""></option>
+        </datalist>
+      <input type="hidden" name="oficina" id="oficina">
+    </td>
+      </tr>
+      <tr>
+        <td><label for="">Comsion sobre operaciones</label></td>
+        <td><input type="number" name="porcentaje_opera" id="porcentaje_opera" step="any" class="campos-ingreso"></td>
+      </tr>
+      <tr>
+        <td><label for="">Fecha Ingreso</label></td>
+        <td><input type="date" name="fe_ingreso" id="fe_ingreso" value="" class="campos-ingreso"></td>
+      </tr>
+      <tr>
+        <td><label for="">Observacion</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
       </tr>
     </tbody>
@@ -64,45 +82,52 @@
 <!-- moneda,tipo,simbolo -->
   <!-- BOTONES -->
   <input name="guardar" type="submit" value="Guardar" class="boton-formulario guardar">
-  <input name="volver" type="button" value="Volver" onclick = "location='medio_contacto_panel.php';"  class="boton-formulario">
+  <input name="volver" type="button" value="Volver" onclick = "location='manager_panel.php';"  class="boton-formulario">
 </form>
 
 
 </body>
 
 <?php
-/*
-    LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
-*/
-    if(($id!=0 )){
-        /*
-            CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
-        */
-        $valores=implode(",",$resultado);
-        $camposIdForm=implode(",",$camposIdForm);
-        //LLAMADA A LA FUNCION JS
-        echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
-    }
+  /*
+      LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
+  */
+      if(($id!=0 )){
+          /*
+              CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
+          */
+          $valores=implode(",",$resultado);
+          $camposIdForm=implode(",",$camposIdForm);
+          //LLAMADA A LA FUNCION JS
+          echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
+      }
 
 
-if (isset($_POST['medio_contacto'])) {
+  if (isset($_POST['nombrefull'])) {
     //======================================================================================
     // NUEVO REGISTRO
     //======================================================================================
-    if(isset($_POST['medio_contacto'])){
-        $medio_contacto =trim($_POST['medio_contacto']);
+    if(isset($_POST['nombrefull'])){
+        $nombrefull =trim($_POST['nombrefull']);
+        $oficina =trim($_POST['oficina']);
+        $porcentaje_opera =trim($_POST['porcentaje_opera']);
+        $fe_ingreso =trim($_POST['fe_ingreso']);
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
-        $campos = array( 'medio','obs', 'creador');
-        $valores="'".$medio_contacto."','".$obs."', '".$creador."'";
+        //$creador    ="UsuarioLogin";
+        $campos = array('nombrefull','oficina_id','porcentaje_opera','fe_ingreso','obs');//,'creador' );
+        $valores="'".$nombrefull."','".$oficina."','".$porcentaje_opera."','".$fe_ingreso."','".$obs."'";
+        // ,'".$creador."'";
+        //echo "$valores";
+        //print_r($campos);
+
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
         if(isset($idForm)&&($idForm!=0)){
-            $inserta_Datos->modificarDato('medio_contacto',$campos,$valores,'id',$idForm);
+            $inserta_Datos->modificarDato('manager',$campos,$valores,'id',$idForm);
         }else{
-            $inserta_Datos->insertarDato('medio_contacto',$campos,$valores);
+            $inserta_Datos->insertarDato('manager',$campos,$valores);
         }
     }
 }
@@ -114,16 +139,16 @@ if (isset($_POST['medio_contacto'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('medio_contacto').value !='')){
+		if( (document.getElementById('nombre').value !='')&&(document.getElementById('cedula').value !='')  ){
 		    return true ;
 
 		}else{
         // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar el medio de contacto');
-            document.getElementById('medio_contacto').focus();
+            popup('Advertencia','Es necesario ingresar el nombre y la cedula') ;
             return false ;
 		}
 	}
+
   </script>
 
 </html>

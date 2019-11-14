@@ -94,8 +94,8 @@ if (isset($_POST['pais'])) {
         $cod_pais =trim($_POST['cod_pais']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'dsc_pais','cod_pais');
-        $valores= "'".$pais."', '".$cod_pais."'";
+        $campos = array( 'dsc_pais','cod_pais', 'creador');
+        $valores= "'".$pais."', '".$cod_pais."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

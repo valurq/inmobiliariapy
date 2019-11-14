@@ -6,9 +6,10 @@
         SECCION PARA OBTENER VALORES NECESARIOS PARA LA MODIFICACION DE REGISTROS
         ========================================================================
         */
+        session_start();
         include("Parametros/conexion.php");
-
         $consulta=new Consultas();
+        include("Parametros/verificarConexion.php");
         $id=0;
         $resultado="" ;
         /*
@@ -16,7 +17,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('usuario','nombre','apellido','mail','cargo','obs');
+            $campos=array('usuario','nombre','apellido','mail','cargo','obs','pass');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -122,12 +123,16 @@
         $cargo=$_POST['cargo'];
         $mail=$_POST['correo'];
         $pass=$_POST['pass'];
+        $pass=$_POST['pass'];
         $obs=$_POST['observacion'];
         $creador="UsuarioLogin" ;
         $idForm= $_POST['Idformulario'];
-
-        $campos = array( 'usuario','perfil_id','nombre','apellido','cargo','obs','mail','pass','creador' );
-        $valores="'".$usuario."','".$perfil."','".$nombre."','".$apellido."','".$cargo."','".$obs."','".$mail."','".md5($pass)."','".$creador."'";
+        $campos = array( 'usuario','perfil_id','nombre','apellido','cargo','obs','mail','creador' );
+        $valores="'".$usuario."','".$perfil."','".$nombre."','".$apellido."','".$cargo."','".$obs."','".$mail."','".$creador."'";
+        if(!(isset($pass))){
+            array_push($campos,'pass');
+            $valores.=",'".md5($pass)."'";
+        }
         /*
         VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
@@ -155,30 +160,9 @@
         }else if(($("#correo").val()=="")||((($("#correo").val()).indexOf("@"))==-1)){
             popup('Advertencia','Es necesario ingresar el correo!!') ;
             return false ;
-        }else if($("#pass").val()==""){
-            popup('Advertencia','Es necesario ingresar su contraseña') ;
-            return false ;
-        }else if($("#passC").val()==""){
-            popup('Advertencia','Es necesario ingresar la confirmacion de contraseña') ;
-            return false ;
-        }else if($("#pass").val()!=$("#passC").val()){
-            popup('Error','Las contraseñas no coinciden') ;
-            $("#pass").val("");
-            $("#passC").val("");
-            return false ;
         }else {
             return true
         }
-
-
-		if((document.getElementById('usuario').value !='')){
-		      return true ;
-
-		}	else{
-       popup('Advertencia','Es necesario ingresar el datos requeridos..!') ;
-       return false ;
-
-		}
 
 	}
   </script>

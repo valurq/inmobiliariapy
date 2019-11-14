@@ -6,8 +6,8 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Fecha','Moneda','Compra','Venta'];
-$campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_compra','cotiz_venta'];
+$cabecera=['Id','Tipo','Estado'];
+$campos=['id','tipo','estado'];
 
 
 ?>
@@ -51,15 +51,19 @@ $campos=['fecha','(SELECT dsc_moneda  FROM moneda WHERE id=moneda_id)','cotiz_co
             <!--campo buscador en el panel -->
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE COTIZACION</B></font>
+                <font color="#808080" class="ws12"><B>PANEL DE SALUDOS</B></font>
             </div>
 
-            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='cotizacion_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='saludos_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('saludos_form.php')">
+            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('texto_saludos')},'texto_saludos')">
+            <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
         <div class="mostrar-tabla">
             <?php
-             $consulta->crearTabla($cabecera,$campos,'cotizacion');
+             $consulta->crearTabla($cabecera,$campos,'texto_saludos');
 
             ?>
         </div>

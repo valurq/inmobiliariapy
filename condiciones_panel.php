@@ -55,10 +55,12 @@ $campos=['titulo','condiciones'];
                 <font color="#808080" class="ws12"><B>PANEL CONDICIONES</B></font>
             </div>
 
+
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='condiciones_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('condiciones_form.php')">
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
             id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('condiciones')},'condiciones')">
+
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 

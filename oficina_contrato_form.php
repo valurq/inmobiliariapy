@@ -12,13 +12,18 @@
         include("Parametros/verificarConexion.php");
         $id=0;
         $resultado="";
+        $cantidadContratos=0;
+        $tipoOficina = "";
 
         /*
             VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde', 'razon');
+            $cantidadContratos=$inserta_Datos->consultarDatos(array("count(*)"),'contratos',"","oficina_id",$id);
+            $cantidadContratos=$cantidadContratos->fetch_array(MYSQLI_NUM);
+            $cantidadContratos=$cantidadContratos[0];
+            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +32,9 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('oficina','ruc','manager','direccion','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde', 'razon');
+            $camposIdForm=array('oficina','ruc','manager','direccion','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde','razon');
+
+            $tipoOficina = $resultado[10];
         }
     ?>
 
@@ -42,11 +49,33 @@
 			  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
 			  crossorigin="anonymous"></script>
         <script type="text/javascript" src="Js/funciones.js"></script>
+        <style>
+          #contrato, #meta{
+            cursor: pointer;
+            border: 1px solid black;
+            border-radius: 20px;
+            padding: 5px 10px;
+          }
+          #contrato:hover, #meta:hover{
+            color: white;
+            background-color: #16156f;
+          }
+
+        </style>
 </head>
 <body style="background-color:white">
   <h2>DEFINICIÓN DE OFICINA</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
-  
+<form action=<?php echo (($cantidadContratos>0)?"'contrato_panel.php'": "'contrato_form.php'");?> 
+target="_blank" method="POST" id='form_contrato'>
+  <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
+</form>
+
+<form action=<?php echo (($cantidadContratos>0)?"'meta_panel.php'": "'meta_form.php'");?> 
+target="_blank" method="POST" id='form_meta'>
+  <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
+</form>
+
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
@@ -60,29 +89,40 @@
         <td><input type="text" name="ruc" id="ruc" value="" placeholder="Ingrese el RUC" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">País</label></td>
-        <td>
-          <?php
-          //name, campoId, campoDescripcion, tabla
-            $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
-          ?>
-        </td>
+          <td><label for="">País</label></td>
+          <td>
+            <?php
+            //name, campoId, campoDescripcion, tabla
+              if(!(count($resultado)>0)){
+                  $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
+              }else{
+                  $inserta_Datos->DesplegableElegido(@$resultado[15],'pais','id','dsc_pais','pais');
+              }
+            ?>
+          </td>
 
-        <td><label for="">Razón Social</label></td>
-        <td>
-          <input type="text" name="razon" id="razon" value="" placeholder="Ingrese la razón social" class="campos-ingreso">
-        </td>
+          <td><label for="">Razón Social</label></td>
+          <td>
+            <input type="text" name="razon" id="razon" value="" placeholder="Ingrese la razón social" class="campos-ingreso">
+          </td>
+
       </tr>
       <tr>
-        <td><label for="">Ciudad</label></td>
-        <td>
-          <?php
-          //name, campoId, campoDescripcion, tabla
-            $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
-          ?>
-        </td>
+          <td><label for="">Ciudad</label></td>
+          <td>
+            <?php
+              if(!(count($resultado)>0)){
+                  $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
+              }else{
+                  $inserta_Datos->DesplegableElegido(@$resultado[16],'ciudad', 'id', 'dsc_ciudad', 'ciudad');
+              }
+
+            ?>
+          </td>
+
         <td><label for="">Manager</label></td>
-        <td><input type="text" name="manager" id="manager" value=""  readonly placeholder="Nombre del manager" class="campos-ingreso"></td>
+        <td><input type="text" name="manager" id="manager" value=""  readonly placeholder="Ingrese el nombre del manager" class="campos-ingreso"></td>
+
       </tr>
       <tr>
         <td><label for="">Dirección</label></td>
@@ -90,47 +130,71 @@
 
         <td><label for="">Broker</label></td>
         <td><input type="text" name="broker" id="broker" value=""  readonly placeholder="Nombre del broker" class="campos-ingreso"></td>
+
       </tr>
       <tr>
+        
         <td><label for="">Fecha de contrato</label></td>
         <td><input type="date" name="fe_contrato" id="fe_contrato" value="" placeholder="Ingrese la fecha de contrato" class="campos-ingreso"></td>
         <td><label for="">Email</label></td>
         <td><input type="email" name="email" id="email" value="" placeholder="Ingrese el email" class="campos-ingreso"></td>
+        
 
       </tr>
       <tr>
         <td><label for="">Teléfono 1</label></td>
         <td><input type="text" name="tel1" id="tel1" value="" placeholder="Ingrese numero del teléfono" class="campos-ingreso"></td>
+
         <td><label for="">Teléfono 2</label></td>
         <td><input type="text" name="tel2" id="tel2" value="" placeholder="Ingrese numero del teléfono" class="campos-ingreso"></td>
+        
 
       </tr>
       <tr>
         <td><label for="">Num. Celular</label></td>
         <td><input type="text" name="celular" id="celular" value="" placeholder="Ingrese numero del celular" class="campos-ingreso"></td>
+
         <td><label for="">Tipo</label></td>
         <td>
-          <select name="tipo" id="tipo">
-            <option value="REMAX">REMAX</option>
-            <option value="OTROS">OTROS</option>
-          </select>
+          <?php
+            $inserta_Datos->DesplegableElegidoFijo(@$resultado[10],'tipo',array('REMAX','OTROS'));
+          ?>
         </td>
+        
 
       </tr>
       <tr>
         <td><label for="">Código REMAX legacy</label></td>
         <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
+
         <td><label for="">Código REMAX</label></td>
         <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional REMAX" class="campos-ingreso"></td>
+        
+
       </tr>
       <tr>
 
         <td><label for="">Primer cobro del fee</label></td>
         <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
+
       </tr>
       <tr>
         <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
+        <td>
+          <?php 
+            if ($tipoOficina != "OTROS") {
+              echo "<a id='contrato' target='_blank' onclick='document.getElementById(".'"form_contrato"'.").submit();'>Contrato</a>";
+            }
+           ?>
+        </td>
+        <td>
+          <?php 
+            if ($tipoOficina != "OTROS") {
+              echo "<a id='meta' target='_blank' onclick='document.getElementById(".'"form_meta"'.").submit();'>Meta</a>";
+            }
+           ?>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -155,6 +219,7 @@
         $camposIdForm=implode(",",$camposIdForm);
         //LLAMADA A LA FUNCION JS
         echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
+        
     }
 
 
@@ -182,7 +247,7 @@ if (isset($_POST['oficina'])) {
         $razon = trim($_POST['razon']);
         $idForm=$_POST['Idformulario'];
         $creador ="UsuarioLogin";
-        $campos = array( 'dsc_oficina','pais_id', 'ciudad_id', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde', 'razon', 'creador');
+        $campos = array( 'dsc_oficina','pais_id', 'ciudad_id', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde', 'razon','creador');
         $valores="'".$oficina."', '".$pais."', '".$ciudad."', '".$ruc."', '".$manager."', '".$direccion."', '".$email."', '".$fe_contrato."', '".$tel1."', '".$tel2."', '".$celular."', '".$obs."', '".$tipo."', '".$cod_remax."', '".$cod_remaxlegacy."', '".$cobro_fee_desde."', '".$razon."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
