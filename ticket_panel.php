@@ -3,12 +3,22 @@
     include("Parametros/conexion.php");
     //include("Parametros/verificarConexion.php");
     $consultas=new Consultas();
+    $asuntos_list = array(array("id" => -1, "asunto" => "Todos"));
 
     // ========================================================================
     //Seteo de cabecera y campos en el mismo orden para tomar de la $tabla
     // ========================================================================
     $cabecera=['ID','Fecha Creación','Asunto','Tipo','Criticidad','Solicitante','Estado'];
     $campos=['id','fecha','asunto','tipo','criticidad','solicitante','estado'];
+
+    //obtencion de los asuntos para usarlos como filtros
+    $aux = $consultas->consultarDatos(array('id','asunto'),'asuntos');
+    if(gettype($aux)!="boolean"){
+      while($row = $aux->fetch_assoc()){
+        array_push($asuntos_list,$row);
+      }
+    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -44,7 +54,7 @@
       <!--============================================================================= -->
 
      <div class="menu-panel" >
-         <div id="resultadoBusqueda">
+        <div id="resultadoBusqueda">
         <br><br>
         <!---TITULO DEL PANEL-->
         <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:540px; height:22px; z-index:1">
@@ -54,11 +64,17 @@
             <!--FILTROS DEL PANEL-->   
             <div class="col-sm-2">        
                 <label for="asunto">Buscar:</label>     
-                <input class="form-control" type="text" name="asunto" id="asunto" onkeyup="buscar();">
+                <select class="form-control form-control-sm" name="asunto" id="asunto" onchange="buscar();">
+                    <?php foreach($asuntos_list as $element): ?>
+                        <option value="<?php echo $element['id']; ?>">
+                            <?php echo $element['asunto']; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="col-sm-2">    
                 <label for="tipo">Tipos:</label>
-                <select class="form-control" name="tipo" id="tipo" onchange="buscar();">
+                <select class="form-control form-control-sm" name="tipo" id="tipo" onchange="buscar();">
                     <option value="Todos">Todos</option>
                     <option value="Consulta">Consulta</option>
                     <option value="Reclamo">Reclamo</option>
@@ -70,7 +86,7 @@
             </div>
             <div class="col-sm-2">    
                 <label for="criticidad">Criticidad:</label>
-                <select class="form-control" name="criticidad" id="criticidad" onchange="buscar();">
+                <select class="form-control form-control-sm" name="criticidad" id="criticidad" onchange="buscar();">
                     <option value="Todos">Todos</option>
                     <option value="Baja">Baja</option>
                     <option value="Media">Media</option>
@@ -80,22 +96,23 @@
             </div>
             <div class="col-sm-2">    
                 <label for="estado">Estados:</label>
-                <select class="form-control" name="estado" id="estado" onchange="buscar();">
+                <select class="form-control form-control-sm" name="estado" id="estado" onchange="buscar();">
                     <option value="Todos">Todos</option>    
                     <option value="Nuevo">Nuevo</option>
                     <option value="Asignado">Asignado</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="Resuelto">Resuelto</option>
                     <option value="Cerrado">Cerrado</option>
+                    <option value="Eliminado">Eliminado</option>
                 </select>
             </div>
             <div class="col-sm-2">    
                 <label for="fecha_desde">Desde:</label>
-                <input class="form-control" name="fecha_desde" id="fecha_desde" type="date" onchange="buscar();" onkeydown="buscar();">
+                <input class="form-control form-control-sm" name="fecha_desde" id="fecha_desde" type="date" onchange="buscar();" onkeydown="buscar();">
             </div>
             <div class="col-sm-2"> 
                 <label for="fecha_hasta">Hasta:</label>
-                <input class="form-control" name="fecha_hasta" id="fecha_hasta" type="date" onchange="buscar();" onkeydown="buscar();">
+                <input class="form-control form-control-sm" name="fecha_hasta" id="fecha_hasta" type="date" onchange="buscar();" onkeydown="buscar();">
             </div>
         </div>
         <div class="row mb-3">
@@ -103,15 +120,16 @@
                 <!--ACCIONES DEL PANEL-->
                 <input type="button" class="boton_panel" name="Nuevo" onclick = "location='ticket_form.php';"  value="Nuevo">
                 <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('ticket_form.php')" >
-                <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('ticket')" >
+                <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="updateTicketStatus();" >
             </div>
         </div>
     </div>
 
         <div class="mostrar-tabla">
-            <?php  $consultas->crearTabla($cabecera,$campos,'ticket');?>
+            <?php  $consultas->crearTabla($cabecera,$campos,'v_asuntos_tickets');?>
         </div>
     </body>
+     
     <script>
         function buscar(){
             //Inicializacion de Variables{
@@ -126,9 +144,9 @@
             //}
 
             //Formacion de la clausula where{
-                if(asunto.value.length > 0){
-                    where += " asunto LIKE '%"+asunto.value+"%'";
-                    c++;
+                if(asunto.value != -1){
+                    where += " asuntos_id ="+asunto.value
+                    c++; 
                 }
                 if(tipo.value != "Todos"){
                     if(c > 0){
@@ -153,7 +171,15 @@
                         where += " estado='"+estado.value+"'";
                     }
                     c++; 
+                }else{
+                    if(c > 0){
+                        where += " AND estado!='Eliminado'";
+                    }else{
+                        where += " estado!='Eliminado'";
+                    }
+                    c++;  
                 }
+                
                 if(fecha_desde.value != null && fecha_desde.value != ""){
                     //if(validarFechaPattern(fecha_desde)){
                         if(c > 0){
@@ -161,7 +187,6 @@
                         }else{
                             where += " fecha>='"+fecha_desde.value+"'";
                         } 
-
                     /*}else{
                         console.log("Fecha desde es invalida --> "+fecha_desde.value);
                     }*/
@@ -178,25 +203,37 @@
                         console.log("Fecha hasta es invalida --> "+fecha_hasta.value);
                     }*/
                 }
+                   
             //}
 
             //Depuracion{
                 //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
                 //console.log(where);
             //}
-            buscarTablaPanelesCustom(campos,'ticket',where);
+            
+            buscarTablaPanelesCustom(campos,'v_asuntos_tickets',where);
 
         }
 
-        //esto puede ser riesgoso ya que no estoy seguro si el formate default 
-        //devuelto por los input date es igual en todos los navegadores - tener presente
-        function validarFechaPattern(dateString){  
-            var pattern = /^\d{4}-\d{2}-\d{2}$/;
-            if(!pattern.match(pattern)){
-                return false;
-            }
-            return true;
+        buscar(); //se le llama para filtrar por defecto los tickes en estado "Eliminado"
+
+        function updateTicketStatus(){
+            var seleccionado = document.getElementById("seleccionado"); //el id del ticket
+            var campos = JSON.stringify(["estado"]);
+            var valores = JSON.stringify(["'Eliminado'"]);
+            $.post("Parametros/modificador.php",
+                 { tabla: "ticket" ,campos:campos, valores:valores, valorIdentificador:seleccionado.value
+                 ,identificador: "id" }, function(resultado) {
+                    if(resultado=="1"){
+                        popup("Informacion","El ticket se ha eliminado satisfactoriamente");
+                    }else{
+                        alert("Error","No se ha podido eliminar el ticket");
+                    }
+                    buscar();
+                 }
+            );
         }
+
     </script>
 
 </html>
