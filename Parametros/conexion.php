@@ -110,18 +110,6 @@ class Consultas extends Conexion{
             //echo $query;
         return $this->conexion->query($query);
     }
-  public function buscarDato($campos,$tabla,$campoCondicion,$valorCondicion){
-         /*
-            METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
-            $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
-            Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
-        */
-        //$texto=(implode(",", $campos));
-        $campos=implode(",",$campos);
-        $query="SELECT ".$campos." FROM ".$tabla." WHERE ".$campoCondicion." LIKE '%".$valorCondicion."%' ";
-        //echo $query;
-        return $this->conexion->query($query);
-    }
 
     //la clausula where se pasa por parametro
     public function buscarDatoCustom($campos,$tabla,$where){
@@ -131,24 +119,6 @@ class Consultas extends Conexion{
 
        return $this->conexion->query($query);
    }
-   public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
-        /*
-            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
-            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
-            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
-        */
-        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
-        array_unshift($camposBD,"id");
-        $this->crearCabeceraTabla($cabecera,$tamanhos);
-        if($tipo!=""){
-            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
-          }else{
-            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
-          }
-        //var_dump($res);
-        $this->crearContenidoTabla($res);
-
-    }
 
     private function crearContenidoTabla($resultadoConsulta){
         /*
@@ -194,8 +164,7 @@ class Consultas extends Conexion{
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
         //echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
-        $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
-
+        return $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
     }
 
     private function crearPaqueteModificacion($campos,$valores){
@@ -217,8 +186,7 @@ class Consultas extends Conexion{
             */
             //$this->crearPaqueteModificacion($campos,$valores);
             //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
-        $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
-
+        return $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
     }
     private function crearPaqueteModificacionQ($campos,$valores){
         $resultado="";
