@@ -120,22 +120,35 @@ class Consultas extends Conexion{
        return $this->conexion->query($query);
    }
 
-    private function crearContenidoTabla($resultadoConsulta){
+    private function crearContenidoTabla($resultadoConsulta,$assoc = ""){
         /*
             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
         */
         if(gettype($resultadoConsulta)!="boolean"){
-            echo "<tbody id='datosPanel'>";
-            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
-                array_shift($datos);
-                foreach( $datos as $valor ){
-                    echo "<td>".$valor." </td>";
+            if($assoc == ""){
+                echo "<tbody id='datosPanel'>";
+                while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+                    echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
+                    array_shift($datos);
+                    foreach( $datos as $valor ){
+                        echo "<td>".$valor." </td>";
+                    }
+                    echo "</tr>";
                 }
-                echo "</tr>";
+                echo"</tbody> </table>";
+            }else{
+                echo "<tbody id='datosPanel'>";
+                while($datos=$resultadoConsulta->fetch_assoc()){
+                    echo "<tr class='datos-tabla' onclick='seleccionarFila(".$datos['id'].");' id='".$datos['id']."'>";
+                    $id = $datos['id'];
+                    foreach( $datos as $indice=>$valor ){
+                        echo "<td id='".$indice."_".$id."'>".$valor." </td>";
+                    }
+                    echo "</tr>";
+                }
+                echo"</tbody> </table>";
             }
-            echo"</tbody> </table>";
         }else{
             echo "Sin resultados";
         }
@@ -177,6 +190,7 @@ class Consultas extends Conexion{
         $resultado.= "".$campos[$i]."=".$datos[$i]." ";
         return $resultado;
     }
+
     public function modificarDato($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
             /*
                 METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
@@ -196,6 +210,7 @@ class Consultas extends Conexion{
         $resultado.= "".$campos[$i]."='".$valores[$i]."' ";
         return $resultado;
     }
+    
     public function modificarDatoQ($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
         /*
             METODO PARA INSERTAR UN REGISTRO NUEVO A LA BASE DE DATOS
@@ -223,7 +238,7 @@ class Consultas extends Conexion{
 
     }
 
-    public function crearTabla($cabecera,$camposBD,$tabla,$campoCondicion="",$valorCondicion="",$tamanhos=['*']){
+    public function crearTabla($cabecera,$camposBD,$tabla,$campoCondicion="",$valorCondicion="",$tamanhos=['*'],$assoc=""){
         /*
             METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
             $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
@@ -233,7 +248,7 @@ class Consultas extends Conexion{
         array_unshift($camposBD,"id");
         $this->crearCabeceraTabla($cabecera,$tamanhos);
         $res=$this->consultarDatos($camposBD,$tabla,"",$campoCondicion,$valorCondicion);
-        $this->crearContenidoTabla($res);
+        $this->crearContenidoTabla($res,$assoc);
     }
 
 
