@@ -75,7 +75,7 @@
             <div class="col-sm-12 text-right">
                 <!--ACCIONES DEL PANEL-->
                 <input type="button" class="boton_panel" name="Cobrar" value="Cobrar" onclick="editar('cobros_alquiler_form.php','cobrar');">
-                <input type="button" class="boton_panel" name="Ver Cobro" value="Ver Cobro" onclick="editar('cobros_alquiler_form.php','ver')">
+                <input type="button" class="boton_panel" name="Ver Cobro" value="Ver" onclick="editar('cobros_alquiler_form.php','ver')">
                 <input type="button" class="boton_panel" name="Ver Pagos" value="Ver Pagos" onclick="editar('cobranza_panel.php')">
                 <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="popup('Informacion','No se permite eliminar cobros')">
             </div>
@@ -83,7 +83,7 @@
     </div>
 
         <div class="mostrar-tabla">
-            <?php  $consultas->crearTabla($cabecera,$campos,'v_cobrosalquiler_propiedades');?>
+            <?php  $consultas->crearTabla($cabecera,$campos,'v_cobrosalquiler_propiedades','','',['*'],'assoc');?>
         </div>
     </body>
      
@@ -130,6 +130,21 @@
 
             buscar();
         }
+
+        function formatear_campos(){
+            //aqui se usan selectores css, en palabras estos selectores serian como seleccionar todas 
+            //las id  monto_* y saldo_*
+            var campos = document.querySelectorAll("[id*='monto_'],[id*='saldo_']");
+            var size = campos.length;
+            $(campos).each(function(){
+               //el valor de cada celda es equivalente al contenido entre los tags <td></td>
+               var value = this.innerHTML;
+               this.innerHTML=nfor(value);
+            });
+        }
+        formatear_campos();
+
+        
 
     </script>
 
