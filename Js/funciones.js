@@ -380,3 +380,11 @@ function cargarData(datos, listaID, listaIDAux){
     document.getElementById(listaIDAux).setAttribute('value', datos[0]);
 }
 
+//analizar estas patterns luego
+function nfor(valor){
+    return valor.replace(/\D/g, "")
+                .replace(/([0-9])([0-9]{2})$/, '$1,$2')
+                .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+    
+}
+
