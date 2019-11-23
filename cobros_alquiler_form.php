@@ -94,11 +94,16 @@
           </div>
         </div>
       </div>
-      <div class="input-group input-group-sm mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text border border-0 bg-white">Propiedad:</span>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="input-group input-group-sm mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">Propiedad:</span>
+            </div>
+            <input type="text" name="id_remax" id="id_remax" class="form-control" readonly>
+          </div>
         </div>
-        <input type="text" name="id_remax" id="id_remax" class="form-control" readonly>
+        <div class="col-sm-6"></div>
       </div>
       <div class="row mt-3">
         <div class="col-sm-6">
@@ -235,7 +240,7 @@
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </span>
               </div>
-              <select name="moneda_id_pago" id="moneda_id_pago" class="form-control">
+              <select name="moneda_id_pago" id="moneda_id_pago" class="form-control" onchange="checkMoneda()">
                 <?php foreach($moneda_list as $element): ?>
                     <option value="<?php echo $element['id']; ?>">
                         <?php echo $element['simbolo']; ?>
@@ -243,7 +248,7 @@
                 <?php endforeach; ?>>
               </select>
               <div class="valid-feedback">Correcto.</div>
-              <div class="invalid-feedback">No hay monedas definidas.</div>
+              <div class="invalid-feedback">No hay cotizacion válida para la moneda.</div>
             </div>
           </div>
         </div>
@@ -273,6 +278,9 @@
             </div>
           </div>
         </div>
+        <!--SECCION: CAMPO OCULTOS-->
+        <input type="hidden" name="cotiz_venta" id="cotiz_venta" value="0">
+        <!--FIN SECCION: CAMPOS OCULTOS-->
       <?php endif; ?>
       
       <!--Botones del formulario-->
@@ -312,20 +320,34 @@
         var nro_comprob = document.getElementById("nro_comprob");
         var fecha_pago = document.getElementById("fecha_pago");
         var moneda_id_pago = document.getElementById("moneda_id_pago");
+        var moneda_id = document.getElementById("moneda_id");
         var saldo = document.getElementById("saldo");
+        var cotiz_venta = document.getElementById("cotiz_venta");
+
+        if(cotiz_venta.value == "0"){
+          esInvalido(moneda_id_pago);
+          ok = false;
+        }else{
+          esValido(moneda_id_pago);
+          if(moneda_id_pago.value == "INDEFINIDO"){
+            esInvalido(moneda_id_pago);
+            ok = false;
+          }else{
+            esValido(moneda_id_pago);
+          }
+        }
 
         if(monto_pagar.value <= 0  || monto_pagar.value == "" || isNaN(monto_pagar.value)){
           esInvalido(monto_pagar);
           ok = false;
         }else{
           //para hacer esta validacion debemos saber que ambos valores son numeros válidos
-          if(parseFloat(monto_pagar.value) > parseFloat(saldo.value)){
+          if(parseFloat(monto_pagar.value)*parseFloat(cotiz_venta.value) > parseFloat(saldo.value)){
             esInvalido(monto_pagar);
             ok = false;
           }else{
-            esValido(monto_pagar);
+            esValido(monto_pagar); 
           }
-          
         }
 
         if(nro_comprob.value == ""){
@@ -344,17 +366,43 @@
           
         }
 
-        if(moneda_id_pago.value == "INDEFINIDO"){
-          esInvalido(moneda_id_pago);
-          ok = false;
-        }else{
-          esValido(moneda_id_pago);
-        }
-
-        
-         
         return ok;
 
+      }
+
+      //se encarga de chequear las monedas con que se opera, si son diferentes, 
+      //se trae de la base de datos la cotizacion de la moneda con que se esta pagando
+      function checkMoneda(resultado = ""){
+        var moneda_id_pago = document.getElementById("moneda_id_pago");
+        var moneda_id = document.getElementById("moneda_id");
+        var max_id = "(SELECT MAX(id) FROM cotizacion WHERE moneda_id="+moneda_id_pago.value+")";
+        var where = " WHERE id="+max_id;
+        var campos = ["cotiz_venta"];
+        if(resultado == ""){
+          if(moneda_id.value != moneda_id_pago.value){  
+            /*<ASINCRONO>---------------------------------------------------------------------------------*/
+            busquedaLibre(campos,"cotizacion",where,checkMoneda);
+            /*</ASINCRONO>--------------------------------------------------------------------------------*/
+          }else{
+            document.getElementById("cotiz_venta").value = "1";
+            esValido(moneda_id_pago);
+          }
+        }else{
+          if(resultado.length > 1){
+            if(isNaN(resultado[1][1])){
+              ok = false;
+              esInvalido(moneda_id_pago);
+              document.getElementById("cotiz_venta").value = 0;
+            }else{
+              document.getElementById("cotiz_venta").value = resultado[1][1];
+              esValido(moneda_id_pago);
+            }  
+          }else{
+            ok = false;
+            esInvalido(moneda_id_pago);
+            document.getElementById("cotiz_venta").value = 0;
+          } 
+        }
       }
   </script>
 
@@ -371,6 +419,7 @@
       $inputsVal = implode(",",$inputsVal);
       $inputsId = implode(",",$inputsId);
       echo '<script>cargarCampos("'.$inputsId.'","'.$inputsVal.'")</script>';
+      echo "<script>checkMoneda();</script>";
   }else{
     //echo "are im a joke to you";
   }
@@ -386,14 +435,15 @@
         $monto = $_POST["monto_pagar"];
         $saldo  = $_POST["saldo"];
         $idForm = $_POST['seleccionado'];
+        $cotiz_venta = $_POST["cotiz_venta"];
         $creador = "nn"; //debe obtenerse de $_SESSION
 
-        $saldo_actual = $saldo - $monto;
+        $saldo_actual = $saldo - $monto*$cotiz_venta;
 
         $campos_pago = array('moneda_id','cobros_alquiler_id','fecha','nro_comprob','monto','obs',
-       'forma_pago','creador');
+       'forma_pago','creador','cotizacion');
        $valores_pago = "$moneda_id,$idForm,'$fecha','$nro_comprob',$monto,'$obs',
-       '$forma_pago','$creador'";
+       '$forma_pago','$creador',$cotiz_venta";
 
         if($saldo_actual > 0){
           $campos_cobro = array('saldo');
@@ -408,8 +458,5 @@
           $consultas->modificarDato('cobros_alquiler',$campos_cobro,$valores_cobro,'id',$idForm);
         }
 
-        
-
-      echo "<script>window.location='cobros_alquiler_panel.php'</script>" ;
     }
 ?>

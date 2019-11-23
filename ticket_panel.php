@@ -8,8 +8,9 @@
     // ========================================================================
     //Seteo de cabecera y campos en el mismo orden para tomar de la $tabla
     // ========================================================================
+    $asunto = "(SELECT asunto FROM asuntos asu WHERE asuntos_id = asu.id)"; 
     $cabecera=['ID','Fecha Creación','Asunto','Tipo','Criticidad','Solicitante','Estado'];
-    $campos=['id','fecha','asunto','tipo','criticidad','solicitante','estado'];
+    $campos=['id','fecreacion',$asunto,'tipo','criticidad','solicitante','estado'];
 
     //obtencion de los asuntos para usarlos como filtros
     $aux = $consultas->consultarDatos(array('id','asunto'),'asuntos');
@@ -33,16 +34,17 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
       <script type="text/javascript">
          // para busqueda en paneles
-         var campos=['id','fecha','asunto','tipo','criticidad','solicitante','estado'];
+         var asunto = "(SELECT asunto FROM asuntos asu WHERE asuntos_id = asu.id)";
+         var campos=['id','fecreacion',asunto,'tipo','criticidad','solicitante','estado'];
       </script> 
-      <style media="screen">
-         .menu-panel{
-             width: 100%
-         }
-         .mostrar-tabla{
-            width: 100%;
-         }
-      </style>
+        <style media="screen">
+            .menu-panel{
+                width: 100%
+            }
+            .mostrar-tabla{
+                width: 100%;
+            }
+        </style>
     </head>
     <body class="container-fluid" style="background-color:white">
       <!--============================================================================= -->
@@ -118,6 +120,7 @@
         <div class="row mb-3">
             <div class="col-sm-12 text-right">
                 <!--ACCIONES DEL PANEL-->
+                <input type="button" class="boton_panel" name="Limpiar" onclick="limpiarFiltros();"  value="Limpiar Filtros">
                 <input type="button" class="boton_panel" name="Nuevo" onclick = "location='ticket_form.php';"  value="Nuevo">
                 <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('ticket_form.php')" >
                 <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="updateTicketStatus();" >
@@ -126,7 +129,7 @@
     </div>
 
         <div class="mostrar-tabla">
-            <?php  $consultas->crearTabla($cabecera,$campos,'v_asuntos_tickets');?>
+            <?php  $consultas->crearTabla($cabecera,$campos,'ticket');?>
         </div>
     </body>
      
@@ -205,13 +208,8 @@
                 }
                    
             //}
-
-            //Depuracion{
-                //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
-                //console.log(where);
-            //}
             
-            buscarTablaPanelesCustom(campos,'v_asuntos_tickets',where);
+            buscarTablaPanelesCustom(campos,'ticket',where);
 
         }
 
@@ -219,19 +217,40 @@
 
         function updateTicketStatus(){
             var seleccionado = document.getElementById("seleccionado"); //el id del ticket
-            var campos = JSON.stringify(["estado"]);
-            var valores = JSON.stringify(["'Eliminado'"]);
-            $.post("Parametros/modificador.php",
-                 { tabla: "ticket" ,campos:campos, valores:valores, valorIdentificador:seleccionado.value
-                 ,identificador: "id" }, function(resultado) {
-                    if(resultado=="1"){
+            var campos = ["estado"];
+            var valores = ["Eliminado"];
+            $.post("Parametros/modificarDatos.php",
+                 { tabla: "ticket" ,campos:campos, valores:valores, valorCondicion:seleccionado.value
+                 ,campoCondicion: "id" }, function(resultado) {
+                    console.log(resultado);
+                    if(resultado=="0"){
                         popup("Informacion","El ticket se ha eliminado satisfactoriamente");
                     }else{
-                        alert("Error","No se ha podido eliminar el ticket");
+                        popup("Error","No se ha podido eliminar el ticket");
                     }
                     buscar();
                  }
             );
+        }
+
+        function limpiarFiltros(){
+            var asunto = document.getElementById("asunto");
+            var tipo = document.getElementById("tipo");
+            var criticidad = document.getElementById("criticidad");
+            var estado = document.getElementById("estado");
+            var fecha_desde = document.getElementById("fecha_desde");
+            var fecha_hasta = document.getElementById("fecha_hasta");
+
+            asunto.selectedIndex = 0;
+            tipo.selectedIndex = 0;
+            criticidad.selectedIndex = 0;
+            estado.selectedIndex = 0;
+            fecha_desde.value = "";
+            fecha_hasta.value = "";
+
+            buscar();
+
+
         }
 
     </script>

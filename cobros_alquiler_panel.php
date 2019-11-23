@@ -83,41 +83,40 @@
     </div>
 
         <div class="mostrar-tabla">
-            <?php  $consultas->crearTabla($cabecera,$campos,'v_cobrosalquiler_propiedades','','',['*'],'assoc');?>
+            <?php  $consultas->crearTabla($cabecera,$campos,'v_cobrosalquiler_propiedades');?>
         </div>
     </body>
      
     <script>
-        function buscar(){
-            //Inicializacion de Variables{
-                var where = "WHERE";
-                var c = 0;
-                var id_remax = document.getElementById("id_remax");
-                var fe_vto = document.getElementById("fe_vto");
-            //}
+        function buscar(retorno = ""){
+            if(retorno == ""){
+                //Inicializacion de Variables{
+                    var where = "WHERE";
+                    var c = 0;
+                    var id_remax = document.getElementById("id_remax");
+                    var fe_vto = document.getElementById("fe_vto");
+                //}
 
-            //Formacion de la clausula where{
-                if(id_remax.value.length >= 0){ //esto ya sobra pero bue
-                    where += " id_remax LIKE '%"+id_remax.value+"%'";
-                    c++;
-                }     
+                //Formacion de la clausula where{
+                    if(id_remax.value.length >= 0){ //esto ya sobra pero bue
+                        where += " id_remax LIKE '%"+id_remax.value+"%'";
+                        c++;
+                    }     
 
-                if(fe_vto.value != ""){
-                    if(c==0){
-                        where += " fe_vto = '"+fe_vto.value+"'";
-                    }else{
-                        where += " AND fe_vto = '"+fe_vto.value+"'";
+                    if(fe_vto.value != ""){
+                        if(c==0){
+                            where += " fe_vto = '"+fe_vto.value+"'";
+                        }else{
+                            where += " AND fe_vto = '"+fe_vto.value+"'";
+                        }
+                        c++;
                     }
-                    c++;
-                }
-            //}
-
-            //Depuracion{
-                //alert("Desde: "+fecha_desde.value+" Hasta: "+fecha_hasta.value+" Tipo: "+tipo.value);
-                //console.log(where);
-            //}
+                //}
             
-            buscarTablaPanelesCustom(campos,'v_cobrosalquiler_propiedades',where);
+                buscarTablaPanelesCustom(campos,'v_cobrosalquiler_propiedades',where,buscar);
+            }else{
+                formatear_campos();
+            }
 
         }
 
@@ -132,14 +131,16 @@
         }
 
         function formatear_campos(){
-            //aqui se usan selectores css, en palabras estos selectores serian como seleccionar todas 
-            //las id  monto_* y saldo_*
-            var campos = document.querySelectorAll("[id*='monto_'],[id*='saldo_']");
+            //aqui se usan selectores css
+            var campos = document.querySelectorAll("td");
             var size = campos.length;
             $(campos).each(function(){
                //el valor de cada celda es equivalente al contenido entre los tags <td></td>
                var value = this.innerHTML;
-               this.innerHTML=nfor(value);
+               if(!isNaN(value)){
+                 this.innerHTML=nfor(value);
+               }
+               
             });
         }
         formatear_campos();

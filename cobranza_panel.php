@@ -7,8 +7,9 @@
     // ========================================================================
     //Seteo de cabecera y campos en el mismo orden para tomar de la $tabla
     // ========================================================================
-    $cabecera=['ID','Creación','Nro. Comprob','Monto','Forma de Pago'];
-    $campos=['id','fecha','nro_comprob','monto','forma_pago'];
+    $moneda = "(SELECT simbolo FROM moneda mon WHERE moneda_id = mon.id )";
+    $cabecera=['ID','Creación','Nro. Comprob','Monto','Forma de Pago','Moneda'];
+    $campos=['id','fecha','nro_comprob','monto','forma_pago',$moneda];
 
     //recibimos el id del cobor
     $cobro_alquiler_id = $_POST['seleccionado'];
@@ -26,7 +27,8 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
       <script type="text/javascript">
          // para busqueda en paneles, es decir, los campos mostrados postumos a una busqueda
-         var campos=['id','fecha','nro_comprob','monto','forma_pago'];
+         var moneda = "(SELECT simbolo FROM moneda mon WHERE moneda_id = mon.id )";
+         var campos=['id','fecha','nro_comprob','monto','forma_pago',moneda];
       </script> 
       <style media="screen">
          .menu-panel{
@@ -86,35 +88,38 @@
     </body>
      
     <script>
-        function buscar(){
-            //Inicializacion de Variables{
-                var where = "WHERE";
-                var c = 0;
-                var fecha = document.getElementById("fecha");
-                var nro_comprob = document.getElementById("nro_comprob");
-                var id_cobro = document.getElementById("id_cobro");
-            //}
+        function buscar(retorno = ""){
+            if(retorno == ""){
+                //Inicializacion de Variables{
+                    var where = "WHERE";
+                    var c = 0;
+                    var fecha = document.getElementById("fecha");
+                    var nro_comprob = document.getElementById("nro_comprob");
+                    var id_cobro = document.getElementById("id_cobro");
+                //}
 
-            //Formacion de la clausula where{
-                where += " cobros_alquiler_id = "+id_cobro.value+""
+                //Formacion de la clausula where{
+                    where += " cobros_alquiler_id = "+id_cobro.value+""
 
-                if(nro_comprob.value.length >= 0){ //esto ya sobra pero bue
-                    where += " AND nro_comprob LIKE '%"+nro_comprob.value+"%'";
-                    c++;
-                }     
+                    if(nro_comprob.value.length >= 0){ //esto ya sobra pero bue
+                        where += " AND nro_comprob LIKE '%"+nro_comprob.value+"%'";
+                        c++;
+                    }     
 
-                if(fecha.value != ""){
-                    if(c==0){
-                        where += " fecha = '"+fecha.value+"'";
-                    }else{
-                        where += " AND fecha = '"+fecha.value+"'";
+                    if(fecha.value != ""){
+                        if(c==0){
+                            where += " fecha = '"+fecha.value+"'";
+                        }else{
+                            where += " AND fecha = '"+fecha.value+"'";
+                        }
+                        c++;
                     }
-                    c++;
-                }
-            //}
-            
-            buscarTablaPanelesCustom(campos,'cobranza',where);
+                //}
 
+                buscarTablaPanelesCustom(campos,'cobranza',where,buscar);
+            }else{
+                formatear_campos();
+            }
         }
 
         function limpiarFiltros(){
@@ -128,54 +133,78 @@
         }
 
         function eliminarCobranza(retorno = ""){
-        var id_cobro = document.getElementById("id_cobro");
-        var id_pago = document.getElementById("seleccionado");
-        var c = 1;
-        if(id_pago == "0"){
-            popup("","Seleccione la conbranza a eliminar");
-            return false;
-        }
-        if(retorno == ""){
-          var campos = ["monto","saldo"];
-          var where = " WHERE id = "+id_cobro.value+" AND id_pago="+id_pago.value;
-          busquedaLibre(campos, "v_cobrosalquiler_cobranza", where, eliminarCobranza);
-        }else{
-          if(retorno.length>1){
-            var monto = parseFloat(retorno[1][1]); //saldo
-            var saldo = parseFloat(retorno[1][2]); //saldo
-            var campos = [];
-            var valores = [];
-            var nuevo_saldo = saldo + monto;
-
-            if(saldo == 0){
-                campos = ['saldo','estado'];
-                valores = [nuevo_saldo,"'Pendiente'"];
-            }else{
-                campos = ['saldo'];
-                valores = [nuevo_saldo];
+            var id_cobro = document.getElementById("id_cobro");
+            var id_pago = document.getElementById("seleccionado");
+            var c = 1;
+            if(id_pago == "0"){
+                popup("Error","Seleccione la conbranza a eliminar");
+                return false;
             }
-            
-            var campos_json = JSON.stringify(campos);
-            var valores_json = JSON.stringify(valores);
-            $.post("Parametros/modificador.php",
-                 { tabla: "cobros_alquiler" ,campos:campos_json, valores:valores_json,
-                    valorIdentificador:id_cobro.value, identificador: "id" }, function(resultado) {
-                    if(resultado=="1"){
-                        eliminar('cobranza',"preventReload");
-                        popup("Informacion","Pago eliminado, se ha actualizado el cobro");
-                    }else{
-                        popup("Informacion","No se puedo completar la operacion");
-                    }
-                    //window.location='cobros_alquiler_panel.php';
-                    buscar();
-                 }
-            );
+            if(retorno == ""){
+                var saldo = "(SELECT saldo FROM cobros_alquiler ca WHERE ca.id = "+id_cobro.value+")";
+                var campos = ["monto",saldo,'cotizacion'];
+                var where = " WHERE id = "+id_pago.value;
+                busquedaLibre(campos, "cobranza", where, eliminarCobranza);
+            }else{
+                if(retorno.length>1){
+                    var monto = parseFloat(retorno[1][1]); //monto del pago
+                    var saldo = parseFloat(retorno[1][2]); //saldo del cobro
+                    var cotiz = parseFloat(retorno[1][3]); //cotizacion del pago
+                    var campos = [];
+                    var valores = [];
+                    var nuevo_saldo = saldo + monto*cotiz;
 
-          }else{
-            //popup("","No se pudo eliminar la cobranza");
-          }
-        }
+                    /*console.log(monto);
+                    console.log(saldo);
+                    console.log(cotiz);
+                    console.log(nuevo_saldo);*/
+
+                    if(saldo == 0){
+                        campos = ['saldo','estado'];
+                        valores = [nuevo_saldo,"Pendiente"];
+                    }else{
+                        campos = ['saldo'];
+                        valores = [nuevo_saldo];
+                    }
+
+                    /*console.log(campos);
+                    console.log(valores);*/
+                    
+                    $.post("Parametros/modificarDatos.php",
+                        { tabla: "cobros_alquiler" ,campos:campos, valores:valores,
+                            valorCondicion:id_cobro.value, campoCondicion: "id" }, function(resultado) {
+                            if(resultado=="0"){
+                                eliminar('cobranza',"preventReload");
+                                popup("Informacion","Pago eliminado, se ha actualizado el cobro");
+                            }else{
+                                popup("Informacion","No se puedo completar la operacion");
+                            }
+                            //window.location='cobros_alquiler_panel.php';
+                            buscar();
+                        }
+                    );
+
+                }else{
+                    //popup("","No se pudo eliminar la cobranza");
+                }
+            }
       }
+
+      function formatear_campos(){
+            //aqui se usan selectores css, el siguiente selector es para seleccionar el quinto 
+            //y el cuarto td que se encuentra bajo el tr
+            var campos = document.querySelectorAll("td:nth-child(5),td:nth-child(4)");
+            var size = campos.length;
+            $(campos).each(function(){
+               //el valor de cada celda es equivalente al contenido entre los tags <td></td>
+               var value = this.innerHTML;
+               if(!isNaN(value)){
+                 this.innerHTML=nfor(value);
+               }
+               
+            });
+        }
+        formatear_campos();
 
     </script>
 
