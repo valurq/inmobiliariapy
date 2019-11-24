@@ -39,21 +39,15 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
                 width: 100%;
             }
             a {
-              background: #ccc;
+              background: white;
               cursor: pointer;
-              border-top: solid 2px #eaeaea;
-              border-left: solid 2px #eaeaea;
-              border-bottom: solid 2px #777;
-              border-right: solid 2px #777;
+              border: 1px solid lightgrey;
               padding: 5px 5px;
             }
 
             a.down {
-              background: #bbb;
-              border-top: solid 2px #777;
-              border-left: solid 2px #777;
-              border-bottom: solid 2px #eaeaea;
-              border-right: solid 2px #eaeaea;
+              background: #61b0f4;
+              border: 1px solid lightgrey;
             }
         </style>
         <title>VALURQ_SRL</title>
@@ -124,7 +118,7 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $buscador = $('#buscador');
               $oficina = "<?php echo $oficina ?>"
 
-              //falta hacer el nombreOfi
+
 
               $button1.click(function() {
                 if ( $(this).attr('class') != "down" ){

@@ -23,7 +23,12 @@
             $cantidadContratos=$inserta_Datos->consultarDatos(array("count(*)"),'contratos',"","oficina_id",$id);
             $cantidadContratos=$cantidadContratos->fetch_array(MYSQLI_NUM);
             $cantidadContratos=$cantidadContratos[0];
-            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
+
+            $cantidadMetas=$inserta_Datos->consultarDatos(array("count(*)"),'metas',"","oficina_id",$id);
+            $cantidadMetas=$cantidadMetas->fetch_array(MYSQLI_NUM);
+            $cantidadMetas=$cantidadMetas[0];
+
+            $campos=array( 'dsc_oficina', 'ruc', '(SELECT nombrefull FROM manager WHERE oficina_id = '.$id.' limit 1)', 'direccion','(SELECT dsc_broker FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -32,9 +37,9 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('oficina','ruc','manager','direccion','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde','razon');
+            $camposIdForm=array('oficina','ruc','manager','direccion', 'broker','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde','razon');
 
-            $tipoOficina = $resultado[10];
+            $tipoOficina = $resultado[11];
         }
     ?>
 
@@ -55,7 +60,10 @@
             border: 1px solid black;
             border-radius: 20px;
             padding: 5px 10px;
+            box-sizing: border-box;
+            width: 100px;
           }
+
           #contrato:hover, #meta:hover{
             color: white;
             background-color: #16156f;
@@ -71,7 +79,7 @@ target="_blank" method="POST" id='form_contrato'>
   <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
 </form>
 
-<form action=<?php echo (($cantidadContratos>0)?"'meta_panel.php'": "'meta_form.php'");?> 
+<form action=<?php echo (($cantidadMetas>0)?"'meta_panel.php'": "'meta_form.php'");?> 
 target="_blank" method="POST" id='form_meta'>
   <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
 </form>
@@ -96,7 +104,7 @@ target="_blank" method="POST" id='form_meta'>
               if(!(count($resultado)>0)){
                   $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
               }else{
-                  $inserta_Datos->DesplegableElegido(@$resultado[15],'pais','id','dsc_pais','pais');
+                  $inserta_Datos->DesplegableElegido(@$resultado[16],'pais','id','dsc_pais','pais');
               }
             ?>
           </td>
@@ -114,7 +122,7 @@ target="_blank" method="POST" id='form_meta'>
               if(!(count($resultado)>0)){
                   $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
               }else{
-                  $inserta_Datos->DesplegableElegido(@$resultado[16],'ciudad', 'id', 'dsc_ciudad', 'ciudad');
+                  $inserta_Datos->DesplegableElegido(@$resultado[17],'ciudad', 'id', 'dsc_ciudad', 'ciudad');
               }
 
             ?>
@@ -157,7 +165,7 @@ target="_blank" method="POST" id='form_meta'>
         <td><label for="">Tipo</label></td>
         <td>
           <?php
-            $inserta_Datos->DesplegableElegidoFijo(@$resultado[10],'tipo',array('REMAX','OTROS'));
+            $inserta_Datos->DesplegableElegidoFijo(@$resultado[11],'tipo',array('REMAX','OTROS'));
           ?>
         </td>
         
@@ -184,14 +192,14 @@ target="_blank" method="POST" id='form_meta'>
         <td>
           <?php 
             if ($tipoOficina != "OTROS") {
-              echo "<a id='contrato' target='_blank' onclick='document.getElementById(".'"form_contrato"'.").submit();'>Contrato</a>";
+              echo "<input type='button' id='contrato' class='boton-formulario' target='_blank' value='Contrato' onclick='document.getElementById(".'"form_contrato"'.").submit();'>";
             }
            ?>
         </td>
         <td>
           <?php 
             if ($tipoOficina != "OTROS") {
-              echo "<a id='meta' target='_blank' onclick='document.getElementById(".'"form_meta"'.").submit();'>Meta</a>";
+              echo "<input type='button' id='meta' class='boton-formulario' target='_blank' value='Meta' onclick='document.getElementById(".'"form_meta"'.").submit();'>";
             }
            ?>
         </td>
