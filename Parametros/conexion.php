@@ -11,7 +11,6 @@ if ($mysqli->connect_errno) {
 }
 $infoHost=$mysqli->host_info . "\n";*/;
 
-
 class Conexion{
     private $user="root";
     private $ip="localhost";
@@ -135,7 +134,16 @@ class Consultas extends Conexion{
         //echo $query;
         return $this->conexion->query($query);
     }
+// =============================
+//la clausula where se pasa por parametro
+public function buscarDatoCustom($campos,$tabla,$where){
+   $campos = implode(",",$campos);
 
+   $query = "SELECT ".$campos." FROM ".$tabla." ".$where;
+
+   return $this->conexion->query($query);
+}
+//=====================
 
 
     public function eliminarDato($tabla,$campo,$identificador){
@@ -158,7 +166,7 @@ class Consultas extends Conexion{
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
         //echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
-        $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
+        return $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
 
@@ -181,7 +189,7 @@ class Consultas extends Conexion{
             */
             //$this->crearPaqueteModificacion($campos,$valores);
             //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
-        $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
+        return $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
 
     }
     private function crearPaqueteModificacionQ($campos,$valores){
@@ -216,7 +224,7 @@ class Consultas extends Conexion{
             }
         }
         //echo $query;
-        $this->conexion->query($query);
+        return $this->conexion->query($query);
 
     }
 
@@ -251,23 +259,27 @@ class Consultas extends Conexion{
         echo "</tr>";
         echo"</thead>";
     }
-   private function crearContenidoTabla($resultadoConsulta){
+    private function crearContenidoTabla($resultadoConsulta){
         /*
             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
         */
-        echo "<tbody id='datosPanel'>";
-
-        while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
-            array_shift($datos);
-            foreach( $datos as $valor ){
-                echo "<td>".$valor." </td>";
+        if(gettype($resultadoConsulta)!="boolean"){
+            echo "<tbody id='datosPanel'>";
+            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
+                array_shift($datos);
+                foreach( $datos as $valor ){
+                    echo "<td>".$valor." </td>";
+                }
+                echo "</tr>";
             }
-            echo "</tr>";
+            echo"</tbody> </table>";
+        }else{
+            echo "Sin resultados";
         }
-        echo"</tbody>";
     }
+    
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
        // MODIFICA REGISTRO

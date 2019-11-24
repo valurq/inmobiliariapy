@@ -19,10 +19,9 @@
       if(isset($_POST['seleccionado'])){
           $cliente_id = $_POST['seleccionado'];
           $campos = array( 'pais_id','ciudad_id','dsc_cliente','ci_ruc','direccion','mail','telefono1','telefono2','telefono3',
-          'creador','sitioweb','obs');
+          'sitioweb','obs');
           $inputsId =  array( 'pais','ciudad','dsc_cliente','ci_ruc','direccion','mail','telefono1','telefono2','telefono3',
-          'creador','sitioweb','obs');
-          $inputsVal = array();
+          'sitioweb','obs');
 
           //echo "ID ". $cliente_id;
           $tmpdatos = $consultas->consultarDatos($campos,'cliente',"","id",$cliente_id);
@@ -116,101 +115,151 @@
     <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
       <input type="hidden" name="idformulario" id="idformulario" value=<?php echo $cliente_id;?> >
     <!-- Campos del Formulario-->
-      <?php if($btn_label=="Modificar Cliente"): ?>
-        <div class="ml-3 form-group">
-          <label for="creador">Creador:</label>
-          <input class="form-control" name="creador" id="creador" type="text" readonly>
+      <div class="input-group input-group-sm mt-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text border border-0 bg-white">
+            Descripción Cliente:
+          </span>
         </div>
-      <?php endif; ?>
-      <div class="ml-3 form-group">
-        <label for="dsc_cliente">Descripción del Cliente:</label>
-        <textarea class="form-control" name="dsc_cliente" id="dsc_cliente" rows="2" maxlength="60"></textarea>
+        <textarea class="form-control" name="dsc_cliente" id="dsc_cliente" rows="1" maxlength="60"></textarea>
         <div class="valid-feedback">Correcto.</div>
         <div class="invalid-feedback">Por favor, agregue una breve descripción del cliente.</div>
       </div>
-      <div class="row ml-1">
-        <div class="col-sm-6 mt-2">
-          <div class="form-group">
-            <label for="ci_ruc">Cédula de Identidad o R.U.C:</label>
+      <div class="row">
+        <div class="col-sm-6 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                C.I o R.U.C:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
             <input class="form-control" name="ci_ruc" id="ci_ruc" type="text" maxlength="30">
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Por favor, indique la cédula o el ruc del cliente.</div>
           </div>
         </div>
-        <div class="col-sm-6 mt-2">
-          <div class="form-group">
-            <label for="mail">Correo Electrónico:</label>
+        <div class="col-sm-6 mt-3">
+          <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <span class="input-group-text border border-0 bg-white">
+                  Correo electrónico:
+                </span>
+              </div>
             <input class="form-control" name="mail" id="mail" type="text" maxlength="60">
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Por favor, indique el correo electrónico del cliente.</div>
           </div>
         </div>
       </div>
-      <div class="ml-3 form-group">
-        <label for="direccion">Dirección:</label>
+      <div class="input-group input-group-sm mt-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text border border-0 bg-white">
+            Dirección:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;
+          </span>
+        </div>
         <input class="form-control" name="direccion" id="direccion" type="text" maxlength="30">
         <div class="valid-feedback">Correcto.</div>
         <div class="invalid-feedback">Por favor, indique la dirección cliente.</div>
       </div>
-      <div class="row ml-1">
-        <div class="col-sm-6 mt-2">
-          <label for="pais">País:</label>
-          <select class="form-control" name="pais" id="pais" onchange="buscarCiudades();">
-            <?php foreach($paises_list as $element): ?>
-                <option value="<?php echo $element['id']; ?>">
-                  <?php echo $element['dsc_pais']; ?>
-                </option>
-            <?php endforeach; ?>
-          </select>
-          <div class="valid-feedback">Correcto.</div>
-          <div class="invalid-feedback">No hay paises definidos.</div>
+      <div class="row">
+        <div class="col-sm-6 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                País:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
+            <select class="form-control" name="pais" id="pais" onchange="buscarCiudades();">
+              <?php foreach($paises_list as $element): ?>
+                  <option value="<?php echo $element['id']; ?>">
+                    <?php echo $element['dsc_pais']; ?>
+                  </option>
+              <?php endforeach; ?>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">No hay paises definidos.</div>
+          </div>
         </div>
-        <div class="col-sm-6 mt-2">
-          <label for="ciudad">Ciudad:</label>
-          <select class="form-control" name="ciudad" id="ciudad">
-            <?php foreach($ciudades_list as $element): ?>
-                <option value="<?php echo $element['id']; ?>">
-                  <?php echo $element['dsc_ciudad']; ?>
-                </option>
-            <?php endforeach; ?>
-          </select>
-          <div class="valid-feedback">Correcto.</div>
-          <div class="invalid-feedback">No hay ciudades definidas.</div>
+        <div class="col-sm-6 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Ciudad:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
+            <select class="form-control" name="ciudad" id="ciudad">
+              <?php foreach($ciudades_list as $element): ?>
+                  <option value="<?php echo $element['id']; ?>">
+                    <?php echo $element['dsc_ciudad']; ?>
+                  </option>
+              <?php endforeach; ?>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">No hay ciudades definidas.</div>
+          </div>
         </div>
       </div>
-      <div class="row ml-1 mt-3">
-        <div class="col-sm-4 mt-2">
-          <div class="form-group">
-            <label for="telefono1">Telefóno 1:</label>
+      <div class="row">
+        <div class="col-sm-4 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Teléfono 1:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
             <input class="form-control" name="telefono1" id="telefono1" type="text" maxlength="30">
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Por favor, indique al menos un número de teléfono correctamente.</div>
           </div>
         </div>
-        <div class="col-sm-4 mt-2">
-          <div class="form-group">
-            <label for="telefono2">Telefóno 2:</label>
+        <div class="col-sm-4 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Teléfono 3:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
             <input class="form-control" name="telefono2" id="telefono2" type="text" maxlength="60">
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Por favor, indique al menos un número de teléfono correctamente.</div>
           </div>
         </div>
-        <div class="col-sm-4 mt-2">
-          <div class="orm-group">
-            <label for="telefono3">Telefóno 3:</label>
+        <div class="col-sm-4 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Teléfono 3:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
             <input class="form-control" name="telefono3" id="telefono3" type="text" maxlength="60">
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Por favor, indique al menos un número de teléfono correctamente.</div>
           </div>
         </div>
       </div>      
-      <div class="ml-3 form-group">
-        <label for="sitioweb">Sitio Web:</label>
+      <div class="input-group input-group-sm mt-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text border border-0 bg-white">
+            Sitio Web:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>
+        </div>
         <input class="form-control" name="sitioweb" id="sitioweb" type="text" maxlength="30">
       </div>
-      <div class="ml-3 form-group">
-        <label for="obs">Observaciones:</label>
-        <textarea class="form-control" name="obs" id="obs" rows="4"></textarea>
+      <div class="input-group input-group-sm mt-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text border border-0 bg-white">
+            Observaciones:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>
+        </div>
+        <textarea class="form-control" name="obs" id="obs" rows="1"></textarea>
       </div>
       <!--Fin campos de formulario-->
       
@@ -375,14 +424,18 @@ if(isset($_POST['submit_cliente'])){
       $idForm = $_POST['idformulario'];
 
       $campos = array( 'pais_id','ciudad_id','dsc_cliente','ci_ruc','direccion','mail','telefono1','telefono2','telefono3',
-      'creador','sitioweb','obs');
+      'sitioweb','obs');
       $valores= "$pais,$ciudad,'$dsc_cliente','$ci_ruc','$direccion','$mail','$telefono1','$telefono2','$telefono3',".
-      "'$creador','$sitioweb','$obs'";
+      "'$sitioweb','$obs'";
       
       //update o insert dependiend de las circunstancias
       if( isset($idForm) && ($idForm!=0) ){
         $consultas->modificarDato('cliente',$campos,$valores,'id',$idForm);
       }else{
+        //el creador solo se debe setear cuando se esta creando el cliente
+        array_push($campos,"creador");
+        $valores.= ",'$creador'";
+
         $consultas->insertarDato('cliente',$campos,$valores);
       }
   //echo "<script>window.location='cliente_panel.php'</script>" ;
