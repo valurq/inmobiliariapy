@@ -9,7 +9,8 @@ $error;
 if ($mysqli->connect_errno) {
     $error="Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
 }
-$infoHost=$mysqli->host_info . "\n";*/
+$infoHost=$mysqli->host_info . "\n";*/;
+
 
 class Conexion{
     private $user="root";
@@ -75,6 +76,30 @@ class Consultas extends Conexion{
         $query.=$orden;
         return $this->conexion->query($query);
     }
+    function consultarDatosQ($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion=""){
+	 /*
+            METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
+            $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
+            Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
+        */
+
+        $texto=(implode(",", $campos));
+        $query="SELECT ".$texto." FROM ".$tabla." ";
+        if(is_array($campoCondicion)==TRUE){
+            $query.="WHERE ";
+            for ($i=0; $i <count($campoCondicion)-1 ; $i++) {
+                $query.=$campoCondicion[$i]." = '".$valorCondicion[$i]."' && ";
+            }
+            $query.=$campoCondicion[$i]." = '".$valorCondicion[$i]."' ";
+        }else{
+            if(($campoCondicion!="")&&($valorCondicion!="")){
+                $query.="WHERE ".$campoCondicion." = '".$valorCondicion."' ";
+            }
+        }
+        //echo "$query";
+        $query.=$orden;
+        return $this->conexion->query($query);
+    }
     public function buscarDato($campos,$tabla,$campoCondicion,$valorCondicion){
          /*
             METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
@@ -99,78 +124,17 @@ class Consultas extends Conexion{
 
         if(is_array($campoC)==TRUE){
             for ($i=0; $i <count($campoC)-1 ; $i++) {
-                $query.="&& ".$campoC[$i]." = '".$valorC[$i]."' && ";
+                $query.="&& ".$campoC[$i]." = '".$valorC[$i]."'  ";
             }
-            $query.=$campoC[$i]." = '".$valorC[$i]."' ";
+            $query.='&& '. $campoC[$i]." = '".$valorC[$i]."' ";
         }else{
             if(($campoC!="")&&($valorC!="")){
                 $query.="&& ".$campoC." = '".$valorC."' ";
             }
         }
-            //echo $query;
-        return $this->conexion->query($query);
-    }
-  public function buscarDato($campos,$tabla,$campoCondicion,$valorCondicion){
-         /*
-            METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
-            $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
-            Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
-        */
-        //$texto=(implode(",", $campos));
-        $campos=implode(",",$campos);
-        $query="SELECT ".$campos." FROM ".$tabla." WHERE ".$campoCondicion." LIKE '%".$valorCondicion."%' ";
         //echo $query;
         return $this->conexion->query($query);
     }
-
-    //la clausula where se pasa por parametro
-    public function buscarDatoCustom($campos,$tabla,$where){
-       $campos = implode(",",$campos);
-
-       $query = "SELECT ".$campos." FROM ".$tabla." ".$where;
-
-       return $this->conexion->query($query);
-   }
-   public function crearTabla($cabecera,$camposBD,$tabla,$condicion="",$valorCond="",$tipo="",$tamanhos=['*']){
-        /*
-            METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
-            $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
-            $objetoConsultas->crearTabla(['ID','Categoria'],['id','nom_categoria'],'categorias')
-        */
-        echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
-        array_unshift($camposBD,"id");
-        $this->crearCabeceraTabla($cabecera,$tamanhos);
-        if($tipo!=""){
-            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond,$tipo);
-          }else{
-            $res=$this->consultarDatos($camposBD,$tabla,'',$condicion,$valorCond);
-          }
-        //var_dump($res);
-        $this->crearContenidoTabla($res);
-
-    }
-
-    private function crearContenidoTabla($resultadoConsulta){
-        /*
-            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
-            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
-        */
-        if(gettype($resultadoConsulta)!="boolean"){
-            echo "<tbody id='datosPanel'>";
-            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
-                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
-                array_shift($datos);
-                foreach( $datos as $valor ){
-                    echo "<td>".$valor." </td>";
-                }
-                echo "</tr>";
-            }
-            echo"</tbody> </table>";
-        }else{
-            echo "Sin resultados";
-        }
-    }
-
 
 
 
@@ -237,6 +201,7 @@ class Consultas extends Conexion{
         */
         //$this->crearPaqueteModificacion($campos,$valores);
     //    echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
+    //echo ">>". $valores;
     $query="UPDATE ".$tabla." SET ".$this->crearPaqueteModificacionQ($campos,$valores);
     if(is_array($campoIdentificador)==TRUE){
             $query.="WHERE ";
@@ -250,12 +215,12 @@ class Consultas extends Conexion{
 
             }
         }
-
+        //echo $query;
         $this->conexion->query($query);
 
     }
 
-    public function crearTabla($cabecera,$camposBD,$tabla,$campoCondicion="",$valorCondicion="",$tamanhos=['*']){
+    public function crearTabla($cabecera,$camposBD,$tabla,$campoCondicion="",$valorCondicion="",$tamanhos=['*'],$orden=""){
         /*
             METODO PARA PODER CREAR UNA TABLA EN EL LUGAR DONDE FUE INVOCADO EL METODO
             $objetoConsultas->crearTabla(<Array de cabeceras>,<array de los campos>.<nombre de la tabla>,<condicion de busqueda>,<tamaños de las columnas>);
@@ -264,7 +229,7 @@ class Consultas extends Conexion{
         echo "<table id='tablaPanel' cellspacing='0' style='width:100%'>";
         array_unshift($camposBD,"id");
         $this->crearCabeceraTabla($cabecera,$tamanhos);
-        $res=$this->consultarDatos($camposBD,$tabla,"",$campoCondicion,$valorCondicion);
+        $res=$this->consultarDatos($camposBD,$tabla,$orden,$campoCondicion,$valorCondicion);
         $this->crearContenidoTabla($res);
     }
 
@@ -285,6 +250,23 @@ class Consultas extends Conexion{
         }
         echo "</tr>";
         echo"</thead>";
+    }
+   private function crearContenidoTabla($resultadoConsulta){
+        /*
+            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
+            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+        */
+        echo "<tbody id='datosPanel'>";
+
+        while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+            echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
+            array_shift($datos);
+            foreach( $datos as $valor ){
+                echo "<td>".$valor." </td>";
+            }
+            echo "</tr>";
+        }
+        echo"</tbody>";
     }
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
@@ -312,8 +294,7 @@ class Consultas extends Conexion{
     public function consultarMenu($usuario){
         /*
             METODO PARA PODER CONSULTAR DATOS REFERENTES AL MENU
-            $objetoConsultas->
-            enu(<ID de usuario>)
+            $objetoConsultas->consultarMenu(<ID de usuario>)
         */
         $sql="SELECT link_acceso,icono,titulo_menu,(SELECT habilita FROM acceso
              WHERE menu_opcion_id = menu_opcion.id AND
@@ -353,6 +334,7 @@ class Consultas extends Conexion{
 
 
     public function crearOpciones($resultadoConsulta){
+
         $opciones="";
         while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
                 $opciones.="<option value='".$datos[0]."'>".$datos[1]."</option>";
@@ -371,7 +353,7 @@ class Consultas extends Conexion{
             $campoDescripcion : nombre del campo de la descrip.en la tabla
             $tabla : nombre de la tabla
         */
-        $lista="<select name='".$nombreLista."' class='campos-ingreso'>";
+        $lista="<select name='".$nombreLista."' id='".$nombreLista."' class='campos-ingreso'>";
         $campos= array($campoID,$campoDescripcion );
         $resultado=$this->consultarDatos($campos,$tabla);
         $lista.=$this->OpcionesElegidas($resultado, $idElegido);

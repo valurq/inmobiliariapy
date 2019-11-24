@@ -35,11 +35,15 @@
     border: 1px solid lightgrey;
     margin-top: 10px;
     margin-left: auto;
+    font-family: Arial;
+    font-size:12pt
 
 }
 #btPopupAceptar:hover{
     background-color: #007ce8;
     border-color: black;
+    font-family: Arial;
+    font-size:12pt
 }
 
 #popupConfirmacion{
@@ -57,6 +61,8 @@
     z-index: 10;
     padding: 15px;
     padding-top: 30px;
+    font-family: Arial;
+    font-size:12pt
 }
 #imagenPopupC{
     width: 40px;
@@ -79,11 +85,15 @@
     border: 1px solid lightgrey;
     margin-top: 10px;
     margin-left: auto;
+    font-family: Arial;
+    font-size:12pt
 
 }
 #btPopupAceptarC:hover{
     background-color: #007ce8;
     border-color: black;
+    font-family: Arial;
+    font-size:12pt
 }
 #btPopupCancelarC{
     background-color: white;
@@ -91,9 +101,13 @@
     border: 1px solid lightgrey;
     margin-top: 10px;
     margin-left: 30px;
+    font-family: Arial;
+    font-size:12pt
 
 }
 #btPopupCancelarC:hover{
     background-color: #007ce8;
     border-color: black;
+    font-family: Arial;
+    font-size:12pt
 }
