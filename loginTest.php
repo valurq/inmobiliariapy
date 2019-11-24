@@ -6,14 +6,43 @@
           <script src="Js/jquery-3.4.1.js" charset="utf-8"></script>
           <link rel="stylesheet" href="CSS/popup.css">
           <script type="text/javascript" src="Js/funciones.js"> </script>
+
+          <style>
+          	html, body{
+          		height: 100%;
+          	}
+
+          	body{
+          		margin: 0px;
+          		background-color: #EBE7E7;
+          		display: flex;
+          		justify-content: center;
+          		align-items: center;
+          	}
+
+      			div{
+      				width: 30%;
+      				height: 30%;
+      			}
+
+      			fieldset{
+      				width: 100%;
+      				height: 100%;
+      			}
+          </style>
     </head>
-    <body>
-        <form name="login" method="POST"  style="margin:0px" >
-            <input name="user" id="user" type="text" style="position:absolute;width:200px;left:518px;top:267px;z-index:6">
-            <input name="pass" id="pass" type="password" style="position:absolute;width:200px;left:518px;top:322px;z-index:7">
-            <input name="INGRESAR" type="button" value="INGRESAR" onclick="valida()"   style="position:absolute;left:568px;top:357px;z-index:10">
-        </form>
-    </body>
+<body>
+	<div id="login_wrapper">
+	    <fieldset>
+		    <legend>ACCOUNT LOGIN</legend>
+		        <form name="login" method="POST" >
+		            <input name="user" id="user" type="text" />
+		            <input name="pass" id="pass" type="password" />
+		            <input name="INGRESAR" type="button" value="INGRESAR" onclick="valida()" />
+		        </form>
+		</fieldset>
+	</div>
+</body>
     <script type="text/javascript">
 
         function valida(){

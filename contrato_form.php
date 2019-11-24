@@ -51,13 +51,49 @@
       }
 
       #section2{
-        margin-left: 10%;
+        margin-left: 3%;
       }
 
       #section2:after{
         clear: left;
         content: "";
       }
+
+      #table{
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      #tableAux{
+        width: 100%;
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid lightgrey;
+        margin-top: 10px;
+        margin-left: auto;
+        font-weight: normal;
+        font-family: arial;
+        padding: 5px 15px;
+      }
+
+      #tableAux tr:nth-child(odd) {
+        background-color:#d3d6da;
+      }
+      #tableAux tr:nth-child(even) {
+        background-color:#ffffff;
+      }
+      #tableAux tr:hover {
+        /*Color de fondo al pasar el mouse sobre cada linea
+        de la tabla en panels*/
+        background-color: #4b85ba;
+      }
+
+      fieldset{
+        border-radius: 10px;
+        border: 1px solid black;
+        box-shadow: 2px 2px 2px black;
+      }
+
     </style>
 </head>
 <body style="background-color:white">
@@ -82,7 +118,7 @@
         </tr>
         <tr>
             <td><label for="">Vigencia hasta</label></td>
-            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" onchange="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
+            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" onchange ="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Duración (en años)</label></td>
@@ -120,20 +156,33 @@
     <input name="guardar" type="button" value="Guardar" class="boton-formulario guardar" onclick="verificar();">
     <input name="volver" type="button" value="Volver" onclick = "window.close();"  class="boton-formulario">
   </form>
-</div>  
+</div>
 
 <div id="section2">
-  <form action="">
-    <table>
-      <tbody id="tableAux">
-        <tr>
-          <td><input type="number" name="ano" id="ano" readonly style="width: 80px;" /></td>
-          <td><input type="number" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" /></td>
-          <td><input type="number" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" /></td>
-          <td><input type="button" name="add" id="save" value="Añadir" onclick="contarVeces();"></td>
-        </tr>
-      </tbody>
-    </table>
+  <form action="" id="form2">
+    <fieldset>
+      <legend>COBROS POR CONTRATO</legend>
+      <table>
+        <tbody id="tableInput">
+          <tr>
+            <td><span><b>AÑO</b></span></td>
+            <td><span><b>FEE ADM.</b></span></td>
+            <td><span><b>FEE MK.</b></span></td>
+            <td><span><b></b></span></td>
+          </tr>
+          <tr>
+            <td><input type="number" name="ano" id="ano" readonly style="width: 80px;" /></td>
+            <td><input type="number" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" /></td>
+            <td><input type="number" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" /></td>
+            <td><img src="Imagenes/addIcon.jpg" width='25px' height='25px' alt="Añadir" title="Añadir" onclick="contarVeces();"/></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table id="table">
+        <tbody id="tableAux"></tbody>
+      </table>
+    </fieldset>
   </form>
 </div>
 
@@ -142,17 +191,22 @@
     let anho = date.getFullYear();
     let anhoAux = 0;
     let vigencia = 0;
-    let tabla = [][];
-    document.getElementById('ano').value = anho;
+    let table = document.getElementById('tableAux');
+    $tableAux = $('#tableAux');
+    let tabla = [];
 
     function agregarAnho(fecha) {
+      document.getElementById('ano').value = anho;
       let ano = [];
       for (let i = 0; i < 4; i++) {
         ano += fecha[i];
       }
       anhoAux = ano;
-      vigencia = document.getElementById('duracion').value = anhoAux - anho;
+      vigencia = document.getElementById('duracion').value = ((anhoAux - anho) < 0) ? 0 : (anhoAux - anho);
       contarVeces.numero = 0;
+
+      $('#tableAux tr').remove();
+      tabla = [];
     }
 
     function contarVeces(){
@@ -163,7 +217,6 @@
     }
 
     function addRow(){
-      let table = document.getElementById('tableAux');
       let row = document.createElement('tr');
       let data = document.createElement('td');
       let ano = document.getElementById('ano').value;
@@ -191,17 +244,15 @@
       document.getElementById('fee_adm').value = "";
       document.getElementById('fee_mk').value = "";
       document.getElementById('ano').value = anho + contarVeces.numero;
-
-
     }
 </script>
 
 </body>
 
 <?php
-/*
-    LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
-*/
+    /*
+        LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
+    */
     if(($id!=0 )){
         /*
             CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
@@ -214,54 +265,51 @@
 
 ?>
 <script type="text/javascript">
-    
+
 
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if(document.getElementById('vigencia_hasta').value ==""){
-      popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
-      return false ;
-    }else if($("#fee_operaciones").value ==""){
-      popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
-      return false ;
-    }else{
-      insertar();
-    }
+	       if(document.getElementById('vigencia_hasta').value ==""){
+               popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
+               return false ;
+           }else if($("#fee_operaciones").value ==""){
+               popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
+               return false ;
+           }else{
+               insertar();
+           }
   }
 
   function insertar(){
-    console.log('fadsf');
-    var campos = ['moneda_id','oficina_id', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'creador'];
-    var valores = [$('#moneda').val(), $('#idOfi').val(), $('#vigencia_hasta').val(), $('#fee_operaciones').val(), $('#obs').val(), $('#estado').val(), $('#mora_dia').val(), $('#interes').val(), $('#duracion'), ""];
+    var campos = ['moneda_id','oficina_id', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes','duracion', 'creador'];
+    var valores = [$('#moneda').val(), $('#idOfi').val(), $('#vigencia_hasta').val(), $('#fee_operaciones').val(), $('#obs').val(), $('#estado').val(), $('#mora_dia').val(), $('#interes').val(), $('#duracion').val(), "creador"];
 
+    console.log(valores);
     insertarDatos(campos, 'contratos', valores);
 
-    $.post("Parametros/obtenerDatos.php",{campos:['id'],tabla:'contratos',campoCondicion:campos,valores:valores}, function(resultado) {
+    $.post("Parametros/obtenerDatosQ.php",{campos:['id'],tabla:'contratos',campoCondicion:campos,valores:valores}, function(resultado) {
                 console.log(resultado+" prueba");
                 var res=JSON.parse(resultado);
-                $('#idFormulario').val(res[0]);
+                $('#Idformulario').val(res[0]);
+                pausa(1000);
+                detalleCarga();
              });
-    pausa(1000);
+    //console.log("testing");
+
   }
 
    function detalleCarga(){
-        var camposDetalle=['contratos_id','año','fee_administrativo', 'fondo_marketing'];
+        var camposDetalle=['anho','fee_administrativo', 'fondo_marketing','contratos_id'];
+        var id=$('#Idformulario').val();
+        //alert(id);
+
         for (var filaReal of tabla) {
             var filas=filaReal.slice();
+            filas.push(id);
             console.log(filas);
-            if(filas[0]==""){
-                filas.shift();
-                datosDetalle=[$('#idFormulario').val(),...filas]
-                console.log('variacion_anual  \ncampos :'+camposDetalle+"\n datos :"+datosDetalle);
-                insertar('ubi_gabetas',camposDetalle,datosDetalle);
-            }else{
-                var id=filas[0];
-                filas.shift();
-                datosDetalle=[$('#idFormulario').val(),...filas]
-                modificar('variacion_anual',camposDetalle,datosDetalle,'id',filaReal[0]);
-            }
+            insertarDatos(camposDetalle, 'variacion_anual', filas);
         }
     }
   </script>

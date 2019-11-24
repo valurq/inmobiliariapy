@@ -1,9 +1,36 @@
+
+function seleccionarFila(id){
+    $("#datosPanel > tr").each(
+        function(){
+            this.style = "";
+        }
+    );
+    document.getElementById(id).style.backgroundColor= "#669ee8";
+    document.getElementById("seleccionado").value=id;
+}
+
+/*
+SECCION BUSCADORES
+*/
 //FUNCION QUE ES LLAMADA POR EL CAMPO DE BUSQUEDA PARA REALIZAR CONSULTAS A LA BASE DE DATOS Y MOSTRAR EN LA TABLA CORRESPONDIENTE
 //PARAMETROS : OBJETO (EL INPUT BUSCADOR)   ;  TABLA: TABLA CORRESPONDIENTE A LA BASE DE DATOS DONDE SE REALIZARA LA BUSQUEDA
 function buscarTablaPaneles(camposResultado,valor,tabla,campo) {
     $.post("Parametros/buscador.php", {camposResultado: camposResultado ,dato:valor,tabla:tabla,campoBusqueda:campo}, function(resultado) {
         //$("#resultadoBusqueda").html(resultado);
         var i;
+        //console.log(resultado);
+        resultado=JSON.parse(resultado);
+        $("#datosPanel tr").remove();
+        for(i=1 ; i<resultado.length;i++){
+            cargarTabla(resultado[i],"datosPanel");
+        }
+     });
+}
+function buscarTablaPanelesQ(camposResultado,valor,tabla,campo,campoC,valorC) {
+    $.post("Parametros/buscadorGenerico.php", {camposResultado: camposResultado,dato:valor,tabla:tabla,campoBusqueda:campo,campoCondicion:campoC,valorCondicion:valorC}, function(resultado) {
+        //$("#resultadoBusqueda").html(resultado);
+        var i;
+        //console.log(resultado);
         $("#datosPanel tr").remove();
         resultado=JSON.parse(resultado);
         for(i=1 ; i<resultado.length;i++){
@@ -11,7 +38,7 @@ function buscarTablaPaneles(camposResultado,valor,tabla,campo) {
         }
      });
 }
-
+//==============
 function buscarTablaPanelesCustom(camposResultado,tabla,where) {
     $.post("Parametros/buscador.php", {camposResultado: camposResultado ,tabla:tabla,where:where}, function(resultado) {
         //$("#resultadoBusqueda").html(resultado);
@@ -23,7 +50,6 @@ function buscarTablaPanelesCustom(camposResultado,tabla,where) {
         }
      });
 }
-
 //a diferencia de las demas funciones de busqueda, esta retorna los datos buscados sin cargarlos
 function busquedaLibre(camposResultado,tabla,where,callback) {
     $.post("Parametros/buscador.php", {camposResultado: camposResultado ,tabla:tabla,where:where}, function(resultado) {
@@ -32,104 +58,58 @@ function busquedaLibre(camposResultado,tabla,where,callback) {
      });
 }
 
-/*
-SECCION VALIDACIONES
-*/
-
-function esVacio(objeto){
-    var resultado;
-    ((objeto.value!="")&&(objeto.value!=" ")&&((objeto.value).strlenght>0))?resultado =true:resultado= false ;
-    return resultado;
-}
-
-function cargarCampos(camposform,valores){
-        var campo;
-        camposform=camposform.split(",");
-        valores=valores.split(",");
-        for(var i=0;i<camposform.length;i++){
-            campo=document.getElementById(camposform[i]);
-            if((campo.tagName=="INPUT")||(campo.tagName=="TEXTAREA")){
-                campo.value=valores[i];
-            }
-            //para el caso de los SELECT, el indice de los options comienza en 0
-            //este codigo solo es util para algunos casos... (ahora utilizado por el modulo de tickets)
-            if(campo.tagName=="SELECT"){
-                var options = campo.options;
-                var size = options.length;
-                var c = 0;
-                while(c<size){
-                    if(options[c].value==valores[i]){
-                        campo.selectedIndex = c;
-                    }
-                    c++;
-                }
-            }
-        }
-    }
-
-    /* Estas funciones de validacion se podrian mejorar pasando el texto de validacion como parametro 
-    y instanciando dicho texto via ids especificas al div de validacion... pero ñe, no por ahora*/
-    //necesita bootstrap css y js para funcionar
-    function esValido(input){
-        input.classList.add("is-valid");
-        input.classList.remove("is-invalid");
-    }
-    //necesita bootstrap css y js para funcionar
-    function esInvalido(input){
-        input.classList.add("is-invalid");
-        input.classList.remove("is-valid");
-    }
-
-    //valida el mail con patterns, no hacer salto de linea en el pattern ya que no es tratado como string (creo)
-    function validateEmail(email) {
-        var p = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return p.test(email);
-      }
-
-function incluirJQuery(){
-    var script=document.createElement('script');
-    script.src="JS/jquery-3.4.0.js";
-    document.head.appendChild(script);
-}
-function seleccionarFila(id){
-    $("#datosPanel > tr").each(
-        function(){
-            this.style = "";
-        }
-    );
-    document.getElementById(id).style.backgroundColor= "#669ee8";
-    document.getElementById("seleccionado").value=id;
-}
-//FUNCION QUE ES LLAMADA POR EL CAMPO DE BUSQUEDA PARA REALIZAR CONSULTAS A LA BASE DE DATOS Y MOSTRAR EN LA TABLA CORRESPONDIENTE
-//PARAMETROS : OBJETO (EL INPUT BUSCADOR)   ;  TABLA: TABLA CORRESPONDIENTE A LA BASE DE DATOS DONDE SE REALIZARA LA BUSQUEDA
-function buscarTablaPaneles(camposResultado,valor,tabla,campo) {
+//==============
+function buscarLista(camposResultado,valor,tabla,campo, idLista, idListaAux) {
     $.post("Parametros/buscador.php", {camposResultado: camposResultado ,dato:valor,tabla:tabla,campoBusqueda:campo}, function(resultado) {
         //$("#resultadoBusqueda").html(resultado);
         var i;
-        $("#datosPanel tr").remove();
+        //console.log(resultado);
+
+        $("#"+idLista).empty();
+
+        console.log(resultado);
         resultado=JSON.parse(resultado);
         for(i=1 ; i<resultado.length;i++){
-            cargarTabla(resultado[i],"datosPanel");
+            cargarData(resultado[i],idLista, idListaAux);
         }
      });
 }
-function buscarTablaPanelesQ(camposResultado,valor,tabla,campo,campoC,valorC) {
+function buscarListaQ(camposResultado,valor,tabla,campo,idLista, idListaAux,campoC,valorC) {
     $.post("Parametros/buscadorGenerico.php", {camposResultado: camposResultado,dato:valor,tabla:tabla,campoBusqueda:campo,campoCondicion:campoC,valorCondicion:valorC}, function(resultado) {
         //$("#resultadoBusqueda").html(resultado);
         var i;
-        $("#datosPanel tr").remove();
+        $("#"+idLista).empty();
+
+        console.log(resultado);
         resultado=JSON.parse(resultado);
         for(i=1 ; i<resultado.length;i++){
-            cargarTabla(resultado[i],"datosPanel");
+            cargarData(resultado[i],idLista, idListaAux);
         }
      });
 }
+function cargarData(datos, listaID, listaIDAux){
+    let lista = document.getElementById(listaID);
+    console.log(lista);
+    let option = document.createElement('option');
+    option.setAttribute('value',datos[1]);
+    let data = document.createTextNode(datos[1]);
+    option.appendChild(data);
+    lista.appendChild(option);
+    document.getElementById(listaIDAux).setAttribute('value', datos[0]);
+}
 
+/*
+FIN BUSQUEDA 
+*/
+/*
+AJAX
+*/
 function obtenerDatos(campos,tabla,campoC,valorC) {
     $.ajaxSetup({async:false});
      var res="";
     $.post("Parametros/obtenerDatos.php", {campos: campos,tabla:tabla,campoCondicion:campoC,valores:valorC}, function(resultado) {
         var i;
+        console.log(resultado);
         resultado=JSON.parse(resultado);
         res=resultado;
     });
@@ -140,6 +120,7 @@ function obtenerDatos(campos,tabla,campoC,valorC) {
 
 function insertarDatos(campos,tabla,valores){
     $.post("Parametros/insertarDatos.php", {campos: campos,tabla:tabla,valores:valores}, function(resultado) {
+        console.log(resultado);
         if(resultado==1){
             popup("Error","Error al guardar");
         }else{
@@ -147,6 +128,37 @@ function insertarDatos(campos,tabla,valores){
         }
     } );
 }
+function eliminar(tabla){
+   var sel=document.getElementById('seleccionado').value;
+   if((sel=="")||(sel==' ')||(sel==0)){
+       popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER ELIMINARLO");
+   }else {
+           //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
+           $.post("Parametros/eliminador.php", {id : sel , tabla : tabla}, function(msg) {
+                console.log(msg);
+                if(msg==0){
+                   document.getElementById('seleccionado').value="";
+                   location.reload();
+                //COD 1451 = CONSTRAINT ERROR
+                }else if(msg==1451){
+                   popup('Error',"OTROS REGISTROS UTILIZAN ESTOS DATOS")
+                }else{
+                   popup('Error',"ERROR EN LA ELIMINACION DEL REGISTRO");
+                }
+            });
+   }
+}
+function editar(direccion){
+    var sel=document.getElementById('seleccionado').value;
+   // alert(sel)
+    if((sel=="")||(sel==' ')||(sel==0)){
+        popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER Editarlo");
+    }else {
+        document.getElementById("formularioMultiuso").action=direccion;
+        document.getElementById("formularioMultiuso").submit();
+   }
+}
+/*FIN AJAX*/
 
 
 function pausa(milisegundos){
@@ -162,49 +174,26 @@ function cargarTabla(datos,tablaId){
     fila.addEventListener('click',function() {seleccionarFila(datos[0])} );
     document.getElementById(tablaId).appendChild(fila);
     for( i=1;i<datos.length;i++){
-        if(datos[i]!="null"|| datos[i]!=null){
+        //console.log(datos[i]);
+        if( datos[i]!=null){
             columna=columna.concat("<td>"+datos[i]+"</td>");
         }else{
             columna=columna.concat("<td>  </td>");
         }
     }
+    //console.log(columna);
     document.getElementById(datos[0]).innerHTML=columna;
 }
-function eliminar(tabla, preventReload = ""){
-   var sel=document.getElementById('seleccionado').value;
-   if((sel=="")||(sel==' ')||(sel==0)){
-       popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER ELIMINARLO");
-   }else {
-           //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
-           $.post("Parametros/eliminador.php", {id : sel , tabla : tabla}, function(msg) {
-                if(msg==0){
-                   document.getElementById('seleccionado').value="";
-                   if(preventReload == ""){
-                       location.reload();
-                   }
-                //COD 1451 = CONSTRAINT ERROR
-                }else if(msg==1451){
-                   popup('Error',"OTROS REGISTROS UTILIZAN ESTOS DATOS")
-                }else{
-                   popup('Error',"ERROR EN LA ELIMINACION DEL REGISTRO");
-                }
-            });
-   }
-}
-function editar(direccion, accion = ""){
-    var sel=document.getElementById('seleccionado').value;
-   // alert(sel)
-    if((sel=="")||(sel==' ')||(sel==0)){
-        popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER Editarlo");
-    }else {
-        if(accion != "" && document.getElementById("accion") != null){
-            document.getElementById("accion").value = accion;
-        }
-        document.getElementById("formularioMultiuso").action=direccion;
-        document.getElementById("formularioMultiuso").submit();
-   }
-}
 
+
+
+/*function editar(pagina){
+    document.getElementById("formularioMultiuso").action=pagina;
+    document.getElementById("formularioMultiuso").submit();
+}*/
+/*
+SECCION POPUP
+*/
 //FUNCION PARA LEVANTAR MENSAJES EN PANTALLA
 function popup(simbolo,mensaje){
     if(!(document.getElementById("popup"))){
@@ -289,7 +278,9 @@ function crearPopupConfirmacion(){
     document.getElementById('popupConfirmacion').appendChild(popBotonC);
 }
 //incluirJQuery();
-
+/*
+FIN SECCION POPUP
+*/
 
 /*
 SECCION VALIDACIONES
@@ -301,6 +292,33 @@ function esVacio(objeto){
     return resultado;
 }
 
+/* Estas funciones de validacion se podrian mejorar pasando el texto de validacion como parametro 
+y instanciando dicho texto via ids especificas al div de validacion... pero ñe, no por ahora*/
+//necesita bootstrap css y js para funcionar
+function esValido(input){
+    input.classList.add("is-valid");
+    input.classList.remove("is-invalid");
+}
+//necesita bootstrap css y js para funcionar
+function esInvalido(input){
+    input.classList.add("is-invalid");
+    input.classList.remove("is-valid");
+}
+
+//valida el mail con patterns, no hacer salto de linea en el pattern ya que no es tratado como string (creo)
+function validateEmail(email) {
+    var p = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return p.test(email);
+  }
+
+  //analizar estas patterns luego
+function nfor(valor){
+      return valor.replace(/\D/g, "")
+                  .replace(/([0-9])([0-9]{2})$/, '$1,$2')
+                  .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+}
+
+//=====================
 function crearAcceso(dir,titulo){
 
   var dire=document.createElement("a");
@@ -356,35 +374,35 @@ function crearMenu(dir,imagen,titulo,permiso){
     cont++;
 }
 
-function buscarLista(camposResultado,valor,tabla,campo, idLista, idListaAux) {
-    $.post("Parametros/buscador.php", {camposResultado: camposResultado ,dato:valor,tabla:tabla,campoBusqueda:campo}, function(resultado) {
-        //$("#resultadoBusqueda").html(resultado);
-        var i;
-
-        $("#"+idLista).empty();
-
-        resultado=JSON.parse(resultado);
-        for(i=1 ; i<resultado.length;i++){
-            cargarData(resultado[i],idLista, idListaAux);
+function cargarCampos(camposform,valores){
+    var campo;
+    //camposform='"'+camposform+'"';
+//    alert(camposform);
+//    alert(valores)
+    camposform=camposform.split(",");
+    valores=valores.split(",");
+    for(var i=0;i<camposform.length;i++){
+        campo=document.getElementById(camposform[i]);
+        console.log(camposform[i]+" ->"+valores[i]);
+        //campo=document.getElementById("frame-trabajo").contentWindow.document.getElementById(camposform[i]);
+        if((campo.tagName=="INPUT")||(campo.tagName=="TEXTAREA")){
+            campo.value=valores[i];
         }
-     });
+        //para el caso de los SELECT, el indice de los options comienza en 0
+        //este codigo solo es util para algunos casos... (ahora utilizado por el modulo de tickets)
+        if(campo.tagName=="SELECT"){
+            var options = campo.options;
+            var size = options.length;
+            var c = 0;
+            while(c<size){
+                if(options[c].value==valores[i]){
+                    campo.selectedIndex = c;
+                }
+                c++;
+            }
+        }
+    }
 }
 
-function cargarData(datos, listaID, listaIDAux){
-    let lista = document.getElementById(listaID);
-    let option = document.createElement('option');
-    option.setAttribute('value',datos[1]);
-    let data = document.createTextNode(datos[1]);
-    option.appendChild(data);
-    lista.appendChild(option);
-    document.getElementById(listaIDAux).setAttribute('value', datos[0]);
-}
 
-//analizar estas patterns luego
-function nfor(valor){
-    return valor.replace(/\D/g, "")
-                .replace(/([0-9])([0-9]{2})$/, '$1,$2')
-                .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
-    
-}
 
