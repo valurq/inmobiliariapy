@@ -129,7 +129,7 @@
         $idForm= $_POST['Idformulario'];
         $campos = array( 'usuario','perfil_id','nombre','apellido','cargo','obs','mail','creador' );
         $valores="'".$usuario."','".$perfil."','".$nombre."','".$apellido."','".$cargo."','".$obs."','".$mail."','".$creador."'";
-        if(!(isset($pass))){
+        if((isset($pass))){
             array_push($campos,'pass');
             $valores.=",'".md5($pass)."'";
         }

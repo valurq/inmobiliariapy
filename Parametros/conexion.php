@@ -256,6 +256,27 @@ class Consultas extends Conexion{
         echo "</tr>";
         echo"</thead>";
     }
+
+    private function crearContenidoTabla($resultadoConsulta){
+        /*
+            METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
+            $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+        */
+        if(gettype($resultadoConsulta)!="boolean"){
+            echo "<tbody id='datosPanel'>";
+            while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+                echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0]);' id='".$datos[0]."'>";
+                array_shift($datos);
+                foreach( $datos as $valor ){
+                    echo "<td>".$valor." </td>";
+                }
+                echo "</tr>";
+            }
+            echo"</tbody> </table>";
+        }else{
+            echo "Sin resultados";
+        }
+    }
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
        // MODIFICA REGISTRO

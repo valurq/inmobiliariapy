@@ -145,7 +145,7 @@
         </tr>
         <tr>
               <td><label for="">Duración</label></td>
-              <td><input type="number" name="duracion" id="duracion" step="any" placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
+              <td><input type="number" name="duracion" id="duracion" step="any" readonly placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Porcentaje a pagar sobre operaciones</label></td>

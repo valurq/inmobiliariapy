@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti');
+            $campos=array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti');
+            $camposIdForm=array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam');
         }
     ?>
 
@@ -87,6 +87,42 @@
         <td><label for="">Email</label></td>
         <td><input type="email" name="mail_ti" id="mail_ti" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
       </tr>
+      <tr>
+        <td><label for="">Email Host</label></td>
+        <td><input type="text" name="mail_host" id="mail_host" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email Puerto</label></td>
+        <td><input type="text" name="mail_puerto" id="mail_puerto" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email Usuario</label></td>
+        <td><input type="text" name="mail_usuario" id="mail_usuario" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email Password</label></td>
+        <td><input type="password" name="mail_pass" id="mail_pass" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email Desde </label></td>
+        <td><input type="text" name="mail_desde" id="mail_desde" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email From</label></td>
+        <td><input type="text" name="mail_from" id="mail_from" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td><label for="">Email Autentica</label></td>
+        <td><input type="text" name="mail_autentica" id="mail_autentica" value="" placeholder="Ingrese el email" placeholder="Ingrese el email de TI" class="campos-ingreso"><br></td>
+      </tr>
+      <tr>
+        <td> <label>Extensiones permitidas</label> </td>
+        <td> <input type="text" name="adjunto_ext" id="adujunto_ext" value="" placeholder="Valores separados por coma"> </td>
+      </tr>
+      <tr>
+        <td> <label>Tamaño permitidas (MB)</label> </td>
+        <td> <input type="text" name="adjunto_tam" id="adujunto_tam" value=""> </td>
+      </tr>
     </tbody>
   </table>
 <!-- moneda,tipo,simbolo -->
@@ -127,10 +163,19 @@ if (isset($_POST['por_feeregional'])) {
         $alq_comercial =trim($_POST['alq_comercial']);
         $alq_temporal =trim($_POST['alq_temporal']);
         $mail_ti =trim($_POST['mail_ti']);
+        $mail_host =trim($_POST['mail_host']);
+        $mail_puerto =trim($_POST['mail_puerto']);
+        $mail_usuario =trim($_POST['mail_usuario']);
+        $mail_pass =trim($_POST['mail_pass']);
+        $mail_desde =trim($_POST['mail_desde']);
+        $mail_from =trim($_POST['mail_from']);
+        $mail_autentica =trim($_POST['mail_autentica']);
+        $adjunto_ext =trim($_POST['adjunto_ext']);
+        $adjunto_tam =trim($_POST['adjunto_tam'])*1000000;
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','creador' );
-        $valores="'".$por_feeregional."','".$candias_vto."','".$fee_adm."','".$fee_marketing."','".$afiliacion."','".$alq_residencial."','".$alq_comercial."','".$alq_temporal."','".$mail_ti."','".$creador."'";
+        $campos = array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam','creador' );
+        $valores="'".$por_feeregional."','".$candias_vto."','".$fee_adm."','".$fee_marketing."','".$afiliacion."','".$alq_residencial."','".$alq_comercial."','".$alq_temporal."','".$mail_ti."','".$mail_host."','".$mail_puerto."','".$mail_usuario."','".$mail_pass."','".$mail_desde."','".$mail_from."','".$mail_autentica."','".$adjunto_ext."','".$adjunto_ext."','".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */

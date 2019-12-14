@@ -123,10 +123,12 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $button1.click(function() {
                 if ( $(this).attr('class') != "down" ){
                     $(this).toggleClass("down");
-                    buscarTablaPanelesQ(campos,"","contratos","(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = 'ACTIVO')", "estado", "vigente");
+                    buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "vigente");
+                    //buscarTablaPanelesQ(campos, this.value ,"contratos", "(SELECT dsc_oficina FROM oficina WHERE id = oficina_id)", "(SELECT estado FROM oficina WHERE id = oficina_id)", "ACTIVO");
+
                     if ($oficina == "") {
-                        $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'"vigente"'+")");
                         document.getElementById('buscador').value="";
+                        $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'"vigente"'+")");
                     }
                 }
 
@@ -142,11 +144,12 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $button2.click(function() {
                 if ( $(this).attr('class') != "down" ){
                     $(this).toggleClass("down");
-                    buscarTablaPanelesQ(campos,"","contratos","(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = 'ACTIVO')", "estado", "inactivo");
+                   buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "inactivo");
+                   //buscarTablaPanelesQ(campos,$oficina,"contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "inactivo");
 
                     if ($oficina == "") {
-                        $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'"inactivo"'+")");
                         document.getElementById('buscador').value="";
+                        $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'"inactivo"'+")");
                     }
                 }
 
@@ -161,7 +164,9 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $button3.click(function() {
                 if ( $(this).attr('class') != "down" ){
                     $(this).toggleClass("down");
-                    buscarTablaPanelesQ(campos,"","contratos","(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = 'ACTIVO')", "estado", "");
+                  //  buscarTablaPanelesQ(campos,"","contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "");
+                  buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "");
+                  //buscarTablaPanelesQ(campos,$oficina,"contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "");
                     if ($oficina == "") {
                         $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'""'+")");
                         document.getElementById('buscador').value="";

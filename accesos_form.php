@@ -50,7 +50,7 @@
                     echo "<tr class='datos-tabla' id='".$datos[0]."'>";
                     echo "<td>".$datos[1]."</td>";
                     echo "<td>".$datos[2]."</td>";
-                    echo "<td>"."<input type='checkbox' ".(($datos[3]=="NO")?"":"checked='on'")."</td>";
+                    echo "<td>"."<input type='checkbox' ".((($datos[3]=="NO")||(is_null($datos[3])))?"":"checked='on'")."</td>";
 
                     echo "</tr>";
                 }
@@ -61,7 +61,7 @@
     </div>
 
   <!-- BOTONES -->
-  <input name="guardar" type="button" value="Guardar" class="boton-formulario guardar" onclick='guardarDatos();this.disabled=true'>
+  <input name="guardar"  id="guardar" type="button" value="Guardar" class="boton-formulario guardar" onclick='guardarDatos();this.disabled=true'>
   <input name="volver" type="button" value="Volver" class="boton-formulario" onclick = "location='perfil_panel.php';" >
 </form>
 
@@ -75,6 +75,7 @@
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
     function guardarDatos(){
+		document.getElementById('guardar').style.display='none' ;
         var datos=document.getElementById("datosPanel");
         var id,perfil,habilita,pack;
         perfil=document.getElementById('Idformulario').value;
@@ -98,7 +99,7 @@
 
             insertar('acceso',new Array('menu_opcion_id','perfil_id','habilita'),fila);
         }},400);
-        setTimeout(function (){window.location='perfil_panel.php'},800);
+        // setTimeout(function (){window.location='perfil_panel.php'},800);
     }
 
     function insertar(tabla,campos,valores){

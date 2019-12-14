@@ -66,7 +66,7 @@
     </td>
       </tr>
       <tr>
-        <td><label for="">Comsion sobre operaciones</label></td>
+        <td><label for="">Comision sobre operaciones</label></td>
         <td><input type="number" name="porcentaje_opera" id="porcentaje_opera" step="any" class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -116,8 +116,9 @@
         $idForm=$_POST['Idformulario'];
         //$creador    ="UsuarioLogin";
         $campos = array('nombrefull','oficina_id','porcentaje_opera','fe_ingreso','obs');//,'creador' );
+        $camposOfi = array('nombrefull');
         $valores="'".$nombrefull."','".$oficina."','".$porcentaje_opera."','".$fe_ingreso."','".$obs."'";
-        // ,'".$creador."'";
+        $valoresOfi="'".$nombrefull."'";
         //echo "$valores";
         //print_r($campos);
 
@@ -126,8 +127,11 @@
         */
         if(isset($idForm)&&($idForm!=0)){
             $inserta_Datos->modificarDato('manager',$campos,$valores,'id',$idForm);
+            $inserta_Datos->modificarDato('oficina',$camposOfi,$valoresOfi,'id',$oficina);
+
         }else{
             $inserta_Datos->insertarDato('manager',$campos,$valores);
+            $inserta_Datos->modificarDato('oficina',$camposOfi,$valoresOfi,'id',$oficina);
         }
     }
 }

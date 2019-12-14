@@ -19,7 +19,7 @@
 
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos = array( 'nombrefull', 'direccion', 'nro_doc', 'dias_prueba', 'fec_nacim', 'barrio', 'telefono1', 'telefono2','fec_ingreso','obs','(SELECT dsc_ciudad FROM ciudad WHERE id=ciudad_id)','sexo','est_civil','estado','tipo_doc');
+            $campos = array( 'nombrefull', 'direccion', 'nro_doc', 'dias_prueba', 'fec_nacim', 'barrio', 'telefono1', 'telefono2','fec_ingreso','obs','(SELECT dsc_ciudad FROM ciudad WHERE id=ciudad_id)','sexo','est_civil','estado','tipo_doc','aprobacion');
             //CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
                 $resultado=$inserta_Datos->consultarDatos($campos,'personal',"","id",$id );
                 $resultado=$resultado->fetch_array(MYSQLI_NUM);
@@ -99,14 +99,17 @@
       </tr>
       <tr>
         <td> <label for="">Estado Civil</label> </td>
-        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[12],'est_civil',array('Soltero','Casado','Divorciado','Viudo'))?></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[12],'est_civil',array('Soltero','Casado','Divorciado','Viudo','Otros'))?></td>
 
         <td> <label for="">Estado</label> </td>
-        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[13],'estado',array('Escuela','Remax'))?></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[14],'estado',array('Universidad','Agente RE/MAX Paraguay','Agente RE/MAX Internacional'))?></td>
       </tr>
       <tr>
         <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
+
+        <td><label for="">Aprobacion</label></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[15],'aprobacion',array('Aprobado','Pendiente','Rechazado'))?></td>
       </tr>
     </tbody>
   </table>
@@ -154,15 +157,32 @@ if (isset($_POST['nombrefull'])) {
         $est_civil =trim($_POST['est_civil']);
         $estado =trim($_POST['estado']);
         $obs =trim($_POST['obs']);
+        $aprobacion =trim($_POST['aprobacion']);
         $idForm=$_POST['Idformulario'];
         $creador ="UsuarioLogin";
-        $campos = array( 'nombrefull','tipo_doc', 'ciudad_id', 'direccion', 'nro_doc', 'dias_prueba', 'fec_nacim', 'barrio', 'telefono1', 'telefono2','fec_ingreso','sexo','est_civil','estado','obs','creador');
-        $valores="'".$nombrefull."', '".$tipo_doc."', '".$ciudad."', '".$direccion."', '".$nro_doc."', '".$dias_prueba."', '".$fecha_nacim."', '".$barrio."', '".$tel1."','".$tel2."','".$fec_ingreso."','".$sexo."','".$est_civil."','".$estado."','".$obs."','".$creador."'";
-        echo "$valores";
-        print_r($campos);
+        $moneda_id= $inserta_Datos->consultarDatos(array("id"),"moneda","","tipo","Local");
+        $moneda_id=$moneda_id->fetch_array(MYSQLI_NUM);
+        $moneda_id=$moneda_id[0];
+        $usuarioP= $inserta_Datos->consultarDatos(array("id"),"usuario","","usuario","*PROVISORIO*");
+        $usuarioP=$usuarioP->fetch_array(MYSQLI_NUM);
+        $usuarioP=$usuarioP[0];
+        $oficinaProvisorio=$inserta_Datos->consultarDatos(array("id"),"oficina","","dsc_oficina","*PROVISORIO*");
+        $oficinaProvisorio=$oficinaProvisorio->fetch_array(MYSQLI_NUM);
+        $oficinaProvisorio=$oficinaProvisorio[0];
+        $campos = array( 'nombrefull','tipo_doc', 'ciudad_id', 'direccion', 'nro_doc', 'dias_prueba', 'fec_nacim', 'barrio', 'telefono1', 'telefono2','fec_ingreso','sexo','est_civil','estado','obs','aprobacion','creador');
+        $valores="'".$nombrefull."', '".$tipo_doc."', '".$ciudad."', '".$direccion."', '".$nro_doc."', '".$dias_prueba."', '".$fecha_nacim."', '".$barrio."','".$tel1."','".$tel2."','".$fec_ingreso."','".$sexo."','".$est_civil."','".$estado."','".$obs."','".$aprobacion."','".$creador."'";
+        $camposV = array( 'dsc_vendedor','nro_doc', 'usuario_id', 'cod_denver', 'oficina_id', 'cod_iconnect', 'moneda_id', 'mail', 'telefono1', 'telefono2','fe_ingreso_py','categoria','fe_ingreso_int','tipo','fe_cumple','fee_mensual','fe_finprueba','obs','fee_afiliacion','curso_acm','curso_fireUP','curso_succeed','creador');
+        $valoresV="'".$nombrefull."','".$nro_doc."','".$usuarioP."','','".$oficinaProvisorio."','','".$moneda_id."','','".$tel1."','".$tel2."','".$fec_ingreso."','','','','".$fecha_nacim."','','','','','','','','".$creador."'";
+
+        //echo "$valores";
+        //print_r($campos);
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
+        if($aprobacion =='Aprobado'){
+          echo "ingresar la condicion";
+          $inserta_Datos->insertarDato('vendedor',$camposV,$valoresV);
+        }
         if(isset($idForm)&&($idForm!=0)){
             $inserta_Datos->modificarDato('personal',$campos,$valores,'id',$idForm);
         }else{
@@ -189,6 +209,14 @@ if (isset($_POST['nombrefull'])) {
       return false ;
     }
   }
+  function inicializar(){
+    var perfil=<?php $tPerfil=$inserta_Datos->consultarDatos(array("tipo"),"perfil",'','id',$_SESSION['perfil']);$tPerfil=$tPerfil->fetch_array(MYSQLI_NUM);echo "'".$tPerfil[0]."'";?>;
+    console.log(perfil);
+    if(perfil!='TI'){
+      $("#aprobacion").attr("disabled","");
+    }
+  }
+  $(document).ready(function (){inicializar()});
   </script>
 
 </html>

@@ -5,10 +5,12 @@ session_start();
   include("Parametros/verificarConexion.php");
   $accesoFunciones=new Consultas() ;
   $message = '';
+  echo "Test";
   if (isset($_POST['uploadBtn']) && $_POST['uploadBtn'] == 'Confirmar' && $_POST['Idformulario'] == '0')
   {
     if (isset($_FILES['uploadedFile']) && $_FILES['uploadedFile']['error'] === UPLOAD_ERR_OK)
     {
+
       /*
             PROCESO DE GRABACION PARA DOCUMENTO NUEVO
       */
@@ -29,19 +31,20 @@ session_start();
             $newFileName = "val_".$secuencia.".".$fileExtension;
 
             $referencia     = trim( $_POST['referencia'] ) ;
-            $refobjecto  = trim( $_POST['refobjeto'] ) ;
+            $refobjeto  = trim( $_POST['refobjeto'] ) ;
+            $refBuscador = trim( $_POST['refBuscador'] ) ;
             $idobjeto = trim( $_POST['idobjeto'] ) ;
             $categorias = trim( $_POST['categorias'] ) ;
             $fecha_vto  = trim( $_POST['fecha_vto'] ) ;
             $estado  = trim( $_POST['estado'] ) ;
             $carpeta ='/almacen/' ;
             $nombre_archivo = $newFileName;
+            $buscador = $referencia . $refobjeto . $categorias . $refBuscador;
             $creador    =$_SESSION['usuario'] ;
 
-            $campos = array('referencia','refobjecto','idobjeto','categorias','fecha_vto','estado',
-            'carpeta','nombre_archivo','creador') ;
+            $campos = array('referencia','refobjeto','idobjeto','categorias','fecha_vto','estado','carpeta','nombre_archivo','buscador','creador');
 
-            $valores ="'".$referencia."','".$refobjecto."','".$idobjeto."','".$categorias."','".$fecha_vto."','".$estado."','".$carpeta."','".$nombre_archivo."','".$creador."'" ;
+            $valores ="'".$referencia."','".$refobjeto."','".$idobjeto."','".$categorias."','".$fecha_vto."','".$estado."','".$carpeta."','".$nombre_archivo."', '".$buscador."', '".$creador."'" ;
 
             //{ //Si la extension del archivo esta dentro de la lista permitida
               // Directorio destino del archivo.
@@ -50,16 +53,17 @@ session_start();
               // aqui carga en al carpeta destino
               if(move_uploaded_file($fileTmpPath, $dest_path))
               {
-                echo "TESTTT";
+                print_r($campos);
+                echo "valores";
                 $accesoFunciones->insertarDato('adjuntos',$campos,$valores);
+
+                print_r($valores);
 
                 $message ='Archivo exitosamente cargado.';
               }else{$message = 'Ocurrio un error al mover al directorio destino. Por favor verique si el destino esta habilitado para el servidor web.';}
-
-          $_SESSION['message'] = $message;
         }
       }
-          //header("Location: adjunto_form.php");
+          header("Location: adjunto_form.php");
   /*else{
 
     /*
