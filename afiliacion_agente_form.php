@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('vendedor_id','moneda_id','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto','creador' );
+            $camposIdForm=array('vendedor_id','moneda_id','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto' );
         }
     ?>
 

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <script src="http://momentjs.com/downloads/moment.min.js"></script>
     <?php
         /*
         SECCION PARA OBTENER VALORES NECESARIOS PARA LA MODIFICACION DE REGISTROS
@@ -26,11 +27,17 @@
             $resultado=$inserta_Datos->consultarDatos($campos,'contratos',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
             $oficina=$resultado[1];
+
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
             $camposIdForm=array('moneda', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'duracion');
         }
+        $fecha_inicial=$inserta_Datos->consultarDatos(array('cobro_fee_desde'),'oficina',"","id",$oficina );
+        $fecha_inicial=$fecha_inicial->fetch_array(MYSQLI_NUM);
+        
+        $nombre_oficina=$inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$oficina );
+        $nombre_oficina=$nombre_oficina->fetch_array(MYSQLI_NUM);
     ?>
 
 
@@ -97,7 +104,7 @@
     </style>
 </head>
 <body style="background-color:white">
-  <h2>CONTRATO</h2>
+  <h2>CONTRATO <?php echo "DE LA OFICINA $nombre_oficina[0]"; ?></h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 
 <div id="section1">
@@ -118,23 +125,23 @@
         </tr>
         <tr>
             <td><label for="">Vigencia hasta</label></td>
-            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" onchange ="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
+            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" min="<?php echo $fecha_inicial[0] ?>" onchange ="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Duración (en años)</label></td>
-            <td><input type="number" name="duracion" id="duracion" readonly step="any" placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
+            <td><input type="number" name="duracion" id="duracion" min="0" readonly step="any" readonly placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Porcentaje a pagar sobre operaciones</label></td>
-            <td><input type="number" name="fee_operaciones" id="fee_operaciones" step="any" placeholder="Ingrese el porcentaje" class="campos-ingreso"></td>
+            <td><input type="number" name="fee_operaciones" id="fee_operaciones" min="0" step="any" placeholder="Ingrese el porcentaje" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Mora por día</label></td>
-            <td><input type="number" name="mora_dia" id="mora_dia" step="any" placeholder="Ingrese el monto de la mora" class="campos-ingreso"></td>
+            <td><input type="number" name="mora_dia" id="mora_dia" step="any" min="0" placeholder="Ingrese el monto de la mora" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Interés</label></td>
-            <td><input type="number" name="interes" id="interes" step="any" placeholder="Ingrese el porcentaje de interés" class="campos-ingreso"></td>
+            <td><input type="number" name="interes" id="interes" step="any" min="0" placeholder="Ingrese el porcentaje de interés" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Estado</label></td>
@@ -151,7 +158,7 @@
         </tr>
       </tbody>
     </table>
-  <!-- moneda,tipo,simbolo -->
+    <!-- moneda,tipo,simbolo -->
     <!-- BOTONES -->
     <input name="guardar" type="button" value="Guardar" class="boton-formulario guardar" onclick="verificar();">
     <input name="volver" type="button" value="Volver" onclick = "window.close();"  class="boton-formulario">
@@ -165,15 +172,17 @@
       <table>
         <tbody id="tableInput">
           <tr>
-            <td><span><b>AÑO</b></span></td>
+            <td><span><b>DESDE</b></span></td>
+            <td><span><b>HASTA</b></span></td>
             <td><span><b>FEE ADM.</b></span></td>
             <td><span><b>FEE MK.</b></span></td>
             <td><span><b></b></span></td>
           </tr>
           <tr>
-            <td><input type="number" name="ano" id="ano" readonly style="width: 80px;" /></td>
-            <td><input type="number" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" /></td>
-            <td><input type="number" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" /></td>
+            <td><input type="date" name="desde" id="desde"  style="width: 130px;" /></td>
+            <td><input type="date" name="hasta" id="hasta"  style="width: 130px;" /></td>
+            <td><input type="number" name="fee_adm" id="fee_adm" min="0" placeholder="Ingrese el fee de administracioón" /></td>
+            <td><input type="number" name="fee_mk" id="fee_mk" min="0" placeholder="Ingrese el fee de marketing" /></td>
             <td><img src="Imagenes/addIcon.jpg" width='25px' height='25px' alt="Añadir" title="Añadir" onclick="contarVeces();"/></td>
           </tr>
         </tbody>
@@ -194,15 +203,26 @@
     let table = document.getElementById('tableAux');
     $tableAux = $('#tableAux');
     let tabla = [];
+    let fecha_inicial = moment("<?php echo $fecha_inicial[0] ?>");
+    let fecha_actual = moment().format('YYYY-MM-DD');
 
     function agregarAnho(fecha) {
-      document.getElementById('ano').value = anho;
+      let fecha_vigencia = moment(document.getElementById('vigencia_hasta').value);
+      document.getElementById('fee_adm').value = "";
+      document.getElementById('fee_mk').value = "";
+      document.getElementById('desde').value = "";
+      document.getElementById('hasta').value = "";
+
+      document.getElementById('desde').setAttribute('min', fecha_inicial.format('YYYY-MM-DD'));
+      document.getElementById('desde').value = fecha_inicial.format('YYYY-MM-DD');
+      document.getElementById('hasta').setAttribute('min', fecha_inicial.format('YYYY-MM-DD'));
       let ano = [];
       for (let i = 0; i < 4; i++) {
         ano += fecha[i];
       }
       anhoAux = ano;
-      vigencia = document.getElementById('duracion').value = ((anhoAux - anho) < 0) ? 0 : (anhoAux - anho);
+      vigencia = ((anhoAux - anho) < 0) ? 0 : (anhoAux - anho);
+      document.getElementById('duracion').value = fecha_vigencia.diff(fecha_actual, 'years');
       contarVeces.numero = 0;
 
       $('#tableAux tr').remove();
@@ -210,18 +230,41 @@
     }
 
     function contarVeces(){
+      let fecha_desde = moment(document.getElementById('desde').value);
+      let fecha_hasta = moment(document.getElementById('hasta').value);
+
       if(contarVeces.numero <= vigencia){
-        ++contarVeces.numero;
-        addRow();
+        if(fecha_hasta.diff(fecha_desde, 'days') >= 0){
+          if ( (document.getElementById('fee_adm').value == "") || (document.getElementById('fee_mk').value == "") ) {
+            popup('Advertencia','Es necesario ingresar al menos un valor!!') ;
+          } else {
+            ++contarVeces.numero;
+            addRow();
+          }
+          
+        }else {
+          popup('Advertencia','La fecha desde no puede ser mayor a la fecha hasta!!') ;
+        }
+        
       }
     }
 
     function addRow(){
+      let fecha = moment(document.getElementById('hasta').value);
       let row = document.createElement('tr');
       let data = document.createElement('td');
-      let ano = document.getElementById('ano').value;
-      let text = document.createTextNode(ano);
+      let desde = document.getElementById('desde').value;
+      let text = document.createTextNode(desde);
       data.appendChild(text);
+      data.style.width = "25%";
+      row.appendChild(data);
+      table.appendChild(row);
+
+      data = document.createElement('td');
+      let hasta = document.getElementById('hasta').value;
+      text = document.createTextNode(hasta);
+      data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
@@ -229,6 +272,7 @@
       let fee_adm = document.getElementById('fee_adm').value;
       text = document.createTextNode(fee_adm);
       data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
@@ -236,14 +280,19 @@
       let fee_mk = document.getElementById('fee_mk').value;
       text = document.createTextNode(fee_mk);
       data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
-      tabla.push(new Array(document.getElementById('ano').value, document.getElementById('fee_adm').value, document.getElementById('fee_mk').value));
+      tabla.push(new Array(document.getElementById('desde').value, document.getElementById('hasta').value, document.getElementById('fee_adm').value, document.getElementById('fee_mk').value));
 
       document.getElementById('fee_adm').value = "";
       document.getElementById('fee_mk').value = "";
-      document.getElementById('ano').value = anho + contarVeces.numero;
+      document.getElementById('desde').value = fecha.add(1, 'days').format('YYYY-MM-DD');
+      document.getElementById('desde').setAttribute('min', fecha.format('YYYY-MM-DD'));
+      document.getElementById('hasta').value = "";
+      document.getElementById('hasta').setAttribute('min', fecha.add(1, 'days').format('YYYY-MM-DD'));
+      //document.getElementById('ano').value = anho + contarVeces.numero;
     }
 </script>
 
@@ -271,10 +320,16 @@
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
+      let fecha1 = moment("<?php echo $fecha_inicial[0] ?>");
+      let fecha2 = moment(document.getElementById('vigencia_hasta').value);
 	       if(document.getElementById('vigencia_hasta').value ==""){
                popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
                return false ;
-           }else if($("#fee_operaciones").value ==""){
+           }else if ( fecha1.diff(fecha2, 'days') > 0 ){
+              popup('Advertencia','La fecha de la vigencia es incorrecta!!') ;
+               return false ;
+           }
+           else if($("#fee_operaciones").value ==""){
                popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
                return false ;
            }else{
@@ -301,7 +356,7 @@
   }
 
    function detalleCarga(){
-        var camposDetalle=['anho','fee_administrativo', 'fondo_marketing','contratos_id'];
+        var camposDetalle=['desde','hasta','fee_administrativo', 'fondo_marketing','contratos_id'];
         var id=$('#Idformulario').val();
         //alert(id);
 

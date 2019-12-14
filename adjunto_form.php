@@ -1,5 +1,3 @@
-<?php
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,25 +13,58 @@
       $id=0;
       $resultado="";
 
+
+
       /*
           VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
       */
       if(isset($_POST['seleccionado'])){
           $id=$_POST['seleccionado'];
-
-          $campos= array('referencia', 'fecha_vto', 'categorias', 'estado') ;
+          $campos= array('referencia','idobjeto','categorias','fecha_vto','estado','refobjeto') ;
+          $aux=array(" ");
           /*
               CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
           */
           $resultado=$inserta_Datos->consultarDatos($campos,'adjuntos',"","id",$id );
           $resultado=$resultado->fetch_array(MYSQLI_NUM);
 
+          if ($resultado[5] == "personal") {
+               $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'personal',"","id",$resultado[1] );
+               $aux=$aux->fetch_array(MYSQLI_NUM);
+          }else if($resultado[5] == "vendedor"){
+               $aux = $inserta_Datos->consultarDatos(array('dsc_vendedor'),'vendedor',"","id",$resultado[1] );     
+               $aux=$aux->fetch_array(MYSQLI_NUM);
+          }else if ($resultado[5] == "oficina") {
+              $aux = $inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$resultado[1] );     
+              $aux=$aux->fetch_array(MYSQLI_NUM);  
+          }else if ($resultado[5] == "manager") {
+              $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'manager',"","id",$resultado[1] );     
+              $aux=$aux->fetch_array(MYSQLI_NUM);
+          }
           /*
               CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
           */
-          $camposIdForm= array('titulo','fecha','numero','referencia','vto','idcategoria',
-          'etiqueta','obs','dias_antes') ;
+          $robj=array_pop($resultado);
+          array_push($resultado,$aux[0]);
+
+          $archivo = $inserta_Datos->consultarDatos(array('nombre_archivo'),'adjuntos',"","id",$id );     
+          $archivo=$archivo->fetch_array(MYSQLI_NUM);
+
+          $carpeta = $inserta_Datos->consultarDatos(array('carpeta'),'adjuntos',"","id",$id );
+          $carpeta=$carpeta->fetch_array(MYSQLI_NUM);
+
+          $nombre_archivo = "." . $carpeta[0] . $archivo[0];
+
+
+          $camposIdForm= array('referencia','idobjeto','categorias','fecha_vto','estado','refBuscador') ;
       }
+
+      $extension = $inserta_Datos->consultarDatos(array('adjunto_ext'),'parametros',"","id", 1);
+      $extension=$extension->fetch_array(MYSQLI_NUM);
+
+      $tamanho = $inserta_Datos->consultarDatos(array('adjunto_tam'),'parametros',"","id", 1);
+      $tamanho=$tamanho->fetch_array(MYSQLI_NUM);
+
   ?>
 
   <title>VALURQ SRL</title>
@@ -60,28 +91,28 @@
     <br>
     <div id="upload" style="visibility:visible">
       <!--EVENTO QUE AYUDA A ADJUNTAR ARCHIVO AL SISTEMA, UNO POR UNO -->
-      <input type="file" name="uploadedFile" />
+      <?php 
+        if(isset($_POST['seleccionado'])){
+
+          echo "<iframe src='".$nombre_archivo."' height='400px' width='80%'>
+
+          </iframe>";
+        }else{
+          echo "<input type='file' name='uploadedFile' id='uploadedFile' />";
+        }
+       ?>
+
     </div>
 
-    <div id="vinculo" style="visibility:hidden;position: absolute;left:200px;top:40px;font-family:arial">
-      <!--LINK DE ACCESO A VISUALIZAR EL ARCHIVO YA ADJUNTO O CARGADO AL SISTEMA. -->
-      <a id="vinculo_doc" href="#" target="_blank">Ver adjunto</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      Archivo:<input id="nombredoc" name="nombredoc" readonly type="text" style="font-family:arial;font-size:12px;font-weight:bold;border:none">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID :<?php echo $id;?>
-    </div>
-
-<div id="nota" style="visibility:hidden;position: absolute;left:220px;top:75px">
-  <font color="red" style="font-family:arial; font-size:11px"><B>Solo datos del documento son editables</B></font>
-</div>
 <!--
         DATOS BASICOS DEL DOCUMENTO INGRESADO
 -->
     <br>
     <font color="#000000" class="ws12"><B>Datos del documento</B></font>
-    <table width="70%" border="0" cellpadding="0" cellspacing="0" style="font-family:arial;font-Size=20px">
+    <table width="65%" border="0" cellpadding="0" cellspacing="0" style="font-family:arial;font-Size=20px">
         <tr>
               <td width="20%"> Referencia *:</td>
-              <td><input type="text" id="referencia" name="referencia" size="100%" /></td>
+              <td><input type="text" id="referencia" name="referencia" size="100%" placeholder="Ingrese la referencia" /></td>
         </tr>
         <tr>
               <td width="20%"> Relaciones *:</td>
@@ -94,9 +125,9 @@
               </td>
         </tr>
         <tr id="rowBuscador" style="visibility: hidden;">
-          <td width="20%"> Relaciones: </td>
+          <td width="20%"> Relaciones *: </td>
           <td>
-            <input list="id_refBuscador" id="refBuscador" name="refBuscador" autocomplete="off"  >
+            <input list="id_refBuscador" id="refBuscador" name="refBuscador" autocomplete="off" placeholder="Ingrese la relación" >
             <datalist id="id_refBuscador">
               <option value=""></option>
             </datalist>
@@ -106,7 +137,7 @@
         </tr>
         <tr>
               <td width="20%">Categoria : </td>
-              <td width="60%"><input type="text" name="categorias" id="categorias" style="width:160px;z-index:2" /></td>
+              <td width="60%"><input type="text" name="categorias" id="categorias" style="width:160px;z-index:2" placeholder="Introduzca la categoria" /></td>
         </tr>
         <tr>
               <td width="20%">Fecha Vencimiento: </td>
@@ -115,16 +146,19 @@
         <tr>
           <td width="20%">Estado: </td>
           <td>
-            <select name="estado" id="estado">
-              <option value="vigente">vigente</option>
-              <option value="inactivo">inactivo</option>
-            </select>
-          </td>
+              <?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[4],'estado',array('inactivo','vigente'))?>
+            </td>
         </tr>
         
         <tr>
-              <td width="20%" align="right"><input type="submit" name="uploadBtn"  class="botones" value="Confirmar" /> </td>
-              <td align="right"><input name="volver" type="button"  class="botones" value="Volver" onclick = "location='doc_panel.php';" ></td>
+            <?php
+              if(!isset($_POST['seleccionado'])){
+                  echo "<td width='20%' align='right'><input type='submit' name='uploadBtn'  class='botones' value='Confirmar' /> </td>";
+              }else{
+                  echo "<td width='20%' align='right'> </td>";
+              }
+            ?>
+              <td align="right"><input name="volver" type="button"  class="botones" value="Volver" onclick = "location='adjunto_panel.php';" ></td>
         </tr>
     </table>
 
@@ -132,55 +166,13 @@
 
 </body>
 
-
-<?php
-/*
-    LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
-*/
-    //if(($id!=0 )){
-        /*
-            CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
-        */
-//         $valores=implode(",",$resultado);
-//         $camposIdForm=implode(",",$camposIdForm);
-
-//         //LLAMADA A LA FUNCION JS
-//         echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
-
-// // carga adicionalmente los demas datos que solo se tiene el ID
-//         $resultado_cate=$inserta_Datos->consultarDatos(array('categoria'),'categoria',"","id",$resultado['5'] );
-//         $resultado_cate=$resultado_cate->fetch_array(MYSQLI_NUM);
-//         echo '<script>cargarCampos("'."categoria".'","'.$resultado_cate[0].'")</script>';
-
-// //      Gaveta descripcion y ID
-//         $resultado_gaveta=$inserta_Datos->consultarDatos(array('etiqueta','ubi_mueble_id','id'),'ubi_gabetas',"","id",$resultado['6'] );
-//         $resu_gaveta=$resultado_gaveta->fetch_array(MYSQLI_NUM);
-//         echo '<script>cargarCampos("'."etiqueta".'","'.$resu_gaveta[0].'")</script>';
-//         echo '<script>cargarCampos("'."ubi_gavetas_id".'","'.$resu_gaveta[2].'")</script>';
-//         echo '<script>cargarCampos("'."HistoricoGabetaid".'","'.$resu_gaveta[2].'")</script>';
-
-// //      mueble descripcion y ID
-//         $resultado_mueble=$inserta_Datos->consultarDatos(array('mueble','id'),'ubi_mueble',"","id",$resu_gaveta['1'] );
-//         $resu_mueble=$resultado_mueble->fetch_array(MYSQLI_NUM);
-//         echo '<script>cargarCampos("'."ubicacion".'","'.$resu_mueble[0].'")</script>';
-//         echo '<script>cargarCampos("'."idubicacion".'","'.$resu_mueble[1].'")</script>';
-
-// // datos de documento para el link de acceso
-//         $consultaDocumento=$inserta_Datos->consultarDatos(array('path_server','nombre_final'),'documento',"","id",$id );
-//         $datoDocumento=$consultaDocumento->fetch_array(MYSQLI_NUM);
-//         $link = ".".$datoDocumento[0]."/".$datoDocumento[1] ;
-
-//         echo '<script>document.getElementById("upload").style.visibility="hidden";
-//                        document.getElementById("vinculo").style.visibility="visible";
-//                        document.getElementById("nota").style.visibility="visible";
-//                        document.getElementById("vinculo_doc").href="'.$link.'" ;
-//                        document.getElementById("nombredoc").value="'.$link.'" ;
-//             </script>';
-
-//     }
-?>
-
 <script>
+  function verificarSelect(valor){
+    document.getElementById(valor).checked = true;
+    if (valor != "otros") {
+      document.getElementById("rowBuscador").style.visibility = "";
+    }
+  }
 
   $(document).ready(function() {
     $otros = $('#otros');
@@ -229,13 +221,70 @@
 
   });
 
-function validacion() {
-  
-  return true;
-}
+  function validacion() {
+    if ($("#uploadedFile").val()=="") {
+      popup('Advertencia','Es necesario adjuntar un archivo!!') ;
+      return false ;
+    }else if($("#referencia").val()==""){
+      popup('Advertencia','Es necesario ingresar el campo Referencia!!') ;
+      return false ;
+    }else if( ($('input[name=refobjeto]:checked').val()!="otros") && ($("#refBuscador").val()=="") ){
+      popup('Advertencia','Es necesario ingresar una relación!!') ;
+      return false ;
+    }else if($("#categorias").val()==""){
+      popup('Advertencia','Es necesario ingresar una categoria!!') ;
+      return false ;
+    }
+    return true;
+  }
+
+  //Validar la extension y peso del archivo
+  var extension = <?php  echo"'". $extension[0] . "'" ?>;
+  extension = extension.split(',');
+
+  var tamanho = <?php  echo"'". $tamanho[0] . "'" ?>;
+
+  $(document).on('change','input[type="file"]',function(){
+    var fileName = this.files[0].name;
+    var fileSize = this.files[0].size;
+
+    if(fileSize > parseInt(tamanho, 10)){
+      //popup('Advertencia','El archivo no debe superar los 3MB');
+      alert('Error, cargar solo archivos de hasta 3MB');
+      this.value = '';
+      //this.files[0].name = '';
+    }else{
+      var ext = fileName.split('.').pop();
+
+      // console.log(ext);
+      for(let j = 0, length2 = extension.length; j <= length2; j++){
+        if(extension[j] == ext){
+          break;
+         }
+         else if(j == length2){
+          alert('Error, extension no permitida');
+          this.value = ''; // reset del valor
+          //this.files[0].name = '';
+         }
+      }
+    }
+  });
 
 </script>
 
-
+<?php
+  if(($id!=0 )){
+        /*
+            CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
+        */
+        $valores=implode(",",$resultado);
+        $camposIdForm=implode(",",$camposIdForm);
+        //LLAMADA A LA FUNCION JS
+        echo '<script>
+                cargarCampos("'.$camposIdForm.'","'.$valores.'");
+                verificarSelect("'.$robj.'");
+              </script>';
+    }
+?>
 
 </html>

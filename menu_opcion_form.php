@@ -19,7 +19,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('titulo_menu','link_acceso','icono','posicion','obs' );
+            $campos=array('titulo_menu','link_acceso','icono','posicion','obs','grupo_menu_id' );
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -58,7 +58,14 @@
       </tr>
       <tr>
         <td><label for="">Grupo</label></td>
-        <td><?php $consulta->crearMenuDesplegable('grupo','id','descripcion','grupo_menu') ?><br></td>
+        <td><?php
+         if(!(count($resultado)>0)){
+             $consulta->crearMenuDesplegable('grupo','id','descripcion','grupo_menu');
+         }else{
+             $consulta->DesplegableElegido(@$resultado[5],'grupo','id','descripcion','grupo_menu');
+         }
+
+         ?></td>
       </tr>
       <tr>
         <td><label for="">Direccion</label></td>

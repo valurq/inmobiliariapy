@@ -18,16 +18,16 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('moneda_id','importe','forma_pago','nro_comprob','ch_nro','ch_banco','nro_recibo','cotizacion','obs');
+            $campos=array('(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
-            $resultado=$inserta_Datos->consultarDatos($campos,'cobros_agentes',"","id",$id );
+            $resultado=$inserta_Datos->consultarDatos($campos,'afiliacion_agente',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('moneda_p','importe','forma_pago','nro_comprob','ch_nro','ch_banco','nro_recibo','cotizacion');
+            $camposIdForm=array('vendedor_id','moneda_id','fe_vto','importe2','saldoO','estado','fe_pago','nro_comprob','concepto');
         }
     ?>
 
@@ -59,17 +59,20 @@
 
         <td> <label for="">Moneda</label> </td>
         <td> <input type="text" name="moneda_id" id="moneda_id" value="" readonly class="campos-ingreso"> </td>
+        <input type="hidden" name="cotizMoneda" id='cotizMoneda' >
+
       </tr>
       <tr>
         <td><label for="">Fecha vto</label></td>
         <td> <input type="date" name="fe_vto" id="fe_vto" value="" readonly class="campos-ingreso"></td>
 
         <td><label for="">Importe</label></td>
-        <td> <input type="number" name="importe" id="importe" value="" step="any" readonly class="campos-ingreso"></td>
+        <td> <input type="number" name="importe2" id="importe2" value="" step="any" readonly class="campos-ingreso"></td>
       </tr>
       <tr>
         <td><label for="">Saldo</label></td>
-        <td> <input type="number" name="saldo" id="saldo" value="" readonly class="campos-ingreso"></td>
+        <td> <input type="number" name="saldo" id="saldo" value="" readonly class="campos-ingreso">
+          <input type="hidden" name="saldoO" id="saldoO" value="" readonly class="campos-ingreso"></td>
 
         <td><label for="">Estado</label></td>
         <td> <input type="text" name="estado" id="estado" value="" readonly class="campos-ingreso"></td>
@@ -151,7 +154,7 @@
           $valores=implode(",",$resultado);
           $camposIdForm=implode(",",$camposIdForm);
           //LLAMADA A LA FUNCION JS
-          //echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
+          echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
       }
 
 
@@ -160,6 +163,7 @@
     // NUEVO REGISTRO
     //======================================================================================
     if(isset($_POST['moneda_p'])){
+        $id=$_POST['Idformulario'];
         $moneda_id =trim($_POST['moneda_p']);
         $importe =trim($_POST['importe']);
         $forma_pago=trim($_POST['forma_pago']);
@@ -168,11 +172,17 @@
         $ch_banco =trim($_POST['ch_banco']);
         $nro_recibo =trim($_POST['nro_recibo']);
         $cotizacion =trim($_POST['cotizacion']);
+        $saldo=trim($_POST['saldo']);
         $obs =trim($_POST['obs']);
+
         //$idForm=$_POST['Idformulario'];
         //$creador    ="UsuarioLogin";
         $campos=array('moneda_id','importe','forma_pago','nro_comprob','ch_nro','ch_banco','nro_recibo','cotizacion','obs');//,'creador' );
         $valores="'".$moneda_id."','".$importe."','".$forma_pago."','".$nro_comprob."','".$ch_nro."','".$ch_banco."','".$cotizacion."','".$obs."'";
+        $camposSal=array('saldo');
+        $valoresSal="'".$saldo."'";
+        $camposEst=array('estado');
+        $valoresEst="'pagado'";
         //,'".$creador."'";
         //echo "$valores";
         //print_r($campos);
@@ -180,10 +190,15 @@
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
+        if ($saldo == 0) {
+          $inserta_Datos->modificarDato('afiliacion_agente',$camposEst,$valoresEst,'id',$id);
+        }
         if(isset($idForm)&&($idForm!=0)){
             $inserta_Datos->modificarDato('cobros_agentes',$campos,$valores,'id',$idForm);
+            $inserta_Datos->modificarDato('afiliacion_agente',$camposSal,$valoresSal,'id',$id);
         }else{
             $inserta_Datos->insertarDato('cobros_agentes',$campos,$valores);
+            $inserta_Datos->modificarDato('afiliacion_agente',$camposSal,$valoresSal,'id',$id);
         }
     }
 }
@@ -195,13 +210,16 @@
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('nombre').value !='')&&(document.getElementById('cedula').value !='')  ){
-		    return true ;
+		if( (document.getElementById('cotizacion').value =='')&&(document.getElementById('importe').value =='')  ){
+        popup('Advertencia','Es necesario ingresar el importe y la cotizacion') ;
+        return false ;
 
-		}else{
-        // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar el nombre y la cedula') ;
-            return false ;
+		}else if(parseInt($("#saldo").val(),10)<0){
+      popup('Error','No puede cargar un importe mayor al Saldo') ;
+      return false ;
+
+    }else{
+            return true ;
 		}
 	}
   function cambiarEstado(valor){
@@ -218,15 +236,32 @@
     document.getElementById('forma_pago').addEventListener("change",function (){cambiarEstado(this.value)});
     document.getElementsByClassName('cheque')[0].style.display='none';
     document.getElementsByClassName('cheque')[1].style.display='none';
+    $("#importe").on("keyup",function(){actualizarSaldo()});
+    $("#saldo").val($("#saldoO").val());
   }
   function verificarCotizacion(valor){
     console.log(valor);
+    var cotizacion=obtenerDatos(['cotiz_venta'],'cotizacion','moneda_id',valor,'ORDER BY fecha DESC LIMIT 1');
+    var cotizacionO=obtenerDatos(['cotiz_compra'],'cotizacion','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)',$("#moneda_id").val(),'ORDER BY fecha DESC LIMIT 1');
+
     if(valor==4){
-      document.getElementById("cotizacion").value='1';
+
       console.log("prueba");
     }else{
       console.log("test");
     }
+    document.getElementById("cotizacion").value=cotizacion;
+    document.getElementById("cotizMoneda").value=cotizacionO;
+
+  }
+
+  function actualizarSaldo(){
+    var importe=$("#importe").val();
+    var importeT=$("#saldoO").val();
+    var cotiz=$("#cotizacion").val();
+    var cotizC=$("#cotizMoneda").val();
+
+    $("#saldo").val(importeT-((importe*cotiz)/cotizC));
   }
   </script>
 

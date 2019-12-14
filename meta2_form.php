@@ -75,7 +75,7 @@
       </tr>
       <tr>
           <td><label for="">Año</label></td>
-          <td><input type="number" name="ano" id="ano" class="campos-ingreso"></td>
+          <td><input type="number" name="ano" id="ano" min="2000" max="2099" class="campos-ingreso"></td>
       </tr>
     </tbody>
   </table>

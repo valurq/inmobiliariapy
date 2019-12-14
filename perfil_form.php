@@ -17,7 +17,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('perfil','tipo','obs');
+            $campos=array('perfil','obs','tipo');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -26,7 +26,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('perfil','tipo','observacion');
+            $camposIdForm=array('perfil','observacion');
         }
     ?>
     <title>VALURQ_SRL</title>
@@ -56,11 +56,12 @@
         </tr>
         <tr>
           <td><label for="">Tipo</label></td>
-          <td><select name="tipo" id='tipo' class="campos-ingreso" >
+          <!-- <td><select name="tipo" id='tipo' class="campos-ingreso" >
             <option value="Regional">Regional</option>
             <option value="Broker">Broker</option>
             <option value="Agente">Agente</option>
-          </select></td>
+          </select></td> -->
+          <td><?php $consulta->DesplegableElegidoFijo(@$resultado[2],'tipo',array('Regional','Broker','Agente','TI'))?></td>
         </tr>
         <tr>
           <td><label for="">Observacion</label></td>

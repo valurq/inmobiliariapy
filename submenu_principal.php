@@ -22,27 +22,40 @@
             width: 100%;
             display: grid;
             /*grid-template-columns: repeat(6, [col-start] 150px);*/
-            grid-template-columns: repeat( auto-fit, 150px );
+            grid-template-columns: repeat( auto-fit, 120px );
             /*grid-auto-columns: 150px;*/
-            grid-auto-rows: 200px;
+            grid-auto-rows: 150px;
             /*grid-auto-rows: auto;*/
             grid-gap: 30px;
             padding: 30px;
             box-sizing: border-box;
             }
             .subMenu{
+                display: flex;
+                flex-direction: column;
                 box-sizing: border-box;
-                padding: 20px 10px 10px 10px;
+                /*padding: 20px 10px 10px 10px;*/
+                align-items: center;
+            }
+            .subMenu:hover{
+                cursor:pointer;
+                box-shadow: 5px 10px 10px #9d9d9d;
             }
             .icono{
-                width: 100%;
-                height: 130px;
+                width: 50%;
+                height: 80px;
+                float: left;
+                clear: both;
                 background-size: 100% 100%;
                 background-repeat: no-repeat;
+
             }
             .titulo{
+                float: left;
+                clear: both;
                 margin-top: 5px;
                 text-align: center;
+                font-family: Arial;
             }
         </style>
         <title></title>

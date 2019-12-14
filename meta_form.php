@@ -18,14 +18,14 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array( 'oficina_id', 'meta_usd', 'meta_gs', 'ano');
+            $campos=array('meta_usd', 'meta_gs', 'ano', 'oficina_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
 
             $resultado=$inserta_Datos->consultarDatos($campos,'metas',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
-            $oficina=$resultado[1];
+            $oficina=$resultado[0];
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
@@ -39,7 +39,7 @@
     <meta name="generator" content="Web Page Maker">
       <link rel="stylesheet" href="CSS/popup.css">
       <link rel="stylesheet" href="CSS/formularios.css">
-      <script>
+      <script
 			  src="https://code.jquery.com/jquery-3.4.0.js"
 			  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
 			  crossorigin="anonymous"></script>
@@ -55,16 +55,16 @@
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-          <td><label for="">Meta en dolares</label></td>
-          <td><input type="number" name="meta_usd" id="meta_usd" class="campos-ingreso"></td>
+          <td><label for="">Meta en USD</label></td>
+          <td><input type="number" name="meta_usd" id="meta_usd" placeholder="Ingrese la cantidad en dolares" class="campos-ingreso"></td>
       </tr>
       <tr>
-          <td><label for="">Meta en guaranies</label></td>
-          <td><input type="number" name="meta_gs" id="meta_gs" class="campos-ingreso"></td>
+          <td><label for="">Meta en PYG</label></td>
+          <td><input type="number" name="meta_gs" id="meta_gs" placeholder="Ingrese la cantidad en guaranies" class="campos-ingreso"></td>
       </tr>
       <tr>
           <td><label for="">Año</label></td>
-          <td><input type="number" name="ano" id="ano" class="campos-ingreso"></td>
+          <td><input type="number" name="ano" id="ano" min="2000" max="2099" class="campos-ingreso"></td>
       </tr>
     </tbody>
   </table>
@@ -123,22 +123,14 @@ if (isset($_POST['meta_usd'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		// if($("#vigencia_hasta").val()==""){
-  //     popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
-  //     return false ;
-  //   }else if($("#fee_adm").val()==""){
-  //     popup('Advertencia','Es necesario ingresar un pago mensual!!') ;
-  //     return false ;
-	 //  }else if($("#fee_operaciones").val()==""){
-  //     popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
-  //     return false ;
-  //   }else if($("#fee_marketing").val()==""){
-  //     popup('Advertencia','Es necesario ingresar un pago mensual de marketing!!') ;
-  //     return false ;
-  //   }else if($("#fee_afiliacion").val()==""){
-  //     popup('Advertencia','Es necesario ingresar el campo pago afiliación!!') ;
-  //     return false ;
-  //   }
+		if($("#meta_usd").val()=="" && $("#meta_gs").val()==""){
+      popup('Advertencia','Es necesario ingresar al menos un tipo de monto!!') ;
+      return false ;
+    }else if($("#ano").val()==""){
+      popup('Advertencia','Es necesario ingresar el año!!') ;
+      return false ;
+    }
+  }
   </script>
 
 </html>

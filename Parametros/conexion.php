@@ -279,7 +279,7 @@ public function buscarDatoCustom($campos,$tabla,$where){
             echo "Sin resultados";
         }
     }
-    
+
     public function opciones_sino($nombreOpcion,$valor) {
      if($valor=="si" || $valor=="no" ) {
        // MODIFICA REGISTRO

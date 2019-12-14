@@ -54,7 +54,7 @@
                     <table style="width:100%">
                         <tr class='opciones-conf' onclick="document.getElementById('miPerfil').submit();accionConf()"><td>Mi perfil</td></tr>
                         <tr class='opciones-conf'><td>Acerca de</td></tr>
-                        <tr class='opciones-conf' onclick="abrirIframe('contraseña_form.php');accionConf()"><td>Cambiar Contraseña</td></tr>
+                        <tr class='opciones-conf' onclick="abrirIframe('contrasenha_form.php');accionConf()"><td>Cambiar Contraseña</td></tr>
                         <tr class='opciones-conf' onclick="cerrarSesion()"><td>Cerrar Sesión</td></tr>
                     </tr>
                 </table>
@@ -106,7 +106,7 @@
             (SELECT grupo_menu_id FROM menu_opcion WHERE id=menu_opcion_id GROUP BY grupo_menu_id) as G_id
             FROM acceso WHERE perfil_id = $perfil AND habilita = 'SI'
             GROUP BY Descripcion";
-
+            //echo $sql;
             $resultado=$consulta->conexion->query($sql);
 
             while ($fila=mysqli_fetch_array($resultado)) {
