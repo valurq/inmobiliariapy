@@ -2,7 +2,7 @@
      //INICIALIZACION DE VARIABLES
       session_start();
       include("Parametros/conexion.php");
-      //include("Parametros/verificarConexion.php");
+      include("Parametros/verificarConexion.php");
       $consultas = new Consultas();
       $asunto_ticket_id = 0;
       $asunto_ticket_campos = array();

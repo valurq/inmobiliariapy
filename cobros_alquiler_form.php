@@ -2,7 +2,7 @@
      //INICIALIZACION DE VARIABLES
       session_start();
       include("Parametros/conexion.php");
-      //include("Parametros/verificarConexion.php");
+      include("Parametros/verificarConexion.php");
       $consultas = new Consultas();
       $cobro_alquiler_id = 0;
       $moneda_list = array();
@@ -457,6 +457,6 @@
         if($consultas->insertarDato('cobranza',$campos_pago,$valores_pago)){
           $consultas->modificarDato('cobros_alquiler',$campos_cobro,$valores_cobro,'id',$idForm);
         }
-
+        echo "<script>window.location='cobros_alquiler_panel.php'</script>" ;
     }
 ?>

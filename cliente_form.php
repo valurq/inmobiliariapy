@@ -2,7 +2,7 @@
      //INICIALIZACION DE VARIABLES
       session_start();
       include("Parametros/conexion.php");
-      //include("Parametros/verificarConexion.php");
+      include("Parametros/verificarConexion.php");
       $consultas = new Consultas();
       $cliente_id = 0;
       $paises_list = array();
@@ -11,7 +11,6 @@
       $inputsId = array();
       $inputsVal = array();
       $btn_label = "Crear Cliente";
-
        /*
       SECCION PARA OBTENER VALORES NECESARIOS PARA LA MODIFICACION DE REGISTROS
       ========================================================================
@@ -22,7 +21,6 @@
           'sitioweb','obs');
           $inputsId =  array( 'pais','ciudad','dsc_cliente','ci_ruc','direccion','mail','telefono1','telefono2','telefono3',
           'sitioweb','obs');
-
           //echo "ID ". $cliente_id;
           $tmpdatos = $consultas->consultarDatos($campos,'cliente',"","id",$cliente_id);
           //ver de controlar mejor este caso
@@ -31,22 +29,18 @@
           }else{
             //echo "Vacio como el corazon de ella";
           }
-
       }
-
       //para el label del boton
       if(isset($_POST['seleccionado'])){
         if($_POST['seleccionado']!=0){ 
           $btn_label = "Modificar Cliente";
         }
       }
-
       if(isset($_POST['idformulario'])){
         if($_POST['idformulario']!=0){
           $btn_label = "Modificar Cliente";
         }
       }
-
       //Obtencion de paises
       $aux = $consultas->consultarDatos(array('id','dsc_pais'),'pais');
       if(gettype($aux)!="boolean"){
@@ -63,7 +57,6 @@
           ) 
         );
       }
-
 
       //para diferenciar por que pais filtrar las ciudades cuando se entra a modificar y se entra a crear respectivamente
       if(!empty($inputsVal)){
@@ -88,7 +81,6 @@
           ) 
         );
       }
-
 ?>
 
 
@@ -115,15 +107,33 @@
     <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
       <input type="hidden" name="idformulario" id="idformulario" value=<?php echo $cliente_id;?> >
     <!-- Campos del Formulario-->
-      <div class="input-group input-group-sm mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text border border-0 bg-white">
-            Descripción Cliente:
-          </span>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="input-group input-group-sm mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Descripción Cliente:
+              </span>
+            </div>
+            <input type="text" class="form-control" name="dsc_cliente" id="dsc_cliente" maxlength="60">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Por favor, agregue una breve descripción del cliente.</div>
+          </div>
         </div>
-        <textarea class="form-control" name="dsc_cliente" id="dsc_cliente" rows="1" maxlength="60"></textarea>
-        <div class="valid-feedback">Correcto.</div>
-        <div class="invalid-feedback">Por favor, agregue una breve descripción del cliente.</div>
+        <div class="col-sm-6">
+          <div class="input-group input-group-sm mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Dirección:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;
+              </span>
+            </div>
+            <input class="form-control" name="direccion" id="direccion" type="text" maxlength="30">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Por favor, indique la dirección cliente.</div>
+        </div>
+       </div>
       </div>
       <div class="row">
         <div class="col-sm-6 mt-3">
@@ -143,7 +153,7 @@
           <div class="input-group input-group-sm">
               <div class="input-group-prepend">
                 <span class="input-group-text border border-0 bg-white">
-                  Correo electrónico:
+                  Correo electrónico:&nbsp;
                 </span>
               </div>
             <input class="form-control" name="mail" id="mail" type="text" maxlength="60">
@@ -151,18 +161,6 @@
             <div class="invalid-feedback">Por favor, indique el correo electrónico del cliente.</div>
           </div>
         </div>
-      </div>
-      <div class="input-group input-group-sm mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text border border-0 bg-white">
-            Dirección:
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;
-          </span>
-        </div>
-        <input class="form-control" name="direccion" id="direccion" type="text" maxlength="30">
-        <div class="valid-feedback">Correcto.</div>
-        <div class="invalid-feedback">Por favor, indique la dirección cliente.</div>
       </div>
       <div class="row">
         <div class="col-sm-6 mt-3">
@@ -207,7 +205,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 mt-3">
+        <div class="col-sm-6 mt-3">
           <div class="input-group input-group-sm">
             <div class="input-group-prepend">
               <span class="input-group-text border border-0 bg-white">
@@ -220,18 +218,20 @@
             <div class="invalid-feedback">Por favor, indique al menos un número de teléfono correctamente.</div>
           </div>
         </div>
-        <div class="col-sm-4 mt-3">
+        <div class="col-sm-6 mt-3">
           <div class="input-group input-group-sm">
             <div class="input-group-prepend">
               <span class="input-group-text border border-0 bg-white">
-                Teléfono 3:
+                Teléfono 2:
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </span>
             </div>
             <input class="form-control" name="telefono2" id="telefono2" type="text" maxlength="60">
           </div>
         </div>
-        <div class="col-sm-4 mt-3">
+      </div>     
+      <div class="row">
+        <div class="col-sm-6 mt-3">
           <div class="input-group input-group-sm">
             <div class="input-group-prepend">
               <span class="input-group-text border border-0 bg-white">
@@ -242,16 +242,19 @@
             <input class="form-control" name="telefono3" id="telefono3" type="text" maxlength="60">
           </div>
         </div>
-      </div>      
-      <div class="input-group input-group-sm mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text border border-0 bg-white">
-            Sitio Web:
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </span>
+        <div class="col-sm-6 mt-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text border border-0 bg-white">
+                Sitio Web:
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
+            <input class="form-control" name="sitioweb" id="sitioweb" type="text" maxlength="30">
+          </div>
         </div>
-        <input class="form-control" name="sitioweb" id="sitioweb" type="text" maxlength="30">
-      </div>
+      </div> 
+      
       <div class="input-group input-group-sm mt-3">
         <div class="input-group-prepend">
           <span class="input-group-text border border-0 bg-white">
@@ -294,21 +297,18 @@
         var pais = document.getElementById("pais");
         var ciudad = document.getElementById("ciudad");
         var telefono1 = document.getElementById("telefono1");
-
         if( (dsc_cliente.value =='' || dsc_cliente.length>60)  ){
           esInvalido(dsc_cliente);
           ok = false;
         }else{
           esValido(dsc_cliente);
         }	
-
         if( (ci_ruc.value =='')  ){
           esInvalido(ci_ruc);
           ok = false;
         }else{
           esValido(ci_ruc);
         }	
-
         if( !validateEmail(mail.value) || mail.value == '' ){
           esInvalido(mail);
           ok = false;
@@ -330,7 +330,6 @@
         }else{
           esValido(pais);
         }
-
         //si tiene INDEFINIDO como texto es que no hay ciudades en la DB
         if( (ciudad.options[0].text == 'INDEFINIDO')  ){
           esInvalido(ciudad);
@@ -338,17 +337,13 @@
         }else{
           esValido(ciudad);
         }
-
         if(telefono1.value == '' || isNaN(telefono1.value)){
           esInvalido(telefono1);
         }else{
           esValido(telefono1);
         }
-
         return ok;
-
       }
-
       function buscarCiudades(retorno = ""){
         var paises = document.getElementById("pais");
         var ciudades = document.getElementById("ciudad");
@@ -360,7 +355,6 @@
           while(k < ciudades.length){
             ciudades.remove(k);
           }
-
           //obtenemos el pais seleccionado y realizamos la busqueda
           var pais_id = pais.options[pais.selectedIndex].value;
           var campos = ["dsc_ciudad"];
@@ -382,17 +376,14 @@
           }
         }
         
-
         
       }
-
   </script>
 
 </html>
 
 <?php
   //var_dump($_POST);
-
   //cuando el id es distinto de cero el form fue llamado para edicion, cargar campos entonces
   if(($cliente_id!=0 and !empty($inputsVal))){
       /*
@@ -419,10 +410,8 @@ if(isset($_POST['submit_cliente'])){
       $creador = "usuarioLogin"; //deber ser con $_SESSION
       $sitioweb = $_POST["sitioweb"];
       $obs = $_POST["obs"];
-
       //solo usado para las modificaciones
       $idForm = $_POST['idformulario'];
-
       $campos = array( 'pais_id','ciudad_id','dsc_cliente','ci_ruc','direccion','mail','telefono1','telefono2','telefono3',
       'sitioweb','obs');
       $valores= "$pais,$ciudad,'$dsc_cliente','$ci_ruc','$direccion','$mail','$telefono1','$telefono2','$telefono3',".
@@ -435,9 +424,8 @@ if(isset($_POST['submit_cliente'])){
         //el creador solo se debe setear cuando se esta creando el cliente
         array_push($campos,"creador");
         $valores.= ",'$creador'";
-
         $consultas->insertarDato('cliente',$campos,$valores);
       }
-  //echo "<script>window.location='cliente_panel.php'</script>" ;
+    echo "<script>window.location='cliente_panel.php'</script>" ;
 }
 ?>

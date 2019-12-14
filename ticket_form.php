@@ -2,7 +2,10 @@
      //INICIALIZACION DE VARIABLES
       session_start();
       include("Parametros/conexion.php");
-      //include("Parametros/verificarConexion.php");
+      include("Parametros/verificarConexion.php");
+      include("Parametros/Mailer.php");
+      $mailer = new Mailer();
+      $loaded = $mailer->loadRemoteConfig();
       $consultas = new Consultas();
       $ticket_id = 0;
       $ticket_campos = array();
@@ -248,7 +251,8 @@
       <!--Botones del formulario-->
       <div class="row ml-1 mt-2">
         <div class="col-sm-6 mt-3 text-center">
-          <input type="submit" class="btn btn-sm btn-info" value="<?php echo $btn_label; ?>" name="submit_ticket">
+          <input type="submit" class="btn btn-sm btn-info" value="<?php echo $btn_label; ?>" 
+          name="submit_ticket">
         </div>
         <div class="col-sm-6 mt-3 text-center" onclick="location='ticket_panel.php';">
           <button type="button" class="btn btn-sm btn-info">Volver</button>
@@ -319,9 +323,11 @@
 
       }
 
-  </script>
+      function redireccionar(placeholder = ""){
+          window.location='ticket_panel.php'
+      }
 
-</html>
+  </script>
 
 <?php
       //var_dump($_POST);
@@ -382,8 +388,64 @@ if(isset($_POST['submit_ticket'])){
 
         $consultas->insertarDato('ticket',$campos,$valores);
       }
-      
 
-  //echo "<script>window.location='ticket_panel.php'</script>" ;
+      //notificar al involucrado que se cerro su ticket
+      if($estado=="Cerrado"){ 
+        //================================
+        //DEFINICION DEL ASUNTO
+        //================================
+        $asunto = "";
+        $aux = $consultas->buscarDato(array("asunto"),"asuntos","id",$asuntos_id);        
+        if(gettype($aux)!="boolean"){
+          if($aux->num_rows > 0){
+            $asunto = "Su ticket: ".$aux->fetch_assoc()['asunto']." ha sido cerrado";
+          }
+        }
+        if($asunto == ""){
+          $asunto = "Su ticket ya ha sido cerrado";
+        }
+        //================================
+        //DEFINICION DEL CUERPO
+        //================================
+        $cuerpo = "
+          <center>
+            <h4>Su ticket ya ha sido resuelto y cerrado</h4>
+          </center>
+          <ul>
+            <li>Asunto: ".$asunto."</li>
+            <li>Explicacion: ".$explica."</li>
+            <li>Criticidad: ".$criticidad."</li>
+            <li>Creado el: ".$fecha."</li>
+          </ul>
+          <small>
+            <strong>Este correo ha sido enviado de forma automatica, por favor no responda a 
+            este correo.</strong>
+          </small>
+        ";
+        //DEFINICION DEL DESTINATARIO-------------
+        $destinatario = array($solic_mail);
+        //================================
+        //ENVIO DEL CORREO
+        //================================
+        if($mailer->sendMsj($destinatario,$cuerpo,$asunto) && $loaded){
+          echo '
+            <script>
+              popup("Informacion","Se ha notificado el cierre de ticket");
+            </script>
+          ';
+        }else{
+          echo '
+            <script>
+              popup("Error","No se ha podido notificar el cierre de ticket");
+            </script>
+          ';
+        }
+        
+      }else{
+        echo "<script>window.location='ticket_panel.php'</script>" ;
+      }
+  
 }
 ?>
+
+</html>

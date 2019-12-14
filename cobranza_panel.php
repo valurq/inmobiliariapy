@@ -1,7 +1,7 @@
 <?php
     session_start();
     include("Parametros/conexion.php");
-    //include("Parametros/verificarConexion.php");
+    include("Parametros/verificarConexion.php");
     $consultas=new Consultas();
 
     // ========================================================================
@@ -179,7 +179,7 @@
                             }else{
                                 popup("Informacion","No se puedo completar la operacion");
                             }
-                            //window.location='cobros_alquiler_panel.php';
+                            window.location='cobros_alquiler_panel.php';
                             buscar();
                         }
                     );

@@ -1,7 +1,7 @@
 <?php
     session_start();
     include("Parametros/conexion.php");
-    //include("Parametros/verificarConexion.php");
+    include("Parametros/verificarConexion.php");
     $consultas=new Consultas();
 
     // ========================================================================
@@ -60,6 +60,7 @@
         <div class="row mb-3">
             <div class="col-sm-12 text-right">
                 <!--ACCIONES DEL PANEL-->
+                <input type="button" class="boton_panel" name="Limpiar" onclick="limpiarFiltros();" value="Limpiar Filtros">
                 <input type="button" class="boton_panel" name="Nuevo" onclick = "location='cliente_form.php';"  value="Nuevo">
                 <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('cliente_form.php')" >
                 <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('cliente')" >
@@ -94,6 +95,12 @@
             
             buscarTablaPanelesCustom(campos,'cliente',where);
 
+        }
+
+        function limpiarFiltros(){
+            var dsc_cliente = document.getElementById("dsc_cliente");
+            dsc_cliente.value = "";
+            buscar();
         }
 
     </script>
