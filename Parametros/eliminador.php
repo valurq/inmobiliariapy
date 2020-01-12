@@ -8,4 +8,3 @@
         echo $consultas->conexion->errno;
     }
  ?>
-

@@ -12,6 +12,9 @@
         include("Parametros/verificarConexion.php");
         $id=0;
         $resultado="";
+        require "Parametros/Mailer.php";
+        $mailer = new Mailer();
+
 
         /*
             VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
@@ -157,7 +160,7 @@ if (isset($_POST['nombrefull'])) {
         $est_civil =trim($_POST['est_civil']);
         $estado =trim($_POST['estado']);
         $obs =trim($_POST['obs']);
-        $aprobacion =trim($_POST['aprobacion']);
+        $aprobacion =(@$_POST['aprobacion']==null)?"":trim($_POST['aprobacion']);
         $idForm=$_POST['Idformulario'];
         $creador ="UsuarioLogin";
         $moneda_id= $inserta_Datos->consultarDatos(array("id"),"moneda","","tipo","Local");
@@ -169,6 +172,14 @@ if (isset($_POST['nombrefull'])) {
         $oficinaProvisorio=$inserta_Datos->consultarDatos(array("id"),"oficina","","dsc_oficina","*PROVISORIO*");
         $oficinaProvisorio=$oficinaProvisorio->fetch_array(MYSQLI_NUM);
         $oficinaProvisorio=$oficinaProvisorio[0];
+        $vendedorProvisorio=$inserta_Datos->consultarDatos(array("count(id)"),"vendedor","","nro_doc",$nro_doc);
+        $vendedorProvisorio=$vendedorProvisorio->fetch_array(MYSQLI_NUM);
+        $vendedorProvisorio=$vendedorProvisorio[0];
+
+        $mail_ti=$inserta_Datos->consultarDatos(array("mail_ti"),"parametros","","","");
+        $mail_ti=$mail_ti->fetch_array(MYSQLI_NUM);
+        $mail_ti=$mail_ti[0];
+
         $campos = array( 'nombrefull','tipo_doc', 'ciudad_id', 'direccion', 'nro_doc', 'dias_prueba', 'fec_nacim', 'barrio', 'telefono1', 'telefono2','fec_ingreso','sexo','est_civil','estado','obs','aprobacion','creador');
         $valores="'".$nombrefull."', '".$tipo_doc."', '".$ciudad."', '".$direccion."', '".$nro_doc."', '".$dias_prueba."', '".$fecha_nacim."', '".$barrio."','".$tel1."','".$tel2."','".$fec_ingreso."','".$sexo."','".$est_civil."','".$estado."','".$obs."','".$aprobacion."','".$creador."'";
         $camposV = array( 'dsc_vendedor','nro_doc', 'usuario_id', 'cod_denver', 'oficina_id', 'cod_iconnect', 'moneda_id', 'mail', 'telefono1', 'telefono2','fe_ingreso_py','categoria','fe_ingreso_int','tipo','fe_cumple','fee_mensual','fe_finprueba','obs','fee_afiliacion','curso_acm','curso_fireUP','curso_succeed','creador');
@@ -177,16 +188,27 @@ if (isset($_POST['nombrefull'])) {
         //echo "$valores";
         //print_r($campos);
         /*
-            VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
+            VER0IFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
-        if($aprobacion =='Aprobado'){
-          echo "ingresar la condicion";
+        if($aprobacion =='Aprobado' && ($vendedorProvisorio==0)){
           $inserta_Datos->insertarDato('vendedor',$camposV,$valoresV);
         }
         if(isset($idForm)&&($idForm!=0)){
             $inserta_Datos->modificarDato('personal',$campos,$valores,'id',$idForm);
         }else{
             $inserta_Datos->insertarDato('personal',$campos,$valores);
+            $destinatarios = array($mail_ti);
+            $contenido = 'Nombre: '.$nombrefull.'<br>'.'Tipo Doc: '.$tipo_doc.'<br>'.'Numero Doc: '.$nro_doc.'<br>'.'Fecha de ingreso: '.$fec_ingreso;
+            $asunto = 'NUEVO: ficha de personal para revision de documentos';
+            if (!empty($destinatarios) and $destinatarios != false and isset($contenido, $asunto,$destinatarios)) {
+              if ($mailer->loadRemoteConfig()) {
+                $estado = $mailer->sendMsj(
+                    $destinatarios,
+                    $contenido,
+                    $asunto
+                );
+              }
+            }
         }
     }
 }
@@ -198,14 +220,20 @@ if (isset($_POST['nombrefull'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if($("#oficina").val()==""){
-      popup('Advertencia','Es necesario ingresar el nombre de la oficina!!') ;
+		if($("#nombrefull").val()==""){
+      popup('Advertencia','Es necesario ingresar el nombre !!') ;
       return false ;
-    }else if($("#direccion").val()==""){
-      popup('Advertencia','Es necesario ingresar la direccion!!') ;
+    }else if($("#tipo_doc").val()==""){
+      popup('Advertencia','Es necesario ingresar el tipo de documento!!') ;
       return false ;
-    }else if($("#email").val()==""){
-      popup('Advertencia','Es necesario ingresar el correo electronico!!') ;
+    }else if($("#nro_doc").val()==""){
+      popup('Advertencia','Es necesario ingresar el numero de documento!!') ;
+      return false ;
+    }else if($("#tipo_doc").val()==""){
+      popup('Advertencia','Es necesario ingresar el tpo de documento!!') ;
+      return false ;
+    }else if($("#fec_ingreso").val()==""){
+      popup('Advertencia','Es necesario ingresar la fecha de ingreso!!') ;
       return false ;
     }
   }

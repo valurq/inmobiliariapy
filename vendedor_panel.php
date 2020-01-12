@@ -61,7 +61,7 @@ $campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='vendedor_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('vendedor_form.php')">
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
-            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('vendedor')},'vendedor')">
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminarVendedor(document.getElementById('seleccionado').value)},'vendedor')">
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
@@ -72,5 +72,16 @@ $campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo
             ?>
         </div>
     </body>
+    <script type="text/javascript">
+      function eliminarVendedor(id){
+        var doc = obtenerDatos((['count(*)'],'dco_detalle','vendedor_id',id));
+        if (doc > 0) {
+          modificarDatos('vendedor',['estado'],['INACTIVO'],"id",id);
+        } else {
+            eliminar('vendedor');
+        }
 
+      }
+
+    </script>
 </html>

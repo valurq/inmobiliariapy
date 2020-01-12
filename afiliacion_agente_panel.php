@@ -4,10 +4,57 @@ session_start();
 include("Parametros/conexion.php");
 $consultas = new Consultas();
 include("Parametros/verificarConexion.php");
+echo $_SESSION['idUsu'];
+$manager=$consultas->consultarDatos(['count(*)'],'manager','','usuario_id',$_SESSION['idUsu']);
+$manager=$manager->fetch_array(MYSQLI_NUM);
+$manager=$manager[0]; // lo mismo hacer para broker
+$broker=$consultas->consultarDatos(['count(*)'],'brokers','','usuario_id',$_SESSION['idUsu']);
+$broker=$broker->fetch_array(MYSQLI_NUM);
+$broker=$broker[0];
+$agente=$consultas->consultarDatos(['count(*)'],'vendedor','','usuario_id',$_SESSION['idUsu']);
+$agente=$agente->fetch_array(MYSQLI_NUM);
+$broker=$broker[0];
+$idOficina;
+$idVendedor;
+if ($manager > 0) {
+  $idOficina=$consultas->consultarDatos(array('oficina_id'),'manager','','usuario_id',$_SESSION['idUsu']);
+  $idOficina=$idOficina->fetch_array(MYSQLI_NUM);
+  $idOficina=$idOficina[0];
+//  echo $idOficina;
+}elseif ($broker >0) {
+  $idOficina=$consultas->consultarDatos(array('oficina_id'),'brokers','','usuario_id',$_SESSION['idUsu']);
+  $idOficina=$idOficina->fetch_array(MYSQLI_NUM);
+  $idOficina=$idOficina[0];
+  //echo $idOficina;
+}elseif ($agente) {
+  $idVendedor=$consultas->consultarDatos(array('id'),'vendedor','','usuario_id',$_SESSION['idUsu']);
+  $idVendedor=$idVendedor->fetch_array(MYSQLI_NUM);
+  $idVendedor=$idVendedor[0];
+  //echo "vendedor".$idVendedor;
+}
+//verificar si es broker (['count(*)'],'broker','usuario_id',$idusuario)
 // DATOS
 $cabecera=['Vendedor','Fecha vto','Importe','Estado','Fecha de pago','Nro comprobante','Concepto'];
 $campos=['(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','fe_vto','importe','estado','fe_pago','nro_comprob','substr(concepto,1,30)'];
 // test
+
+function crearContenidoTabla2($resultadoConsulta){
+     /*
+         METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
+         $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
+     */
+     echo "<tbody id='datosPanel'>";
+
+     while($datos=$resultadoConsulta->fetch_array(MYSQLI_NUM)){
+         echo "<tr class='datos-tabla' onclick='seleccionarFila($datos[0])' id='".$datos[0]."'>";
+         array_shift($datos);
+         foreach( $datos as $valor ){
+             echo "<td>".$valor." </td>";
+         }
+         echo "</tr>";
+     }
+     echo"</tbody>";
+ }
 
 ?>
 <html lang="en" dir="ltr">
@@ -64,10 +111,27 @@ $campos=['(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','fe_vto','im
         </div>
 
         <div class="mostrar-tabla">
-            <?php
-             $consultas->crearTabla($cabecera,$campos,'afiliacion_agente');
+          <table id='tablaPanel' cellspacing='0' style='width:100%'>
 
+            <?php
+            // echo "select (SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id),fe_vto,importe,estado,fe_pago,nro_comprob,substr(concepto,1,30)
+            //  from afiliacion_agente where vendedor_id in (select id from vendedor where oficina_id = $idOficina ";
+            if (empty($idVendedor)) {
+              $datoTabla=$consultas->conexion->query("select id,(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id),fe_vto,importe,estado,fe_pago,nro_comprob,substr(concepto,1,30)
+              from afiliacion_agente where vendedor_id in (select id from vendedor where oficina_id = $idOficina )");
+              //echo "select (SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id),fe_vto,importe,estado,fe_pago,nro_comprob,substr(concepto,1,30)  from afiliacion_agente where vendedor_id in (select id from vendedor where oficina_id = $idOficina )";
+              // code...
+            }else{
+              $datoTabla=$consultas->conexion->query("select id,(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id),fe_vto,importe,estado,fe_pago,nro_comprob,substr(concepto,1,30) from afiliacion_agente where vendedor_id = $idVendedor ");
+            //  echo "select id,(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id),fe_vto,importe,estado,fe_pago,nro_comprob,substr(concepto,1,30) from afiliacion_agente where vendedor_id = $idVendedor )";
+
+            }
+
+             //$consultas->crearTabla($cabecera,$campos,'afiliacion_agente');
+             $consultas->crearCabeceraTabla($cabecera);
+            crearContenidoTabla2($datoTabla);
             ?>
+          </table>
         </div>
     </body>
 

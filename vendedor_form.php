@@ -234,6 +234,7 @@ if (isset($_POST['vendedor'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
+  
 		if($("#oficina").val()==""){
       popup('Advertencia','Es necesario ingresar el nombre de la oficina!!') ;
       return false ;

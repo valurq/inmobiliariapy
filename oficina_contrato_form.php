@@ -24,9 +24,9 @@
             $cantidadContratos=$cantidadContratos->fetch_array(MYSQLI_NUM);
             $cantidadContratos=$cantidadContratos[0];
 
-            $cantidadMetas=$inserta_Datos->consultarDatos(array("count(*)"),'metas',"","oficina_id",$id);
-            $cantidadMetas=$cantidadMetas->fetch_array(MYSQLI_NUM);
-            $cantidadMetas=$cantidadMetas[0];
+            @$cantidadMetas=$inserta_Datos->consultarDatos(array("count(*)"),'metas',"","oficina_id",$id);
+            @$cantidadMetas=$cantidadMetas->fetch_array(MYSQLI_NUM);
+            @$cantidadMetas=$cantidadMetas[0];
 
             $campos=array( 'dsc_oficina', 'ruc', '(SELECT nombrefull FROM manager WHERE oficina_id = '.$id.' limit 1)', 'direccion','(SELECT dsc_broker FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
             /*
@@ -74,12 +74,12 @@
 <body style="background-color:white">
   <h2>DEFINICIÓN DE OFICINA</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
-<form action=<?php echo (($cantidadContratos>0)?"'contrato_panel.php'": "'contrato_form.php'");?> 
+<form action=<?php echo (($cantidadContratos>0)?"'contrato_panel.php'": "'contrato_form.php'");?>
 target="_blank" method="POST" id='form_contrato'>
   <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
 </form>
 
-<form action=<?php echo (($cantidadMetas>0)?"'meta_panel.php'": "'meta_form.php'");?> 
+<form action=<?php echo ((@$cantidadMetas>0)?"'meta_panel.php'": "'meta_form.php'");?>
 target="_blank" method="POST" id='form_meta'>
   <input type="hidden" name='idOfi'  value=<?php echo "'$id'";?>>
 </form>
@@ -141,12 +141,12 @@ target="_blank" method="POST" id='form_meta'>
 
       </tr>
       <tr>
-        
+
         <td><label for="">Fecha de contrato</label></td>
         <td><input type="date" name="fe_contrato" id="fe_contrato" value="" placeholder="Ingrese la fecha de contrato" class="campos-ingreso"></td>
         <td><label for="">Email</label></td>
         <td><input type="email" name="email" id="email" value="" placeholder="Ingrese el email" class="campos-ingreso"></td>
-        
+
 
       </tr>
       <tr>
@@ -155,7 +155,7 @@ target="_blank" method="POST" id='form_meta'>
 
         <td><label for="">Teléfono 2</label></td>
         <td><input type="text" name="tel2" id="tel2" value="" placeholder="Ingrese numero del teléfono" class="campos-ingreso"></td>
-        
+
 
       </tr>
       <tr>
@@ -168,7 +168,7 @@ target="_blank" method="POST" id='form_meta'>
             $inserta_Datos->DesplegableElegidoFijo(@$resultado[11],'tipo',array('REMAX','OTROS'));
           ?>
         </td>
-        
+
 
       </tr>
       <tr>
@@ -177,7 +177,7 @@ target="_blank" method="POST" id='form_meta'>
 
         <td><label for="">Código REMAX</label></td>
         <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional REMAX" class="campos-ingreso"></td>
-        
+
 
       </tr>
       <tr>
@@ -190,14 +190,14 @@ target="_blank" method="POST" id='form_meta'>
         <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
         <td>
-          <?php 
+          <?php
             if ($tipoOficina != "OTROS") {
               echo "<input type='button' id='contrato' class='boton-formulario' target='_blank' value='Contrato' onclick='document.getElementById(".'"form_contrato"'.").submit();'>";
             }
            ?>
         </td>
         <td>
-          <?php 
+          <?php
             if ($tipoOficina != "OTROS") {
               echo "<input type='button' id='meta' class='boton-formulario' target='_blank' value='Meta' onclick='document.getElementById(".'"form_meta"'.").submit();'>";
             }
@@ -227,7 +227,7 @@ target="_blank" method="POST" id='form_meta'>
         $camposIdForm=implode(",",$camposIdForm);
         //LLAMADA A LA FUNCION JS
         echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
-        
+
     }
 
 

@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina_id','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)');
+            $campos=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina_id','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)','usuario_id','(SELECT usuario FROM usuario WHERE id=usuario_id)');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina','oficinaLista');
+            $camposIdForm=array('nombrefull','porcentaje_opera','fe_ingreso','obs','oficina','oficinaLista','usuario_id','usuarioLista');
         }
     ?>
 
@@ -64,6 +64,14 @@
         </datalist>
       <input type="hidden" name="oficina" id="oficina">
     </td>
+      </tr>
+      <tr>
+        <td><label for="">Usuario</label></td>
+        <td><input list="usuLista" id="usuarioLista" name="propiedades" autocomplete="off" onkeyup="buscarLista(['usuario'], this.value,'usuario', 'usuario', 'usuLista', 'usuario_id') " class="campos-ingreso">
+        <datalist id="usuLista">
+          <option value=""></option>
+        </datalist>
+        <input type="hidden" name="usuario_id" id="usuario_id"></td>
       </tr>
       <tr>
         <td><label for="">Comision sobre operaciones</label></td>
@@ -113,11 +121,12 @@
         $porcentaje_opera =trim($_POST['porcentaje_opera']);
         $fe_ingreso =trim($_POST['fe_ingreso']);
         $obs =trim($_POST['obs']);
+        $usuario_id =trim($_POST['usuario_id']);
         $idForm=$_POST['Idformulario'];
         //$creador    ="UsuarioLogin";
-        $campos = array('nombrefull','oficina_id','porcentaje_opera','fe_ingreso','obs');//,'creador' );
+        $campos = array('nombrefull','oficina_id','porcentaje_opera','fe_ingreso','obs','usuario_id');//,'creador' );
         $camposOfi = array('nombrefull');
-        $valores="'".$nombrefull."','".$oficina."','".$porcentaje_opera."','".$fe_ingreso."','".$obs."'";
+        $valores="'".$nombrefull."','".$oficina."','".$porcentaje_opera."','".$fe_ingreso."','".$obs."','".$usuario_id."'";
         $valoresOfi="'".$nombrefull."'";
         //echo "$valores";
         //print_r($campos);

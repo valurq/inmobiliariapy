@@ -87,7 +87,7 @@
         $camposIdForm=implode(",",$camposIdForm);
         //LLAMADA A LA FUNCION JS
         echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
-    }
+    }   //echo "<script>cargarCampos('".$camposIdForm."','".$valores."')</script>";
 
 
 if (isset($_POST['titulo'])) {

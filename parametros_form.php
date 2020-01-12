@@ -28,6 +28,8 @@
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
             $camposIdForm=array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam');
+
+
         }
     ?>
 
@@ -117,11 +119,11 @@
       </tr>
       <tr>
         <td> <label>Extensiones permitidas</label> </td>
-        <td> <input type="text" name="adjunto_ext" id="adujunto_ext" value="" placeholder="Valores separados por coma"> </td>
+        <td> <input type="text" name="adjunto_ext" id="adjunto_ext" value="" class="campos-ingreso" placeholder="Valores separados por guion"> </td>
       </tr>
       <tr>
         <td> <label>Tamaño permitidas (MB)</label> </td>
-        <td> <input type="text" name="adjunto_tam" id="adujunto_tam" value=""> </td>
+        <td> <input type="number" min="0" name="adjunto_tam" id="adjunto_tam" value="" class="campos-ingreso"> </td>
       </tr>
     </tbody>
   </table>
@@ -171,11 +173,14 @@ if (isset($_POST['por_feeregional'])) {
         $mail_from =trim($_POST['mail_from']);
         $mail_autentica =trim($_POST['mail_autentica']);
         $adjunto_ext =trim($_POST['adjunto_ext']);
-        $adjunto_tam =trim($_POST['adjunto_tam'])*1000000;
+        $adjunto_tam =trim($_POST['adjunto_tam']) * 1000000;
+        
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
         $campos = array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam','creador' );
-        $valores="'".$por_feeregional."','".$candias_vto."','".$fee_adm."','".$fee_marketing."','".$afiliacion."','".$alq_residencial."','".$alq_comercial."','".$alq_temporal."','".$mail_ti."','".$mail_host."','".$mail_puerto."','".$mail_usuario."','".$mail_pass."','".$mail_desde."','".$mail_from."','".$mail_autentica."','".$adjunto_ext."','".$adjunto_ext."','".$creador."'";
+        $valores="'".$por_feeregional."','".$candias_vto."','".$fee_adm."','".$fee_marketing."','".$afiliacion."','".$alq_residencial."','".$alq_comercial."','".$alq_temporal."','".$mail_ti."','".$mail_host."','".$mail_puerto."','".$mail_usuario."','".$mail_pass."','".$mail_desde."','".$mail_from."','".$mail_autentica."', '".$adjunto_ext."','".$adjunto_tam."','".$creador."'";
+
+        print_r($valores);
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
@@ -188,20 +193,18 @@ if (isset($_POST['por_feeregional'])) {
 }
 ?>
 <script type="text/javascript">
-
-
+	
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('moneda').value !='')&&(document.getElementById('simbolo').value !='')  ){
-		    return true ;
 
-		}else{
-        // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar el nombre moneda y simbolo') ;
-            return false ;
+		if( (document.getElementById('moneda').value =='')&&(document.getElementById('simbolo').value =='')  ){
+		    popup('Advertencia','Es necesario ingresar el nombre moneda y simbolo') ;
+            return false;
 		}
+
+		return true;
 	}
   </script>
 

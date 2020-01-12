@@ -54,7 +54,7 @@
             <br><br>
             <!--campo buscador en el panel -->
             <!-- oficina: la tabla, dsc_oficina: el campo a buscar -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', 'estado', 'ACTIVO')">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', 'estado', 'ACTIVO')">
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE OFICINAS</B></font>

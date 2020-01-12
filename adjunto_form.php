@@ -20,7 +20,7 @@
       */
       if(isset($_POST['seleccionado'])){
           $id=$_POST['seleccionado'];
-          $campos= array('referencia','idobjeto','categorias','fecha_vto','estado','refobjeto') ;
+          $campos= array('referencia','idobjeto','categorias','fecha_vto','estado','adjuntos_categoria_id', 'dsc_objeto','refobjeto') ;
           $aux=array(" ");
           /*
               CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
@@ -28,16 +28,16 @@
           $resultado=$inserta_Datos->consultarDatos($campos,'adjuntos',"","id",$id );
           $resultado=$resultado->fetch_array(MYSQLI_NUM);
 
-          if ($resultado[5] == "personal") {
+          if ($resultado[7] == "personal") {
                $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'personal',"","id",$resultado[1] );
                $aux=$aux->fetch_array(MYSQLI_NUM);
-          }else if($resultado[5] == "vendedor"){
+          }else if($resultado[7] == "vendedor"){
                $aux = $inserta_Datos->consultarDatos(array('dsc_vendedor'),'vendedor',"","id",$resultado[1] );     
                $aux=$aux->fetch_array(MYSQLI_NUM);
-          }else if ($resultado[5] == "oficina") {
+          }else if ($resultado[7] == "oficina") {
               $aux = $inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$resultado[1] );     
               $aux=$aux->fetch_array(MYSQLI_NUM);  
-          }else if ($resultado[5] == "manager") {
+          }else if ($resultado[7] == "manager") {
               $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'manager',"","id",$resultado[1] );     
               $aux=$aux->fetch_array(MYSQLI_NUM);
           }
@@ -56,7 +56,7 @@
           $nombre_archivo = "." . $carpeta[0] . $archivo[0];
 
 
-          $camposIdForm= array('referencia','idobjeto','categorias','fecha_vto','estado','refBuscador') ;
+          $camposIdForm= array('referencia','idobjeto','categorias','fecha_vto','estado','idcategoria', 'id_categorias','refBuscador') ;
       }
 
       $extension = $inserta_Datos->consultarDatos(array('adjunto_ext'),'parametros',"","id", 1);
@@ -136,8 +136,18 @@
           </td>
         </tr>
         <tr>
+          <td width="20%"> Categoria: </td>
+          <td>
+            <input list="id_categorias" id="categorias" name="categorias" autocomplete="off" placeholder="Ingrese la relación" 
+            onkeyup="buscarLista(['dsc_categoria'], this.value, 'adjuntos_categoria', 'dsc_categoria', 'id_categorias', 'idcategoria')">
+            <datalist id="id_categorias">
+              <option value=""></option>
+            </datalist>
+
+            <input type="hidden" name="idcategoria" id="idcategoria" />
+          <!-- </td>
               <td width="20%">Categoria : </td>
-              <td width="60%"><input type="text" name="categorias" id="categorias" style="width:160px;z-index:2" placeholder="Introduzca la categoria" /></td>
+              <td width="60%"><input type="text" name="categorias" id="categorias" style="width:160px;z-index:2" placeholder="Introduzca la categoria" /></td> -->
         </tr>
         <tr>
               <td width="20%">Fecha Vencimiento: </td>
@@ -239,8 +249,16 @@
   }
 
   //Validar la extension y peso del archivo
-  var extension = <?php  echo"'". $extension[0] . "'" ?>;
-  extension = extension.split(',');
+  var auxExtension = <?php  echo"'". $extension[0] . "'" ?>;
+  let extension = "";
+
+  for(let caracter of auxExtension){
+    if(caracter != " ")
+      extension += caracter;
+  }
+
+  extension = extension.split('-');
+  
 
   var tamanho = <?php  echo"'". $tamanho[0] . "'" ?>;
 
@@ -250,18 +268,19 @@
 
     if(fileSize > parseInt(tamanho, 10)){
       //popup('Advertencia','El archivo no debe superar los 3MB');
-      alert('Error, cargar solo archivos de hasta 3MB');
+      alert(`Error, cargar solo archivos de hasta ${tamanho/1000000}MB`);
       this.value = '';
       //this.files[0].name = '';
     }else{
       var ext = fileName.split('.').pop();
-
-      // console.log(ext);
-      for(let j = 0, length2 = extension.length; j <= length2; j++){
+      //console.log(ext);
+      
+      for(let j = 0; j <= extension.length; j++){
+          //console.log(extension[j]);
         if(extension[j] == ext){
           break;
          }
-         else if(j == length2){
+         else if(j == extension.length){
           alert('Error, extension no permitida');
           this.value = ''; // reset del valor
           //this.files[0].name = '';

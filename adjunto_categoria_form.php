@@ -6,8 +6,10 @@
         SECCION PARA OBTENER VALORES NECESARIOS PARA LA MODIFICACION DE REGISTROS
         ========================================================================
         */
+        session_start();
         include("Parametros/conexion.php");
-        $inserta_Datos=new Consultas();
+        $inserta_Datos= new Consultas();
+        include("Parametros/verificarConexion.php");
         $id=0;
         $resultado="";
 
@@ -16,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('dsc_categoria','obs');
+            $campos=array( 'dsc_categoria','obs');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -25,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('dsc_categoria', 'obs');
+            $camposIdForm=array('dsc_categoria','obs');
         }
     ?>
 
@@ -33,35 +35,8 @@
     <title>VALURQ_SRL</title>
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
     <meta name="generator" content="Web Page Maker">
-<style type="text/css">
-      /*----------Text Styles----------*/
-      .ws6 {font-size: 8px;}
-      .ws7 {font-size: 9.3px;}
-      .ws8 {font-size: 11px;}
-      .ws9 {font-size: 12px;}
-      .ws10 {font-size: 13px;}
-      .ws11 {font-size: 15px;}
-      .ws12 {font-size: 16px;}
-      .ws14 {font-size: 19px;}
-      .ws16 {font-size: 21px;}
-      .ws18 {font-size: 24px;}
-      .ws20 {font-size: 27px;}
-      .ws22 {font-size: 29px;}
-      .ws24 {font-size: 32px;}
-      .ws26 {font-size: 35px;}
-      .ws28 {font-size: 37px;}
-      .ws36 {font-size: 48px;}
-      .ws48 {font-size: 64px;}
-      .ws72 {font-size: 96px;}
-      .wpmd {font-size: 13px;font-family: Arial,Helvetica,Sans-Serif;font-style: normal;font-weight: normal;}
-      /*----------Para Styles----------*/
-      DIV,UL,OL /* Left */
-      {
-       margin-top: 0px;
-       margin-bottom: 0px;
-      }
-</style>
       <link rel="stylesheet" href="CSS/popup.css">
+      <link rel="stylesheet" href="CSS/formularios.css">
       <script
 			  src="https://code.jquery.com/jquery-3.4.0.js"
 			  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
@@ -69,35 +44,29 @@
         <script type="text/javascript" src="Js/funciones.js"></script>
 </head>
 <body style="background-color:white">
+  <h2>CATEGORIAS</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
-  <input name="dsc_categoria" id ="dsc_categoria" type="text"   maxlength=80 style="position:absolute;width:200px;left:133px;top:97px;z-index:2" >
-  <textarea name="obs" id="obs" style="position:absolute;left:134px;top:137px;width:379px;height:97px;z-index:3"></textarea>
-
+  <table class="tabla-fomulario">
+    <tbody>
+      <tr>
+        <td><label for="">Categoría</label></td>
+        <td><input type="text" name="dsc_categoria" id="dsc_categoria" value="" placeholder="Ingrese la categoría" class="campos-ingreso"></td>
+      </tr>
+      <tr>
+        <td><label for="">Observación</label></td>
+        <td><textarea name="obs" id="obs" class="campos-ingreso" placeholder="Ingrese la observación"></textarea></td>
+      </tr>
+    </tbody>
+  </table>
+<!-- moneda,tipo,simbolo -->
   <!-- BOTONES -->
-  <input name="guardar" type="submit" value="Guardar" style="position:absolute;left:439px;top:275px;z-index:6">
-  <input name="volver" type="button" value="Volver" onclick = "location='categoria_panel.php';" style="position:absolute;left:131px;top:273px;z-index:7">
+  <input name="guardar" type="submit" value="Guardar" class="boton-formulario guardar">
+  <input name="volver" type="button" value="Volver" onclick = "location='adjunto_categoria_panel.php';"  class="boton-formulario">
 </form>
 
-  <!-- Titulos y etiquetas -->
-<div id="text1" style="position:absolute; overflow:hidden; left:20px; top:21px; width:224px; height:22px; z-index:1">
-<div class="wpmd">
-<div><font color="#808080" class="ws12"><B>Categoria de documentos</B></font></div>
-</div></div>
-
-<div id="text2" style="position:absolute; overflow:hidden; left:24px; top:97px; width:100px;; height:23px; z-index:4">
-<div class="wpmd">
-<div><font color="#333333" class="ws11">Descripcion :</font></div>
-</div></div>
-
-<div id="text3" style="position:absolute; overflow:hidden; left:23px; top:135px; width:100px;; height:23px; z-index:5">
-<div class="wpmd">
-<div><font color="#333333" class="ws11">Comentarios:</font></div>
-</div></div>
-
-  <!-- Fin titulos y etiquetas -->
 
 </body>
 
@@ -122,11 +91,11 @@ if (isset($_POST['dsc_categoria'])) {
     //======================================================================================
     if(isset($_POST['dsc_categoria'])){
         $dsc_categoria =trim($_POST['dsc_categoria']);
-        $obs       =trim($_POST['obs']);
+        $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
-        $campos = array( 'dsc_categoria','creador','obs', 'creador' );
-        $valores="'".$dsc_categoria."','".$creador."','".$obs."', '".$creador."'";
+        $campos = array( 'dsc_categoria','obs', 'creador');
+        $valores= "'".$dsc_categoria."', '".$obs."', '".$creador."'";
         /*
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
@@ -145,12 +114,12 @@ if (isset($_POST['dsc_categoria'])) {
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('dsc_categoria').value !='')  ){
+		if( document.getElementById('dsc_categoria').value !='' ){
 		    return true ;
 
 		}else{
         // Error - Advertencia - Informacion
-            popup('Advertencia','Es necesario ingresar la descripcion de la categoria') ;
+            popup('Advertencia','Es necesario ingresar todos los campos') ;
             return false ;
 		}
 	}
