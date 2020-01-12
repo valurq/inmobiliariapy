@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="http://momentjs.com/downloads/moment.min.js"></script>
+	<script type="text/javascript" src="Js/funciones.js"></script>
+	<link rel="stylesheet" href="CSS/popup.css">
+	<script src="https://code.jquery.com/jquery-3.4.0.js"
+			integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
+			crossorigin="anonymous"></script>
+	<meta charset="UTF-8">
+	<title>VALURQ_SRL</title>
+	<style>
+		html, body{
+			width: 100%;
+			height: 100%;
+		}
+
+		body{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#container{
+			width: 50%;
+			display: flex;
+			justify-content: center;
+		}
+
+		form{
+			width: 50%;
+		}
+
+		#wrapper{
+			display: flex;
+			flex-flow: column;
+			justify-content: center;
+			align-items: center;
+			border: 2px solid #072D58;
+			border-radius: 10px;
+			padding: 10px;
+			font-family: monospace;
+		}
+
+		h2{
+			letter-spacing: 0.15em;
+			font-size: 24px;
+		}
+
+		label{
+			align-self: flex-start;
+			letter-spacing: 0.15em;
+			font-size: 16px;
+		}
+
+		input{
+			width: 100%;
+			font-family: inherit;
+			letter-spacing: 0.15em;
+			font-size: 14px;
+
+		}
+
+		input[type="submit"]{
+			width: 50%;
+			background-color: #072D58;
+			height: 40px;
+			color: #DFC7C7;
+			border: none;
+			letter-spacing: 0.15em;
+			font-size: 16px;
+
+		}
+
+		input[type="submit"]:hover{
+			background-color: #1F4A7B;
+			color: #DFC7C7;
+		}
+
+		#popup{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="container">
+		<form action="">
+			<div id="wrapper">
+				<h2>Tickets por Fecha</h2>
+				<label for="desde">Fecha desde</label><input type="date" id="desde" name="desde" /><br />
+				<label for="hasta">Fecha hasta</label><input type="date" id="hasta" name="hasta" /><br />
+				<input type="submit" id="aceptar" name="aceptar" value="Aceptar" />
+			</div>
+		</form>
+	</div>
+
+</body>
+
+<script>
+	let desde = "";
+	let hasta = "";
+
+	document.getElementById("desde").addEventListener("change", () => {
+		desde = moment(document.getElementById("desde").value);
+		console.log(desde.format('YYYY-MM-DD'));
+	});
+
+	document.getElementById("hasta").addEventListener("change", () => {
+		hasta = moment(document.getElementById("hasta").value);
+		console.log(hasta.format('YYYY-MM-DD'));
+	});
+
+	document.getElementById("aceptar").addEventListener("click", (e) => {
+		if( (desde == "") || (hasta == "") ){
+			popup('Advertencia','Por favor, introduzca ambas fechas') ;
+			e.preventDefault();
+		}
+		else if ( hasta.diff(desde, 'days') < 0 ) {
+			popup('Advertencia','La fecha hasta no puede ser menor que la fecha desde') ;
+			e.preventDefault();
+		}
+		else{
+			document.getElementsByTagName('form')[0].setAttribute("action", "http://localhost:8080/birt/frameset?_report=remax_listado_oficina.rptdesign");
+		}
+
+	});
+
+</script>
+</html>

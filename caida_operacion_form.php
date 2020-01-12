@@ -76,7 +76,7 @@
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-        <td><label for="">ID Propiedad</label></td>
+        <td><label for="">ID Propiedad REMAX</label></td>
         <td>
           <input list="id_propiedades" id="propiedades" name="propiedades" autocomplete="off" onkeyup="buscarLista(['idpropiedad_remax'], this.value,'dco', 'idpropiedad_remax', 'id_propiedades', 'propiedades_hidden')" >
           <datalist id="id_propiedades">

@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto');
+            $campos=array('(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto','moneda_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -233,35 +233,54 @@
   }
   window.onload=function (){
     document.getElementById('moneda_p').addEventListener("change",function (){verificarCotizacion(this.value)});
+    $("#moneda_p").val($("#moneda_id").val());
     document.getElementById('forma_pago').addEventListener("change",function (){cambiarEstado(this.value)});
     document.getElementsByClassName('cheque')[0].style.display='none';
     document.getElementsByClassName('cheque')[1].style.display='none';
     $("#importe").on("keyup",function(){actualizarSaldo()});
     $("#saldo").val($("#saldoO").val());
   }
+
   function verificarCotizacion(valor){
-    console.log(valor);
-    var cotizacion=obtenerDatos(['cotiz_venta'],'cotizacion','moneda_id',valor,'ORDER BY fecha DESC LIMIT 1');
-    var cotizacionO=obtenerDatos(['cotiz_compra'],'cotizacion','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)',$("#moneda_id").val(),'ORDER BY fecha DESC LIMIT 1');
+    //console.log(valor);
+    var cotizacion=obtenerDatos(['cotiz_compra'],'cotizacion','moneda_id',valor,'ORDER BY fecha DESC LIMIT 1');//Detalle
+    var cotizacionO=obtenerDatos(['cotiz_venta'],'cotizacion','(SELECT dsc_moneda FROM moneda WHERE id=moneda_id)',$("#moneda_id").val(),'ORDER BY fecha DESC LIMIT 1');//cabecera
+    //Cotizacion=1;
+    var cotizacionD=obtenerDatos(['dsc_moneda'],'moneda','id',valor,'');//cabecera
+    console.log(cotizacion+"compra");
+    console.log(cotizacionO+"venta");
+    //console.log('test'+cotizacionD+'ttest'+$("#moneda_id").val());
+    if($("#moneda_id").val() == cotizacionD) {
+      document.getElementById("cotizacion").value=1;//det
+      document.getElementById("cotizMoneda").value=1;//cab
 
-    if(valor==4){
+      //document.getElementById("cotizMoneda").value=1;//cab
+    }else {
+      document.getElementById("cotizacion").value=cotizacion;//det
+      document.getElementById("cotizMoneda").value=cotizacionO;//cab
 
-      console.log("prueba");
-    }else{
-      console.log("test");
-    }
-    document.getElementById("cotizacion").value=cotizacion;
-    document.getElementById("cotizMoneda").value=cotizacionO;
-
+    }$("#importe").val(0);
+    actualizarSaldo();
   }
 
   function actualizarSaldo(){
-    var importe=$("#importe").val();
-    var importeT=$("#saldoO").val();
-    var cotiz=$("#cotizacion").val();
-    var cotizC=$("#cotizMoneda").val();
+    var importe= parseFloat($("#importe").val());//DETALLE
+    var importeT=$("#saldoO").val();//cabecera
+    var cotiz=$("#cotizacion").val();//DET
+    var cotizC=$("#cotizMoneda").val();//cab
+    console.log(cotiz+"Cotiz");
+    console.log(cotizC+"cotizC");
+    console.log(importeT+'- '+(importe)+"*"+cotiz+"/"+cotizC );
+    var resultado = importeT-(((importe*cotiz)/cotizC));
+    if (resultado < 0.05 && resultado>0) {
+      $("#saldo").val(0);//calculo
+    }else if(resultado<0){
+      popup("Error","El valor ingresado supera a la deuda");
+      $("#importe").val(0)
+    }else{
+      $("#saldo").val(resultado);//calculo
+    }
 
-    $("#saldo").val(importeT-((importe*cotiz)/cotizC));
   }
   </script>
 

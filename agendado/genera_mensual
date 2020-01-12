@@ -1,0 +1,4 @@
+#!/bin/bash
+/opt/lampp/bin/php /opt/lampp/htdocs/Remax/generar_deuda_oficina.php
+/opt/lampp/bin/php /opt/lampp/htdocs/Remax/generar_cotizacion.php
+

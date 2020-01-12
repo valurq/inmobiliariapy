@@ -5,7 +5,7 @@ $consultas=new Consultas();
 
 // DATOS
 $cabecera=['Categoria','Comentario','Fecha de Creacion'];
-$campos=['categoria','substr(obs,1,40)','fecreacion'];
+$campos=['dsc_categoria','obs','feccreacion'];
 
 
 ?>
@@ -23,7 +23,7 @@ $campos=['categoria','substr(obs,1,40)','fecreacion'];
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['categoria','obs','fecreacion'];
+            var campos=['dsc_categoria','obs','feccreacion'];
         </script>
 
         <meta charset="utf-8">
@@ -51,7 +51,7 @@ $campos=['categoria','substr(obs,1,40)','fecreacion'];
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'categoria','categoria')">
+            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'adjuntos_categoria','dsc_categoria')">
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE CATEGORIA</B></font>
             </div>
@@ -59,13 +59,13 @@ $campos=['categoria','substr(obs,1,40)','fecreacion'];
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='categoria_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('categoria_form.php')">
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
-            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('categoria')})">
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('adjuntos_categoria')})">
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
         <div class="mostrar-tabla">
             <?php
-             $consultas->crearTabla($cabecera,$campos,'categoria');
+             $consultas->crearTabla($cabecera,$campos,'adjuntos_categoria');
 
             ?>
         </div>

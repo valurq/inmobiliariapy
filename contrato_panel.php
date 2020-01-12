@@ -11,6 +11,12 @@ $campos=['(SELECT dsc_moneda FROM moneda WHERE id = moneda_id)','(SELECT dsc_ofi
 
 @$oficina=$_POST['idOfi'];
 $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$oficina);
+$nombreOfi=$nombreOfi->fetch_array(MYSQLI_NUM);
+
+if (!@$_POST['idOfi']) {
+  $nombreOfi = array("");
+}
+
 ?>
 <html lang="en" dir="ltr">
 
@@ -71,8 +77,8 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
             <br><br>
             <!--campo buscador en el panel -->
 
-            <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE CONTRATO</B></font>
+            <div class="wpmd" id="text1" style="position:absolute; overflow:visible; left:10px; top:10px; width:50%; height:22px; z-index:1">
+                <font color="#808080" class="ws12"><B>PANEL DE CONTRATO <?php echo "DE LA OFICINA $nombreOfi[0]"; ?></B></font>
             </div>
             
             <?php
@@ -116,15 +122,15 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $button2 = $('a#button2');
               $button3 = $('a#button3');
               $buscador = $('#buscador');
-              $oficina = "<?php echo $oficina ?>"
-
+              $oficina = "<?php echo $oficina ?>";
+              $nombreOficina = "<?php echo $nombreOfi[0] ?>";
 
 
               $button1.click(function() {
                 if ( $(this).attr('class') != "down" ){
                     $(this).toggleClass("down");
-                    buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "vigente");
-                    //buscarTablaPanelesQ(campos, this.value ,"contratos", "(SELECT dsc_oficina FROM oficina WHERE id = oficina_id)", "(SELECT estado FROM oficina WHERE id = oficina_id)", "ACTIVO");
+
+                    buscarTablaPanelesQ(campos, $nombreOficina, 'contratos','(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = "ACTIVO")', 'estado', 'vigente');
 
                     if ($oficina == "") {
                         document.getElementById('buscador').value="";
@@ -144,8 +150,7 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
               $button2.click(function() {
                 if ( $(this).attr('class') != "down" ){
                     $(this).toggleClass("down");
-                   buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "inactivo");
-                   //buscarTablaPanelesQ(campos,$oficina,"contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "inactivo");
+                   buscarTablaPanelesQ(campos, $nombreOficina, 'contratos','(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = "ACTIVO")', 'estado', 'inactivo');
 
                     if ($oficina == "") {
                         document.getElementById('buscador').value="";
@@ -163,10 +168,9 @@ $nombreOfi = $consultas->consultarDatos(["dsc_oficina"], "oficina", "", "id", @$
 
               $button3.click(function() {
                 if ( $(this).attr('class') != "down" ){
-                    $(this).toggleClass("down");
-                  //  buscarTablaPanelesQ(campos,"","contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "");
-                  buscarTablaPanelesQ(campos,$oficina,"contratos","oficina_id", "estado", "");
-                  //buscarTablaPanelesQ(campos,$oficina,"contratos","(SELECT dsc_oficina FROM oficina WHERE id = "+$oficina+" AND estado = 'ACTIVO')", "estado", "");
+                  $(this).toggleClass("down");
+                  
+                  buscarTablaPanelesQ(campos, $nombreOficina, 'contratos','(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = "ACTIVO")', 'estado', '');
                     if ($oficina == "") {
                         $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"contratos"'+","+'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id AND estado = '+"'ACTIVO'"+')"'+", "+'"estado"'+", "+'""'+")");
                         document.getElementById('buscador').value="";

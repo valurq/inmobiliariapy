@@ -3,7 +3,7 @@
      INICIALIZACIONES VARIAS
      ===========================*/
     date_default_timezone_set("America/Asuncion");
-    require "../Parametros/conexion.php";
+    require "./Parametros/conexion.php";
     $consultas = new Consultas();
     $tabla = "propiedades"; //tabla en la que insertar los registros resultantes
     $currentDate = date("Y_m_d__H_i_s", time()); //para nombrar directorios

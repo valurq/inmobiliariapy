@@ -32,19 +32,20 @@ session_start();
 
             $referencia     = trim( $_POST['referencia'] ) ;
             $refobjeto  = trim( $_POST['refobjeto'] ) ;
-            $refBuscador = trim( $_POST['refBuscador'] ) ;
+            $dsc_objeto = trim( $_POST['refBuscador'] ) ;
             $idobjeto = trim( $_POST['idobjeto'] ) ;
             $categorias = trim( $_POST['categorias'] ) ;
+            $adjuntos_categoria_id = trim( $_POST['adjuntos_categoria_id'] ) ;
             $fecha_vto  = trim( $_POST['fecha_vto'] ) ;
             $estado  = trim( $_POST['estado'] ) ;
             $carpeta ='/almacen/' ;
             $nombre_archivo = $newFileName;
-            $buscador = $referencia . $refobjeto . $categorias . $refBuscador;
+            $buscador = $referencia . $refobjeto . $categorias . $dsc_objeto;
             $creador    =$_SESSION['usuario'] ;
 
-            $campos = array('referencia','refobjeto','idobjeto','categorias','fecha_vto','estado','carpeta','nombre_archivo','buscador','creador');
+            $campos = array('referencia','refobjeto','dsc_objeto','idobjeto','categorias','adjuntos_categoria_id' ,'fecha_vto','estado','carpeta','nombre_archivo','buscador','creador');
 
-            $valores ="'".$referencia."','".$refobjeto."','".$idobjeto."','".$categorias."','".$fecha_vto."','".$estado."','".$carpeta."','".$nombre_archivo."', '".$buscador."', '".$creador."'" ;
+            $valores ="'".$referencia."','".$refobjeto."','".$dsc_objeto."','".$idobjeto."','".$categorias."','".$adjuntos_categoria_id."' ,'".$fecha_vto."','".$estado."','".$carpeta."','".$nombre_archivo."', '".$buscador."', '".$creador."'" ;
 
             //{ //Si la extension del archivo esta dentro de la lista permitida
               // Directorio destino del archivo.
