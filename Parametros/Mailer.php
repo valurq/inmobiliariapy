@@ -98,10 +98,10 @@ class Mailer extends Consultas{
 		if($mailer != null){
 			//VALIDACIONES-----------------------------------------------
 			if(empty($destinatarios) or empty($cuerpo) or empty($asunto)){
-				$mailer->setError("No se han indicado todos los parametros 
-				obligatorios para el envio de mensajes");
+				$mailer->ErrorInfo = "No se han indicado todos los parametros 
+				obligatorios para el envio de mensajes";
 				$this->currentMailer = $mailer;
-				logError($this->getLastError());
+				$this->logError($this->getLastError());
 				return false;
 			}
 
@@ -132,7 +132,7 @@ class Mailer extends Consultas{
 				//logSuccess(); //crea un fichero que puede crecer mucho en el tiempo
 				return true;
 			}else{
-				logError($this->lastError());
+				$this->logError($this->getlastError());
 				return false;
 			}
 		}else{
@@ -140,7 +140,6 @@ class Mailer extends Consultas{
 			la configuracion del mailer";
 			$this->logError($this->lastError);
 		}
-
 	}	
 
 	//Debe ser inmediatamente llamado si sendMsj retorna FALSE
