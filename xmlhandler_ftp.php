@@ -3,7 +3,7 @@
      INICIALIZACIONES VARIAS
      ===========================*/
     date_default_timezone_set("America/Asuncion");
-    require "./Parametros/conexion.php";
+    require "../Parametros/conexion.php";
     $consultas = new Consultas();
     $tabla = "propiedades"; //tabla en la que insertar los registros resultantes
     $currentDate = date("Y_m_d__H_i_s", time()); //para nombrar directorios
@@ -20,40 +20,32 @@
     $nuevosXML = array(); //los ficheros XML que lleven la palabra "Full"
     $dbcampos = array("nom_fichero");
     $dbtabla = "xml_ficheros";
-    $dtd = "";
-    $ftpconn = ftp_connect("ftp.remax-europe.com"); //conexion al servidor ftp
+    $dtd = "";   
     //validamos la conexion ftp
-    if(ftp_login($ftpconn, "remaxparaguay_xml", "3qqyjQV")){
-        ftp_pasv($ftpconn, true);
+    $conexion = connectToFtpServer();
+    if($conexion !== false){
         //obtenemos el listad de ficheros xml que ya fueron leidos en ocasiones pasadas
         $listaXML = $consultas->consultarDatos(array("nom_fichero"),"xml_ficheros");
-        $totalXML = ftp_nlist($ftpconn,"."); //lista de ficheros en el servidor
         $leidosXML = array();
         while($nomXML = $listaXML->fetch_assoc()){
             array_push($leidosXML,$nomXML["nom_fichero"]);
         }
+        
+        $totalXML = ftp_nlist($conexion, "."); //lista de ficheros en el servidor
         //obtencion de los XML a cargar
         if(gettype($totalXML)!="boolean"){
             foreach($totalXML as $XML){
-                $existe = false;
-                foreach($leidosXML as $leido){
-                    if($leido==$XML){
-                        $existe = true;
-                    }
-                }
-                //guardamos los ficheros en sus respectivos arrays de acuerdo a la 
-                //nomenclatura de su nombre
                 $espropiedad = strpos($XML, "Properties_114001");
-                if ($espropiedad!==false) {
-                    //Solo se procesaran los ficheros con extension full
-                    $esFull = strpos($XML,"_Full.xml");
-                    if (!$existe and $esFull!==false) {
+                $esFull = strpos($XML, "_Full.xml");
+                $esDtd = strpos($XML, ".dtd");
+                foreach($leidosXML as $leido){
+                    if($leido==$XML and $espropiedad !== false and $esFull !==false){
                         array_push($nuevosXML, $XML);
                     }
-                }else if (strpos($XML, ".dtd") !== false) {           
-                        $dtd =  $XML;
-
-                }              
+                    if($esDtd){
+                        $dtd = $XML;
+                    }
+                }            
             }
         }else{
             fwrite($log, "ALERTA: No hay ficheros procesados en la base de datos" . PHP_EOL);
@@ -61,44 +53,52 @@
 
         fwrite($log, "INFORME: Se ha determinado los/el xml/s a leer en tiempo: " . date("Y-m-d H:i:s") . PHP_EOL);
 
+        var_dump($nuevosXML);
+
         /*===================================================================================
         DESCARGA DE LOS FICHEROS XML SEGUN LOS NOMBRES ALMACENADOS ANTERIORMENTE 
         =====================================================================================*/
-        if(!empty($nuevosXML)){
-            //descargar primeramente el DTD
-            if (ftp_get($ftpconn, $newDir . "/" . $dtd, $dtd, FTP_ASCII)) {
-                if($consultas->insertarDato($dbtabla, $dbcampos, "'" . $XML . "'")){
-                    fwrite($log, "QUERY: Fichero $XML guardado como procesado en base de datos" . PHP_EOL);
-                }else{
-                    fwrite($log, "ALERTA-QUERY: Fichero $XML no se registro en base de datos" . PHP_EOL);
-                }
+        //descargar primeramente el DTD
+        $handler = fopen($newDir . "/" . $dtd, "w");
+        if (ftp_fget($conexion, $handler, $dtd, FTP_ASCII, 0)) {
+            if ($consultas->insertarDato($dbtabla, $dbcampos, "'" . $XML . "'")) {
+                fwrite($log, "QUERY: Fichero $XML guardado como procesado en base de datos" . PHP_EOL);
+            } else {
+                fwrite($log, "ALERTA-QUERY: Fichero $XML no se registro en base de datos" . PHP_EOL);
             }
-            
+        }
+        //Reiniciar la conexion
+        ftp_close($conexion);
+        $conexion = connectToFtpServer();
+        if(!empty($nuevosXML)){            
             foreach($nuevosXML as $XML){
-                if(ftp_get($ftpconn,$newDir."/".$XML,$XML,FTP_ASCII)){
-                    if($consultas->insertarDato($dbtabla, $dbcampos,"'".$XML."'")){
-                        fwrite($log, "QUERY: Fichero $XML guardado como procesado en base de datos" . PHP_EOL);
+                if($conexion !== false){                
+                    fwrite($log, "INFORME: Iniciando descarga de --> $XML" . PHP_EOL);
+                    $handler = fopen($newDir . "/" . $XML, "w");
+                    if(ftp_fget($conexion,$handler,$XML,FTP_ASCII)){
+                        if($consultas->insertarDato($dbtabla, $dbcampos,"'".$XML."'")){
+                            fwrite($log, "QUERY: Fichero $XML guardado como procesado en base de datos" . PHP_EOL);
+                        }else{
+                            fwrite($log, "ALERTA-QUERY: Fichero $XML no se registro en base de datos" . PHP_EOL);
+                        }
                     }else{
-                        fwrite($log, "ALERTA-QUERY: Fichero $XML no se registro en base de datos" . PHP_EOL);
+                        fwrite($log, "FATAL: El fichero $XML no se pudo descargar, puede deberse a un problema del firewall" . PHP_EOL);
                     }
+                    ftp_close($conexion);
+                    $conexion = connectToFtpServer();
                 }
             }    
+        }else{
+            fwrite($log, "INFORE: No hay nuevos XML que cargar" . PHP_EOL);
         }
     }else{
         fwrite($log,"FATAL: No se pudo iniciar sesion en el servidor FTP".PHP_EOL);
     }
-    ftp_close($ftpconn); //cerrar conexion ftp
+
+    ftp_close($conexion); //cerrar conexion ftp
 
     fwrite($log, "INFORME: Se han descargado el/los ficheros xml en tiempo: " . date("Y-m-d H:i:s") . PHP_EOL);
-
-    //liberar variables de la memoria
-    unset($listaXML);
-    unset($totalXML);
-    unset($leidosXML);
-    unset($espropiedad);
-    unset($existe);
-    unset($ftpconn);
-
+    
     //lee los xml nuevos si existiesen
     require "xmlhandler_reader.php";
 
@@ -110,5 +110,25 @@
     echo "El script ha terminado de ejecutarse.<br>
     Directorio generado: ".str_replace("./","",$newDir)."<br>
     Log de proceso: process_log_".$currentDate. ".log<br>";
+
+    //Retorna TRUE si la conexion fue exitosa y FALSE si no se pudo conectar
+    function connectToFtpServer(){
+        global $log;
+        $conexion = ftp_connect("ftp.remax-europe.com", 21, 90);
+        if($conexion){
+            if(ftp_login($conexion, "remaxparaguay_xml", "3qqyjQV")){
+                if(ftp_pasv($conexion, true)){
+                    return $conexion;
+                }else{
+                    fwrite($log, "FATAL: la conexion ftp no se pudo establecer en modo pasivo" . PHP_EOL);
+                }
+            }else{
+                fwrite($log, "FATAL: no se pudo autenticar el usuario remaxparaguay_xml" . PHP_EOL);
+            }
+        }else{
+            fwrite($log, "FATAL: no se pudo conectar a ftp.remax-europe.com" . PHP_EOL);
+        }
+        return false;
+    }
 
 ?>

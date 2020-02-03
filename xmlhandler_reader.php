@@ -69,6 +69,50 @@
                     }
                 }
                 return $valor;
+            case "estado":
+                //Por ahora se ignorara el id de estado ofrecido por el xml
+                $valor = "DISPONIBLE";
+                return $valor;
+            case "totalm2":
+                if(empty($valor)){
+                    $valor = "0";
+
+                }
+                return $valor;
+            case "captacion_com":
+                if (empty($valor)) {
+                    $valor = "0";
+                }
+                return $valor;
+            case "listingstatus":
+                if(empty($valor)){
+                    return "";
+                }else{
+                    switch($valor){
+                        case "1":
+                            return "Active";
+                        case "2":
+                            return "Sold";
+                        case "3":
+                            return "Rented";
+                        case "4":
+                            return "Expired";
+                        case "5":
+                            return "Cancelled";
+                        case "6":
+                            return "Sold by Other Agent";
+                        case "7":
+                            return "Sold by Owner";
+                        case "8":
+                            return "Sale Agreed";
+                        case "9":
+                            return "On Option";
+                        case "10":
+                            return "Prospective";
+                        default: 
+                            return "Undefined";
+                    }
+                }
             default:
                 if (empty($valor) or strlen($valor)<=0) {
                     $valor = "";
@@ -84,22 +128,23 @@
         //Array que contiene los tags que se buscaran de cada <Property> (osea de cada propiedad)
         //El indice de cada tag representa su campo equivalente en la base de datos
         $tags = array(
-            "id_remax" => "IntegratorPropertyID", "Finca_ccctral" => "RegionID",
+            "id_remax" => "IntegratorPropertyID",
             "cate_propiedad" => "CommercialResidential", "cod_iconnect" => "IntegratorSalesAssociateID",
             "direccion" => "AddressLine2", "dsc_ciudad" => "City",
             "precio" => "CurrentListingPrice", "precio_mon" => "CurrentListingCurrency",
             "totalm2" => "TotalArea", "fecha_alta" => "OrigListingDate",
             "fecha_vto" => "ExpiryDate", "dsc_inmueble" => "DescriptionText",
-            "captacion_com" => "ComTotalPct", "estado" => "PropertyStatus"
+            "captacion_com" => "ComTotalPct", "estado" => "PropertyStatus",
+            "listingstatus" => "ListingStatus", "code" => "ListingStatus"
         );
 
         //En este array se guardan los nombres de los tags (como indice) y el nombre de su atributo a 
         //buscar (como valor) si es que lo tuviese
         //Cuando se busca el attributo de un tag se ignorara el valor del mismo si es que lo tuviese
         $attrs = array(
-            "RegionID" => "RegionID",
             "CurrentListingCurrency" => "CurrentListingCurrency",
-            "PropertyStatus" => "PropertyStatus"        
+            "PropertyStatus" => "PropertyStatus",
+            "ListingStatus" => "ListingStatus"        
         );
 
         //Se cargaran como campos los que esten definidos en el array de tags
@@ -124,7 +169,8 @@
                     //Se obtiene el valor del atributo del tag
                     if($indice == $tag){
                         $esAtributo = true;
-                        $valores[$field] = (string) evaluarCaso($field, (string) $property->$tag[$attr], $property);
+                        $valores[$field] = (string) evaluarCaso($field, (string) $property->$tag->attributes()->$attr, $property);
+                        //$valores[$field] = (string) evaluarCaso($field, (string) $property->$tag[$attr], $property);
                     }
                 }
 
@@ -149,10 +195,10 @@
             $modificar = gettype($registroBD) == "boolean";
             $modificar = ($modificar) ? 0 : $registroBD->num_rows;
             if ($modificar>0) {
-
+                fwrite($log, "INFORME: Propiedad " . $valores["id_remax"] . " ya existe y no necesita actualizarse ($XML)" . PHP_EOL);
                 //corroboramos que todos los campos sean iguales
                 //en teoria no pueden haber 2 id_remax iguales
-                $registro = $registroBD->fetch_assoc();
+                /*$registro = $registroBD->fetch_assoc();
                 $campos_diferencia = array();
                 $valores_diferencia = "";
 
@@ -195,7 +241,8 @@
                     }
                 } else {
                     fwrite($log, "INFORME: Propiedad ". $valores["id_remax"]." ya existe y no necesita actualizarse ($XML)" . PHP_EOL);
-                }
+                }*/
+
             } else {
 
                 $str_valores = "";
@@ -220,4 +267,58 @@
 
         }
     }
+
+    //Obtencion de los registros de la tabla de monedas
+    $monedas = $consultas->consultarDatos(array("id", "simbolo"), "moneda");
+    $simbolo_monedas = array();
+    if (gettype($monedas) != "boolean") {
+        if ($monedas->num_rows > 0) {
+            while ($registro = $monedas->fetch_assoc()) {
+                array_push($simbolo_monedas, $registro);
+            }
+        } else {
+            fwrite($log, "SQL ERROR: No se encontraron registros en la tabla de monedas" . PHP_EOL);
+        }
+    } else {
+        fwrite($log, "SQL ERROR: No se encontraron registros en la tabla de monedas" . PHP_EOL);
+    }
+
+    //Obtencion de los registros de l a tabla de popiedades
+    $simbolo_propiedades = $consultas->consultarDatos(array("id", "precio_mon"), "propiedades");
+    if (gettype($simbolo_propiedades) != "boolean") {
+        if ($simbolo_propiedades->num_rows > 0) {
+            while ($registro_propiedades = $simbolo_propiedades->fetch_assoc()) {
+                //Comparacion con los simbolos de la tabla moneda para obtener el id de la moneda
+                $updated = false;
+                foreach ($simbolo_monedas as $moneda) {
+                    if ($registro_propiedades["precio_mon"] == $moneda["simbolo"]) {
+                        $res = $consultas->modificarDato(
+                            "propiedades",
+                            array("moneda_id"),
+                            $moneda["id"],
+                            "id",
+                            $registro_propiedades["id"]
+                        );
+                        if ($res > 0) {
+                            $updated = true;
+                        }
+                    }
+                }
+                //Que no se haya actualizado se puede deber a que la consulta fallo o que le simbolo 
+                //no exista en la tabla de monedas
+                if (!$updated) {
+                    fwrite($log, "SQL ALERTA: No se actualizó el campo moneda_id de la propiedad con id "
+                      . $registro_propiedades["id"] . PHP_EOL);
+                } else {
+                    fwrite($log, "SQL INFORME: Se actualizó el campo moneda_id de la propiedad con id "
+                        . $registro_propiedades["id"] . PHP_EOL);
+                }
+            }
+        } else {
+            fwrite($log, "SQL ERROR: No se encontraron registros en la tabla de propiedades" . PHP_EOL);
+        }
+    } else {
+        fwrite($log, "SQL ERROR: No se encontraron registros en la tabla de propiedades" . PHP_EOL);
+    }
+
 ?>
