@@ -28,8 +28,8 @@
       <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
       <link rel="stylesheet" href="CSS/popup.css">
       <link rel="stylesheet" href="CSS/paneles.css">
-      <script src="JS/jquery-3.4.0.js"></script>
-      <script src="JS/funciones.js"></script>
+      <script src="Js/jquery-3.4.0.js"></script>
+      <script src="Js/funciones.js"></script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
       <script type="text/javascript">

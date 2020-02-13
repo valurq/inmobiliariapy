@@ -6,7 +6,7 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Titulo','Grupo','Posicion','Direccion'];
+$cabecera=['Título','Grupo','Posición','Dirección'];
 $campos=['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_id)','posicion','link_acceso'];
 
 
@@ -22,6 +22,9 @@ $campos=['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_
   			  crossorigin="anonymous">
       </script>
         <script type="text/javascript" src="Js/funciones.js"></script>
+        <script>
+            var campos = ['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_id)','posicion','link_acceso'];
+        </script>
         <meta charset="utf-8">
         <style media="screen">
             .menu-panel{
@@ -52,10 +55,15 @@ $campos=['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_
                 <font color="#808080" class="ws12"><B>PANEL DE MENU</B></font>
             </div>
 
+            <input type='text' name='buscador' id='buscador' placeholder="Buscar por titulo" onkeyup='buscarTablaPanelesQ(campos, this.value, "menu_opcion", "titulo_menu", "", "")'>
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='menu_opcion_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('menu_opcion_form.php')">
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
             id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('menu_opcion')},'menu_opcion')">
+            <?php
+                //name, campoId, campoDescripcion, tabla
+                $consultas->crearMenuDesplegable('grupo','id','descripcion','grupo_menu');
+             ?>
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
@@ -67,4 +75,32 @@ $campos=['titulo_menu','(SELECT descripcion FROM grupo_menu WHERE id=grupo_menu_
         </div>
     </body>
 
+    <script>
+        $grupo = $("[name='grupo']");
+        var option = document.createElement('option');
+        var text = "Todos los grupos";
+        option.appendChild(document.createTextNode(text));
+        option.setAttribute('selected', true);
+        option.setAttribute("value", "0");
+        grupo.prepend(option);
+
+        $buscador = $('#buscador');
+        $grupo.change(function(){
+            $value = $(this).val();
+            //alert($value);
+
+            if ($value != 0){
+                document.getElementById('buscador').value="";
+                buscarTablaPanelesQ(campos, "", 'menu_opcion','titulo_menu', 'grupo_menu_id', $value);
+                $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"menu_opcion"'+", "+'"titulo_menu"'+", "+'"grupo_menu_id"'+", "+$value+")");
+            }
+            else if ($value == 0){
+                document.getElementById('buscador').value="";
+                buscarTablaPanelesQ(campos, "", 'menu_opcion','titulo_menu', '', '');
+                $buscador.attr("onkeyup", "buscarTablaPanelesQ(campos, this.value, "+'"menu_opcion"'+", "+'"titulo_menu"'+", '', '')");
+            }
+
+        });
+
+    </script>
 </html>

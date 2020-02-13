@@ -32,13 +32,13 @@
                $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'personal',"","id",$resultado[1] );
                $aux=$aux->fetch_array(MYSQLI_NUM);
           }else if($resultado[7] == "vendedor"){
-               $aux = $inserta_Datos->consultarDatos(array('dsc_vendedor'),'vendedor',"","id",$resultado[1] );     
+               $aux = $inserta_Datos->consultarDatos(array('dsc_vendedor'),'vendedor',"","id",$resultado[1] );
                $aux=$aux->fetch_array(MYSQLI_NUM);
           }else if ($resultado[7] == "oficina") {
-              $aux = $inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$resultado[1] );     
-              $aux=$aux->fetch_array(MYSQLI_NUM);  
+              $aux = $inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$resultado[1] );
+              $aux=$aux->fetch_array(MYSQLI_NUM);
           }else if ($resultado[7] == "manager") {
-              $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'manager',"","id",$resultado[1] );     
+              $aux = $inserta_Datos->consultarDatos(array('nombrefull'),'manager',"","id",$resultado[1] );
               $aux=$aux->fetch_array(MYSQLI_NUM);
           }
           /*
@@ -47,7 +47,7 @@
           $robj=array_pop($resultado);
           array_push($resultado,$aux[0]);
 
-          $archivo = $inserta_Datos->consultarDatos(array('nombre_archivo'),'adjuntos',"","id",$id );     
+          $archivo = $inserta_Datos->consultarDatos(array('nombre_archivo'),'adjuntos',"","id",$id );
           $archivo=$archivo->fetch_array(MYSQLI_NUM);
 
           $carpeta = $inserta_Datos->consultarDatos(array('carpeta'),'adjuntos',"","id",$id );
@@ -91,7 +91,7 @@
     <br>
     <div id="upload" style="visibility:visible">
       <!--EVENTO QUE AYUDA A ADJUNTAR ARCHIVO AL SISTEMA, UNO POR UNO -->
-      <?php 
+      <?php
         if(isset($_POST['seleccionado'])){
 
           echo "<iframe src='".$nombre_archivo."' height='400px' width='80%'>
@@ -111,21 +111,21 @@
     <font color="#000000" class="ws12"><B>Datos del documento</B></font>
     <table width="65%" border="0" cellpadding="0" cellspacing="0" style="font-family:arial;font-Size=20px">
         <tr>
-              <td width="20%"> Referencia *:</td>
+              <td width="30%"> Referencia *:</td>
               <td><input type="text" id="referencia" name="referencia" size="100%" placeholder="Ingrese la referencia" /></td>
         </tr>
         <tr>
               <td width="20%"> Relaciones *:</td>
               <td width="60%">
-                <label for="otros">Otros</label><input type="radio" id="otros" name="refobjeto" value="otros">
-                <label for="personal">Personal</label><input type="radio" id="personal" name="refobjeto" value="personal">
-                <label for="oficina">Oficina</label><input type="radio" id="oficina" name="refobjeto" value="oficina">
-                <label for="vendedor">Vendedor</label><input type="radio" id="vendedor" name="refobjeto" value="vendedor">
-                <label for="manager">Manager</label><input type="radio" id="manager" name="refobjeto" value="manager">
+                <input type="radio" id="otros" name="refobjeto" value="otros"><label for="otros">Otros</label>
+                <input type="radio" id="personal" name="refobjeto" value="personal"><label for="personal">Personal</label>
+                <input type="radio" id="oficina" name="refobjeto" value="oficina"><label for="oficina">Oficina</label>
+                <input type="radio" id="vendedor" name="refobjeto" value="vendedor"><label for="vendedor">Vendedor</label>
+                <input type="radio" id="manager" name="refobjeto" value="manager"><label for="manager">Manager</label>
               </td>
         </tr>
         <tr id="rowBuscador" style="visibility: hidden;">
-          <td width="20%"> Relaciones *: </td>
+          <td width="30%"> Relaciones *: </td>
           <td>
             <input list="id_refBuscador" id="refBuscador" name="refBuscador" autocomplete="off" placeholder="Ingrese la relación" >
             <datalist id="id_refBuscador">
@@ -136,9 +136,9 @@
           </td>
         </tr>
         <tr>
-          <td width="20%"> Categoria: </td>
+          <td width="30%"> Categoría: </td>
           <td>
-            <input list="id_categorias" id="categorias" name="categorias" autocomplete="off" placeholder="Ingrese la relación" 
+            <input list="id_categorias" id="categorias" name="categorias" autocomplete="off" placeholder="Ingrese la relación"
             onkeyup="buscarLista(['dsc_categoria'], this.value, 'adjuntos_categoria', 'dsc_categoria', 'id_categorias', 'idcategoria')">
             <datalist id="id_categorias">
               <option value=""></option>
@@ -150,16 +150,16 @@
               <td width="60%"><input type="text" name="categorias" id="categorias" style="width:160px;z-index:2" placeholder="Introduzca la categoria" /></td> -->
         </tr>
         <tr>
-              <td width="20%">Fecha Vencimiento: </td>
+              <td width="30%">Fecha Vencimiento: </td>
               <td><input name="fecha_vto" id="fecha_vto" type="date" style="width:160px;z-index:2"></td>
         </tr>
         <tr>
-          <td width="20%">Estado: </td>
+          <td width="30%">Estado: </td>
           <td>
               <?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[4],'estado',array('inactivo','vigente'))?>
             </td>
         </tr>
-        
+
         <tr>
             <?php
               if(!isset($_POST['seleccionado'])){
@@ -258,7 +258,7 @@
   }
 
   extension = extension.split('-');
-  
+
 
   var tamanho = <?php  echo"'". $tamanho[0] . "'" ?>;
 
@@ -274,7 +274,7 @@
     }else{
       var ext = fileName.split('.').pop();
       //console.log(ext);
-      
+
       for(let j = 0; j <= extension.length; j++){
           //console.log(extension[j]);
         if(extension[j] == ext){

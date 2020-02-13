@@ -30,7 +30,7 @@
             $test=$inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$oficina );
             $test=$test->fetch_array(MYSQLI_NUM);
 
-            $campos2 = array('anho','fee_administrativo', 'fondo_marketing');
+            $campos2 = array('desde','hasta','fee_administrativo', 'fondo_marketing');
             $test2=$inserta_Datos->consultarDatos($campos2,'variacion_anual',"","contratos_id", $id);
             $cobros=[];
             while($aux=$test2->fetch_row()){
@@ -153,7 +153,7 @@
         </tr>
         <tr>
             <td><label for="">Mora por día</label></td>
-            <td><input type="number" name="mora_dia" id="mora_dia" step="any" readonly placeholder="Ingrese el monto de la mora" class="campos-ingreso"></td>
+            <td><input type="text" name="mora_dia" id="mora_dia" step="any" data-type="currency" maxlength="12" placeholder="Ingrese el monto de la mora" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"></td>
         </tr>
         <tr>
             <td><label for="">Interés</label></td>
@@ -182,14 +182,21 @@
   <form action="" id="form2">
     <fieldset>
       <legend>COBROS POR CONTRATO</legend>
-      <table id="tableAux">
+      <table>
         <tbody id="tableInput">
           <tr>
-            <td><span><b>AÑO</b></span></td>
+            <td><span><b>DESDE</b></span></td>
+            <td><span><b>HASTA</b></span></td>
             <td><span><b>FEE ADM.</b></span></td>
             <td><span><b>FEE MK.</b></span></td>
+            <td><span><b></b></span></td>
           </tr>
+          
         </tbody>
+      </table>
+
+      <table id="table">
+        <tbody id="tableAux"></tbody>
       </table>
     </fieldset>
   </form>
@@ -215,21 +222,35 @@
 ?>
 <script type="text/javascript">
 
+  $( () => {
+    formatoMoneda($("input[data-type='currency']"));
+  });
+
   $nombreOfi = "<?php echo $test[0] ?>";
   document.getElementById('titulo').innerHTML += '<br />Oficina: ' + $nombreOfi;
 
   var cobros = JSON.parse('<?php  echo json_encode($cobros) ?>');
   let tabla = document.getElementById('tableInput');
+
+  var formato = new Intl.NumberFormat('en-US');
   
-  for (var i = 0; i < cobros.length; i++) {
-    let row = document.createElement('tr');
-    for (var j = 0; j < cobros[i].length; j++) {
-      let data = document.createElement('td');
-      let text = document.createTextNode(cobros[i][j]);
-      data.appendChild(text);
-      row.appendChild(data);
-      tabla.appendChild(row);
+  for(let fila of cobros){
+    let tr = document.createElement('tr');
+    for(let celda of fila){
+      let td = document.createElement('td');
+      let text = '';
+
+
+      if(formato.format(celda) == 'NaN')
+        text = document.createTextNode(celda);
+      else
+        text = document.createTextNode(formato.format(celda));
+
+      td.appendChild(text);
+      td.style.textAlign = 'right';
+      tr.appendChild(td);
     }
+    tabla.appendChild(tr);
   }
 
   </script>

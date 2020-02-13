@@ -22,12 +22,13 @@
             width: 100%;
             display: grid;
             /*grid-template-columns: repeat(6, [col-start] 150px);*/
-            grid-template-columns: repeat( auto-fit, 120px );
+            grid-template-columns: repeat( auto-fit, 90px );
             /*grid-auto-columns: 150px;*/
-            grid-auto-rows: 150px;
+            grid-auto-rows: 110px;
             /*grid-auto-rows: auto;*/
             grid-gap: 30px;
             padding: 30px;
+            font-size: 10pt;
             box-sizing: border-box;
             }
             .subMenu{

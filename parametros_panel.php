@@ -6,7 +6,7 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Fecha de creacion','"Parametros Generales"'];
+$cabecera=['Fecha de creación','"Parametros Generales"'];
 $campos=['fecreacion','"Parametros Generales"'];
 
 

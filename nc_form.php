@@ -44,7 +44,7 @@
         <script type="text/javascript" src="Js/funciones.js"></script>
 </head>
 <body style="background-color:white">
-  <h2>NOTA CREDITO</h2>
+  <h2>NOTA CRÉDITO</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
@@ -77,7 +77,7 @@
         <td><input type="text" name="concepto" id="concepto" value="" placeholder="Ingrese su concepto" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Numero nota credito</label></td>
+        <td><label for="">Número nota crédito</label></td>
         <td><input type="text" name="numero_nc" id="numero_nc" value="" placeholder="Ingrese numero de la nota de credito" class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -85,7 +85,7 @@
         <td><input type="date" name="fecha" id="fecha" value="" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Observacion</label></td>
+        <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" class="campos-ingreso"></textarea></td>
       </tr>
     </tbody>
@@ -127,7 +127,7 @@ if (isset($_POST['moneda'])) {
         $fecha =trim($_POST['fecha']);
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos =array('moneda_id','oficina_id','importe','concepto','numero_nc','fecha','obs','creador' );
         $valores="'".$moneda."','".$oficina."','".$importe."','".$concepto."','".$numero_nc."','".$fecha."','".$obs."','".$creador."'";
         //echo "$valores";

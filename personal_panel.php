@@ -6,8 +6,8 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Nombre','Tipo de documento ','Numero de documento','Telefono','Fecha de ingreso','Estado Civil','Estado'];
-$campos=['nombrefull','tipo_doc','nro_doc','telefono1','fec_ingreso','est_civil','estado'];
+$cabecera=['Nombre', 'Apellido' ,'Nro de C.I.', 'Teléfono<br />Particular', 'Teléfono<br />Celular','Fecha de ingreso','Estado Civil','Estado', 'Experiencia en<br />Bienes Raices'];
+$campos=['nombrefull', 'apellido', 'nro_doc', 'telefono1', 'telefono2','fec_ingreso','est_civil','estado', 'sededico'];
 
 
 ?>
@@ -25,7 +25,7 @@ $campos=['nombrefull','tipo_doc','nro_doc','telefono1','fec_ingreso','est_civil'
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo'];
+            var campos=['nombrefull', 'apellido', 'nro_doc', 'telefono1', 'telefono2','fec_ingreso','est_civil','estado', 'sededico'];
         </script>
 
         <meta charset="utf-8">
@@ -53,24 +53,46 @@ $campos=['nombrefull','tipo_doc','nro_doc','telefono1','fec_ingreso','est_civil'
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'vendedor','dsc_vendedor')">
-            <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE PERSONAL</B></font>
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por nombre" onkeyup="buscarTablaPaneles(campos, this.value ,'personal','nombrefull')">
+            <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:50%; height:22px; z-index:1">
+                <font color="#808080" class="ws12"><B>PANEL DE SOLICITUD DE ALTA CANDIDATO</B></font>
             </div>
 
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='personal_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('personal_form.php')">
-            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
-            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('personal')},'personal')">
+            <input type="button" class="boton_panel" name="Eliminar" value="Dar de baja" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles', () => {cambiarEstado()})">
+            <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('personal')},'personal')">-->
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
         <div class="mostrar-tabla">
             <?php
-             $consultas->crearTabla($cabecera,$campos,'personal');
+             $consultas->crearTabla($cabecera,$campos,'personal', '', '', ['10%','10%','11%','11%','11%','11%','11%','14%','10%']);
 
             ?>
         </div>
     </body>
+    
+    <script>
+    	function cambiarEstado() {
+            var sel=document.getElementById('seleccionado').value;
+               if((sel=="")||(sel==' ')||(sel==0)){
+                   popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER ELIMINARLO");
+               }else {
+              		popup('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles');
+                   //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
+                   $.post("Parametros/modificarDatos.php", {campos: new Array('estado'), tabla: 'personal', valores: new Array('INACTIVO'), campoCondicion: 'id', valorCondicion: sel}, function(msg) {
+                       console.log(msg);
+                       if(msg==0){
+                           document.getElementById('seleccionado').value="";
+                           location.reload();
+                       }else{
+                           popup('Error',"ERROR EN LA ELIMINACION DEL REGISTRO");
+                       }
+                    });
+               }
+            }
+    </script>
 
 </html>

@@ -6,7 +6,7 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Titulo','Condiciones'];
+$cabecera=['Título','Condiciones'];
 $campos=['titulo','condiciones'];
 
 

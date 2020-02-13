@@ -6,8 +6,8 @@ $consultas = new Consultas();
 include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Id','Nombre','Oficina','Email','Profesion'];
-$campos=['id','dsc_broker','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)','mail','profesion'];
+$cabecera=['Nombre', 'Apellido', 'Usuario', 'Oficina','Email','Profesión', 'Celular'];
+$campos=['dsc_broker', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)', '(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)','mail','profesion', 'telefono2'];
 
 
 ?>
@@ -25,7 +25,7 @@ $campos=['id','dsc_broker','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['id','dsc_broker','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)','mail','profesion'];
+            var campos=['dsc_broker', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)', '(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)','mail','profesion', 'telefono2'];
         </script>
 
         <meta charset="utf-8">
@@ -53,7 +53,7 @@ $campos=['id','dsc_broker','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'brokers','dsc_broker')">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por nombre u oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'brokers','(CONCAT(dsc_broker,(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)) )')">
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE BROKERS</B></font>
             </div>

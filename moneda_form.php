@@ -60,12 +60,12 @@
         <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[1],'tipo',array('Local','Extranjero'))?></td>
       </tr>
       <tr>
-        <td><label for="">Simbolo</label></td>
-        <td><input type="text" name="simbolo" id="simbolo" value="" placeholder="Ingrese el simbolo de la moneda" class="campos-ingreso"><br></td>
+        <td><label for="">Abreviatura</label></td>
+        <td><input type="text" name="simbolo" id="simbolo" value="" placeholder="Ingrese la abreviatura de la moneda" class="campos-ingreso"><br></td>
       </tr>
       <tr>
         <td><label for="">Compra</label></td>
-        <td><input type="text" name="compra" id="compra" value=""  readonly class="campos-ingreso"><br></td>
+        <td><input type="text" name="compra" id="compra" value="" readonly class="campos-ingreso" ><br></td>
       </tr>
       <tr>
         <td><label for="">Venta</label></td>
@@ -106,7 +106,7 @@ if (isset($_POST['moneda'])) {
         $tipo   =trim($_POST['tipo']);
         $simbolo =trim($_POST['simbolo']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos = array( 'dsc_moneda','tipo','simbolo','creador' );
         $valores="'".$moneda."','".$tipo."','".$simbolo."','".$creador."'";
         /*

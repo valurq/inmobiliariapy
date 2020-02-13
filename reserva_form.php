@@ -16,19 +16,27 @@
         /*
             VALIDAR SI EL FORMULARIO FUE LLAMADO PARA LA MODIFICACION O CREACION DE UN REGISTRO
         */
+        
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
             $campos=array('(SELECT id_remax FROM propiedades WHERE id = propiedades_id)','propiedades_id', 'moneda_id', 'fecha', 'importe', 'referencia', 'cotizacion', 'fecha_vto', 'nombre', 'nro_ci', 'email', 'estado');
+            
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
             $resultado=$inserta_Datos->consultarDatos($campos,'reservas',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
+            
+            echo '<pre>';
+    		print_r($resultado);
+    		echo '</pre>';
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
             $camposIdForm=array( 'propiedades_lista', 'propiedades_id','moneda','fecha','importe','referencia','cotizacion','fecha_vto','nombre','nro_ci','email');
         }
+        
+        
     ?>
 
 
@@ -52,12 +60,15 @@
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-        <td><label for="">ID Propiedad REMAX</label></td>
+        <td><label for="">ID Propiedad RE/MAX</label></td>
         <td>
-          <input list="propiedad" id="propiedades_lista" name="propiedades_lista" autocomplete="off" placeholder="Ingrese el código de la propiedad" class="campos-ingreso" onkeyup="buscarListaQ(['id_remax'], this.value,'propiedades', 'id_remax', 'propiedad', 'propiedades_id', 'estado', '')" >
+          <input list="propiedad" id="propiedades_lista" name="propiedades_lista" autocomplete="off" placeholder="Ingrese el código de la propiedad" class="campos-ingreso" onkeyup="buscarListaQ(['id_remax'], this.value,'propiedades', 'id_remax', 'propiedad', 'propiedades_id', 'estado', '','','LIMIT 10')" >
           <datalist id="propiedad">
             <option value=""></option>
           </datalist>
+        </td>
+        <td>
+        	
         </td>
         <td>
           <input type="hidden" name="propiedades_id" id="propiedades_id">
@@ -148,6 +159,7 @@ if (isset($_POST['propiedades_id'])) {
     // NUEVO REGISTRO
     //======================================================================================
     if(isset($_POST['propiedades_id'])){
+    	
         $propiedades_id =trim($_POST['propiedades_id']);
         $moneda =trim($_POST['moneda']);
         $fecha =trim($_POST['fecha']);
@@ -186,16 +198,15 @@ if (isset($_POST['propiedades_id'])) {
   });
 
   function asignarCotizacion(resultado){
-    $('#cotizacion').val(resultado[0]);
+    $('#cotizacion').val(resultado[0][0]);
   }
 
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-		if( (document.getElementById('propiedades_lista').value =='') ){
-      popup('Advertencia','Es necesario ingresar todos los campos') ;
-		  return true ;
+		if( (document.getElementById('propiedades_lista').value !='') ){
+		  	return true ;
 
 		}else{
         // Error - Advertencia - Informacion

@@ -99,7 +99,7 @@
         <td><input type="date" name="fecha_uso" id="fecha_uso" value="" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Observacion</label></td>
+        <td><label for="">Observación</label></td>
         <td><textarea name="obs" id="obs" rows="8" cols="80" class="campos-ingreso"></textarea></td>
       </tr>
     </tbody>
@@ -142,7 +142,7 @@ if (isset($_POST['fecha'])) {
         $fecha_uso =trim($_POST['fecha_uso']);
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos = array( 'fecha','vendedor_id','moneda_id','conceptos_id','importe','estado','fecha_uso','obs','creador' );
         $valores="'".$fecha."','".$vendedor."','".$moneda."','".$conceptos."','".$importe."','".$estado."','".$fecha_uso."','".$obs."','".$creador."'";
         /*

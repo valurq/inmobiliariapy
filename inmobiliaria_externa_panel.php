@@ -6,8 +6,8 @@
       include("Parametros/verificarConexion.php");
 
   // DATOS
-  $cabecera=['Oficina', 'Ciudad', 'RUC', 'Manager', 'Email', 'F. Contrato', 'Tipo', 'C. RE/MAX', 'C. Legacy', 'F. Inicio Cobro'];
-  $campos=['id','dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'dsc_manager', 'mail', 'fe_contrato', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde'];
+  $cabecera=['Oficina', 'Ciudad', 'RUC', 'Email', 'Tipo'];
+  $campos=['id','dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'mail', 'tipo'];
 
 
 ?>
@@ -25,7 +25,7 @@
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'dsc_manager', 'mail', 'fe_contrato', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde'];
+            var campos=['dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'mail', 'tipo'];
         </script>
 
         <meta charset="utf-8">
@@ -54,22 +54,22 @@
             <br><br>
             <!--campo buscador en el panel -->
             <!-- oficina: la tabla, dsc_oficina: el campo a buscar -->
-            <input type="text" name="buscador" id="buscador" placeholder="Buscar por oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', ['estado','tipo'], ['ACTIVO','RE/MAX'])">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', ['estado','tipo'], ['ACTIVO','OTROS'])">
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE OFICINAS</B></font>
             </div>
 
-            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='oficina_form.php';" value="Nuevo">
-            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('oficina_contrato_form.php')">
-            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles', () => {cambiarEstado()})">
+            <input type="button" class="boton_panel" name="Nuevo" onclick = "location='inmobiliaria_externa_form.php';" value="Nuevo">
+            <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('inmobiliaria_externa_form.php')">
+            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick='cambiarEstado()'>
         </div>
 
-        <div class="mostrar-tabla">
+        <div class="mostrar-tabla" >
           <table id='tablaPanel' cellspacing='0' style='width:100%'>
             <?php
               $consulta->crearCabeceraTabla($cabecera);
-              $datos=$consulta->consultarDatosQ($campos,'oficina','',['estado','tipo'],['ACTIVO','RE/MAX']);
+              $datos=$consulta->consultarDatosQ($campos,'oficina','',['estado','tipo'],['ACTIVO','OTROS']);
               $consulta->crearContenidoTabla($datos);
              //$consultas->crearTabla($cabecera,$campos,'oficina', 'estado', 'ACTIVO');
 
