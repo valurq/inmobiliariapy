@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script
+			  src="https://code.jquery.com/jquery-3.4.0.js"
+			  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
+			  crossorigin="anonymous"></script>
+        <script type="text/javascript" src="Js/funciones.js"></script>
+        <script src="Js/Chart.js-2.9.3/dist/Chart.js"></script>
+</head>
+<body>
+	<input list="propiedades" id="propiedadesLista" autocomplete="off">
+	<input type="text" name="campoOculto" id="campoOculto" value="">
+	<datalist id="propiedades" >
+
+</body>
+
+	<script>
+
+		let propiedades = [];
+		obtenerDatosCallBackQuery('SELECT id_remax, id FROM propiedades', resultado => propiedades = resultado);
+
+		function cargarDatalist (valor,idHidden) {
+			let propiedadesAux = document.getElementById('propiedades');
+			let opcion = document.createElement('option');
+			opcion.setAttribute('value', valor[0]);
+			opcion.setAttribute('data-id', valor[1]);
+			propiedadesAux.appendChild(opcion);
+		}
+		function buscadorListaPropiedades(valor,idLista,idInputHidden){
+			
+			$("#"+idLista).empty();
+			document.getElementById(idLista).addEventListener('click',()=>{ console.log("prueba");document.getElementById(idHidden).value=valor[1]});
+			let arrayPropiedades = propiedades.filter( propiedad => propiedad[0].includes(valor) );
+			arrayPropiedades.forEach( (propiedad, contador) => { if(contador < 10) {contador++; cargarDatalist(propiedad,idInputHidden); } });
+
+			let lista = document.getElementById(idLista);
+		    let txt = "";
+
+		    for (let i = 0; i < lista.options.length; i++) {
+		        txt = txt + lista.options[i].getAttribute('data-id');
+		    }
+
+		    document.getElementById(idInputHidden).value = txt;
+		}
+		document.getElementById('propiedadesLista').addEventListener('keyup',(valor)=>{buscadorListaPropiedades(valor.target.value,"propiedades","campoOculto")});
+		
+			// 	(e) =>
+			//
+			// 	$("#propiedades").empty();
+			//
+			//
+			// 	let arrayPropiedades = propiedades.filter( propiedad => propiedad[0].includes(e.target.value) );
+			//
+			//
+			// 	arrayPropiedades.forEach( (propiedad, contador) => { if(contador < 10) {contador++; cargarDatalist(propiedad[0]); } });
+			// 	//console.log(arrayPropiedades.length);
+			// });
+	</script>
+</html>

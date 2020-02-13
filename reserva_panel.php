@@ -6,7 +6,7 @@
     include("Parametros/verificarConexion.php");
 
     // DATOS
-    $cabecera=['Código REMAX', 'Nombre', 'Moneda', 'Importe', 'Referencia', 'Fecha', 'Fec. Vencimiento'];
+    $cabecera=['Código RE/MAX', 'Nombre', 'Moneda', 'Importe', 'Referencia', 'Fecha', 'Fec. Vencimiento'];
     $campos=['(SELECT id_remax FROM propiedades WHERE id = propiedades_id)', 'nombre', '(SELECT dsc_moneda FROM moneda WHERE id = moneda_id)', 'importe', 'referencia', 'fecha', 'fecha_vto'];
 
 ?>
@@ -53,7 +53,7 @@
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" placeholder="Buscar por código REMAX" onkeyup="buscarTablaPanelesQ(campos, this.value ,'reservas','buscador', 'estado', 'PENDIENTE');">
+            <input type="text" name="buscador" id="buscador" style="width: 25%;" placeholder="Buscar por código RE/MAX o por nombre" onkeyup="buscarTablaPanelesQ(campos, this.value ,'reservas','buscador', 'estado', 'PENDIENTE');">
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE RESERVAS</B></font>

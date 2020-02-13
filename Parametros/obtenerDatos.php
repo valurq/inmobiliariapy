@@ -20,6 +20,9 @@ include("conexion.php");
 $resultado=array(array($campos));
 $datos=$consultas->consultarDatosQ($campos,$tabla,"",$campoC,$valor);
 while ($fila=$datos->fetch_row()) {
+    for ($i=0; $i <count($fila) ; $i++) {
+        $fila[$i]=utf8_encode($fila[$i]);
+    }
     array_push($resultado,$fila);
 }
 array_shift($resultado);

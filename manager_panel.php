@@ -6,8 +6,8 @@ $consultas = new Consultas();
 include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Nombre Full','Fecha Ingreso','Oficina'];
-$campos=['nombrefull','fe_ingreso','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)'];
+$cabecera=['Nombre', 'Apellido', 'Usuario','Oficina', 'Comisión sobre operaciones','Fecha Ingreso'];
+$campos=['nombrefull', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)', 'porcentaje_opera','fe_ingreso'];
 
 
 ?>
@@ -25,7 +25,7 @@ $campos=['nombrefull','fe_ingreso','(SELECT dsc_oficina FROM oficina WHERE id=of
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['nombrefull','fe_ingreso','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)'];
+            var campos=['nombrefull', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)', 'porcentaje_opera','fe_ingreso'];
         </script>
 
         <meta charset="utf-8">
@@ -53,7 +53,7 @@ $campos=['nombrefull','fe_ingreso','(SELECT dsc_oficina FROM oficina WHERE id=of
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'manager','(CONCAT(nombrefull,(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)) )')">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por nombre o por oficina" style="width: 15%;" onkeyup="buscarTablaPaneles(campos, this.value ,'manager','(CONCAT(nombrefull,(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)) )')">
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE MANAGER</B></font>
             </div>
@@ -61,16 +61,28 @@ $campos=['nombrefull','fe_ingreso','(SELECT dsc_oficina FROM oficina WHERE id=of
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='manager_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('manager_form.php')">
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar"
-            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('manager')},'manager')">
+            id="eliminarTest" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminarManager()},'manager')">
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->
         </div>
 
         <div class="mostrar-tabla">
             <?php
-             $consultas->crearTabla($cabecera,$campos,'manager');
+             $consultas->crearTabla($cabecera,$campos,'manager', '', '', ['16%','16%','16%','16%','16%','16%']);
 
             ?>
         </div>
     </body>
+    <script type="text/javascript">
+        
+    function eliminarManager(){
+        let id = document.getElementById('seleccionado').value;
+
+        obtenerDatosCallBack(["oficina_id"], 'manager', 'id', id, '', resultado => {console.log(resultado[0]); modificarDatos('oficina', ['dsc_manager'], [''], 'id', resultado[0][0])});
+
+        obtenerDatosCallBack(["usuario_id"], 'manager', 'id', id, '', resultado => {console.log(resultado[0]); modificarDatos('usuario', ['asignado'], ['NO'], 'id', resultado[0][0])});
+
+        eliminar('manager');
+    }
+    </script>
 
 </html>

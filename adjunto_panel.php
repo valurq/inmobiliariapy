@@ -9,10 +9,10 @@ session_start();
 
     $perfilUser=$consultas->consultarDatos(array('tipo'),'perfil',"","id",$usuarioLogeado );
     $perfilUser=$perfilUser->fetch_array(MYSQLI_NUM);
-    
+
 
 // DATOS
-$cabecera=['Referencia','Relación','Categoria', 'Estado','Fecha Vencimiento [AAAA/MM/DD]'];
+$cabecera=['Referencia','Relación','Categoría', 'Estado','Fecha Vencimiento [AAAA/MM/DD]'];
 $campos=['referencia','refobjeto','categorias', 'estado','fecha_vto'];
 
 
@@ -71,7 +71,7 @@ $campos=['referencia','refobjeto','categorias', 'estado','fecha_vto'];
                 if ($perfilUser[0] == "TI") {
                 echo "<input type='button' class='boton_panel' name='Eliminar' value='Eliminar'
                 id='eliminarTest' onclick='popupC(".'"Advertencia"'.",".'"Esta seguro de que desea eliminar? los cambios son irreversibles"'.",function (){eliminar(".'"adjuntos"'.")},".'"adjuntos"'.")'>";
-                    
+
                 }
             ?>
             <!--<input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="eliminar('categoria')">-->

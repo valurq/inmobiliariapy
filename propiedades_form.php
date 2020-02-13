@@ -58,7 +58,7 @@
         <td><label for="">Inmueble</label></td>
         <td> <input type="text" name="dsc_inmueble" id="dsc_inmueble" value="" readonly class="campos-ingreso"></td>
       </tr>
-        <td><label for="">Categoria propiedad</label></td>
+        <td><label for="">Categoría propiedad</label></td>
         <td> <input type="text" name="cate_propiedad" id="cate_propiedad" value="" readonly class="campos-ingreso"></td>
 
         <td><label for="">Cuenta catrastal de la finca</label></td>
@@ -82,7 +82,7 @@
         <td><label for="">Email propietario</label></td>
         <td> <input type="email" name="mail_propietario" id="mail_propietario" readonly value="" class="campos-ingreso"> </td>
       </tr>
-        <td><label for="">Operacion</label></td>
+        <td><label for="">Operación</label></td>
         <td> <input type="text" name="operacion" id="operacion" readonly value="" class="campos-ingreso"> </td>
 
         <td><label for="">Precio</label></td>
@@ -91,10 +91,10 @@
         <td><label for="">Moneda</label></td>
         <td> <input type="text" name="precio_mon" id="precio_mon" readonly value="" class="campos-ingreso"> </td>
 
-        <td><label for="">Captacion</label></td>
+        <td><label for="">Captación</label></td>
         <td> <input type="text" name="captacion_com" id="captacion_com" readonly value="" class="campos-ingreso"> </td>
       </tr>
-        <td><label for="">Remax</label></td>
+        <td><label for="">RE/MAX</label></td>
         <td> <input type="text" name="id_remax" id="id_remax" readonly value="" class="campos-ingreso"> </td>
 
 
@@ -102,7 +102,7 @@
         <td> <input type="text" name="nom_agentecapta" id="nom_agentecapta" readonly value="" class="campos-ingreso"> </td>
       <tr>
       </tr>
-        <td><label for="">Direccion</label></td>
+        <td><label for="">Dirección</label></td>
         <td> <input type="text" name="direccion" id="direccion" readonly value="" class="campos-ingreso"> </td>
 
         <td><label for="">Fee acuerdo</label></td>

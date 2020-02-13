@@ -46,7 +46,7 @@
 <body style="background-color:white">
   <h2>DEFINICIÓN DE OFICINA</h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
-  
+
 <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
   <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
   <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
@@ -86,7 +86,7 @@
       </tr>
       <tr>
         <td><label for="">Dirección</label></td>
-        <td><input type="text" name="direccion" id="direccion" value="" placeholder="Ingrese la direccion de la oficina" class="campos-ingreso"></td>
+        <td><input type="text" name="direccion" id="direccion" value="" placeholder="Ingrese la dirección de la oficina" class="campos-ingreso"></td>
 
         <td><label for="">Broker</label></td>
         <td><input type="text" name="broker" id="broker" value=""  readonly placeholder="Nombre del broker" class="campos-ingreso"></td>
@@ -108,25 +108,26 @@
       <tr>
         <td><label for="">Num. Celular</label></td>
         <td><input type="text" name="celular" id="celular" value="" placeholder="Ingrese numero del celular" class="campos-ingreso"></td>
-        <td><label for="">Tipo</label></td>
-        <td>
+
+        <td hidden="hidden"><label for="">Tipo</label></td>
+        <td hidden="hidden">
           <select name="tipo" id="tipo">
-            <option value="REMAX">REMAX</option>
-            <option value="OTROS">OTROS</option>
+            <option value="RE/MAX">RE/MAX</option>
           </select>
         </td>
 
+        <td><label for="">Código RE/MAX legacy</label></td>
+        <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Código REMAX legacy</label></td>
-        <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
-        <td><label for="">Código REMAX</label></td>
+        <td><label for="">Primer cobro del fee</label></td>
+        <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
+
+        <td><label for="">Código RE/MAX</label></td>
         <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional REMAX" class="campos-ingreso"></td>
       </tr>
       <tr>
 
-        <td><label for="">Primer cobro del fee</label></td>
-        <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
       </tr>
       <tr>
         <td><label for="">Observación</label></td>
@@ -181,7 +182,7 @@ if (isset($_POST['oficina'])) {
         $obs =trim($_POST['obs']);
         $razon = trim($_POST['razon']);
         $idForm=$_POST['Idformulario'];
-        $creador ="UsuarioLogin";
+        $creador =$_SESSION['usuario'];
         $campos = array( 'dsc_oficina','pais_id', 'ciudad_id', 'ruc', 'dsc_manager', 'direccion', 'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde', 'razon', 'creador');
         $valores="'".$oficina."', '".$pais."', '".$ciudad."', '".$ruc."', '".$manager."', '".$direccion."', '".$email."', '".$fe_contrato."', '".$tel1."', '".$tel2."', '".$celular."', '".$obs."', '".$tipo."', '".$cod_remax."', '".$cod_remaxlegacy."', '".$cobro_fee_desde."', '".$razon."', '".$creador."'";
         /*

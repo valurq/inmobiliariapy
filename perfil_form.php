@@ -21,6 +21,7 @@
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
+
             $resultado=$consulta->consultarDatos($campos,'perfil',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
             /*
@@ -64,7 +65,7 @@
           <td><?php $consulta->DesplegableElegidoFijo(@$resultado[2],'tipo',array('Regional','Broker','Agente','TI'))?></td>
         </tr>
         <tr>
-          <td><label for="">Observacion</label></td>
+          <td><label for="">Observación</label></td>
           <td><textarea name="observacion" id="observacion" value=""  class="campos-ingreso"></textarea><br></td>
         </tr>
       </tbody>
@@ -101,7 +102,7 @@ if(isset( $_POST['perfil'] )) {
     $perfil =trim($_POST['perfil']);
     $tipo=$_POST['tipo'];
     $obs=trim($_POST['observacion']);
-    $creador="UsuarioLogin" ;
+    $creador=$_SESSION['usuario'];
     $idForm= $_POST['Idformulario'];
 
     $campos = array( 'perfil','tipo','obs','creador' );

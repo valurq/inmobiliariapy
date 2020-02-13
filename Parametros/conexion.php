@@ -112,7 +112,7 @@ class Consultas extends Conexion{
             //echo $query;
         return $this->conexion->query($query);
     }
-    public function buscarDatoQ($campos,$tabla,$campoCondicion,$valorCondicion,$campoC='',$valorC=''){
+    public function buscarDatoQ($campos,$tabla,$campoCondicion,$valorCondicion,$campoC='',$valorC='',$orden=""){
          /*
             METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
             $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
@@ -131,6 +131,9 @@ class Consultas extends Conexion{
             if(($campoC!="")&&($valorC!="")){
                 $query.="&& ".$campoC." = '".$valorC."' ";
             }
+        }
+	if($orden!=''){
+            $query.=$orden;
         }
         //echo $query;
         return $this->conexion->query($query);
@@ -166,7 +169,7 @@ public function buscarDatoCustom($campos,$tabla,$where){
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
-        echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
+        //echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
         return $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
     }
@@ -260,7 +263,7 @@ public function buscarDatoCustom($campos,$tabla,$where){
         echo "</tr>";
         echo"</thead>";
     }
-    private function crearContenidoTabla($resultadoConsulta){
+    public function crearContenidoTabla($resultadoConsulta){
         /*
             METODO PARA PODER CREAR LOS DATOS DENTRO DE UNA TABLA
             $objetoConsultas->crearContenidoTabla(<Resultado de consulta a la base de datos>);
@@ -409,6 +412,9 @@ public function buscarDatoCustom($campos,$tabla,$where){
     }
     public function getLastError(){
     	return $this->conexion->error;
+    }
+    public static function transformarMonto($valor){
+        return str_replace(',','',$numero);
     }
 }
 

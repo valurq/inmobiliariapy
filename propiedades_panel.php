@@ -5,7 +5,7 @@ include("Parametros/conexion.php");
 $consultas = new Consultas();
 include("Parametros/verificarConexion.php");
 // DATOS
-$cabecera=['Remax','Inmueble','Categoria propiedad','Propietario','Fecha alta','Precio'];
+$cabecera=['RE/MAX','Inmueble','Categoría propiedad','Propietario','Fecha alta','Precio'];
 $campos=['id_remax','dsc_inmueble','cate_propiedad','propietario','fecha_alta','precio'];
 // test
 
@@ -24,7 +24,7 @@ $campos=['id_remax','dsc_inmueble','cate_propiedad','propietario','fecha_alta','
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['(SELECT dsc_vendedor FROM vendedor WHERE id=vendedor_id)','fe_vto','importe','estado','fe_pago','nro_comprob','substr(concepto,1,30)'];
+            var campos=['id_remax','dsc_inmueble','cate_propiedad','propietario','fecha_alta','precio'];
         </script>
 
         <meta charset="utf-8">

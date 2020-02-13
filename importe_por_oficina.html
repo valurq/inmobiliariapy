@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+	<script src="http://momentjs.com/downloads/moment.min.js"></script>
+	<script type="text/javascript" src="Js/funciones.js"></script>
+	<link rel="stylesheet" href="CSS/popup.css">
+	<script src="https://code.jquery.com/jquery-3.4.0.js"
+			integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
+			crossorigin="anonymous"></script>
+	<meta charset="UTF-8">
+	<title>VALURQ_SRL</title>
+	<style>
+		html, body{
+			width: 100%;
+			height: 100%;
+		}
+
+		body{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#container{
+			width: 80%;
+			display: flex;
+			justify-content: center;
+		}
+
+		form{
+			width: 50%;
+		}
+
+		#wrapper{
+			display: flex;
+			flex-flow: column;
+			justify-content: center;
+			align-items: center;
+			border: 2px solid #072D58;
+			border-radius: 10px;
+			padding: 10px;
+			font-family: arial;
+		}
+
+
+				h2{
+					/*letter-spacing: 0.15em;*/
+					font-size: 24px;
+				}
+
+				label{
+					align-self: flex-start;
+					/*letter-spacing: 0.15em;*/
+					font-size: 16px;
+				}
+
+		input{
+			width: 100%;
+			font-family: inherit;
+			letter-spacing: 0.15em;
+			font-size: 14px;
+
+		}
+
+		input[type="button"]{
+			width: 50%;
+			background-color: #072D58;
+			height: 40px;
+			color: #DFC7C7;
+			border: none;
+			letter-spacing: 0.15em;
+			font-size: 16px;
+
+		}
+
+		input[type="button"]:hover{
+			background-color: #1F4A7B;
+			color: #DFC7C7;
+		}
+
+		#popup{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+		}
+
+	</style>
+
+
+</head>
+<body>
+	<div id="container">
+		<form action="">
+			<div id="wrapper">
+				<h2>Importe de transacciones por oficina</h2>
+				<label for="desde">Ingrese rango de tiempo</label>
+
+				<input type="date" name="fdesde" id="fdesde"><br>
+				<input type="date" name="fhasta" id="fhasta">
+<br>
+				<input type="button" id="aceptar" name="aceptar" value="Aceptar" />
+			</div>
+		</form>
+	</div>
+
+</body>
+
+<script>
+
+
+
+	document.getElementById("aceptar").addEventListener("click", (e) => {
+		var desde = document.getElementById('fdesde').value;
+		var hasta = document.getElementById('fhasta').value;
+		//alert(hasta) ;
+		if( (desde == "") || (hasta == "")  ){
+			popup('Advertencia','Por favor, seleccione un rango de tiempo') ;
+			e.preventDefault();
+		}
+		else{
+
+				// var parametros = `fdesde=${desde}&fhasta=${hasta}`;
+			var fdesde = '&fdesde='+desde;
+			var fhasta = '&fhasta='+hasta;
+
+			 //var direccion = "http://localhost/remax/reporte_intermediario.php?reporte=remax_importe_oficina&parametros="+parametros ;
+			var direccion = "http://localhost/remax/reporte_intermediario.php?reporte=remax_importe_oficina"+fdesde+fhasta ;
+			window.location=direccion;
+		}
+
+	});
+
+</script>
+</html>

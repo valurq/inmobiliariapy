@@ -103,7 +103,7 @@ if (isset($_POST['banco'])) {
         $telefono =trim($_POST['telefono']);
         $obs =trim($_POST['obs']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos = array( 'dsc_banco','direccion','telefono','obs', 'creador');
         $valores="'".$banco."', '".$direccion."', '".$telefono."', '".$obs."', '".$creador."'";
         /*

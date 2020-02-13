@@ -54,7 +54,7 @@
   <table class="tabla-fomulario">
     <tbody>
       <tr>
-        <td><label for="">Titulo</label></td>
+        <td><label for="">Título</label></td>
         <td><input type="text" name="titulo" id="titulo" value="" placeholder="Ingrese el titulo de la condición" class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -98,7 +98,7 @@ if (isset($_POST['titulo'])) {
         $titulo =trim($_POST['titulo']);
         $condiciones =trim($_POST['condiciones']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos = array( 'titulo','condiciones', 'creador');
         $valores="'".$titulo."','".$condiciones."', '".$creador."'";
         /*

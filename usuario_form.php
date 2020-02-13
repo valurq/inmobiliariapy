@@ -17,7 +17,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('usuario','nombre','apellido','mail','cargo','obs','pass');
+            $campos=array('usuario','nombre','apellido','mail','cargo','obs', 'asignado');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -26,8 +26,16 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('usuario','nombre','apellido','correo','cargo','observacion');
+            $camposIdForm=array('usuario','nombre','apellido','correo','cargo','observacion', 'asignado');
+
         }
+
+        $test = $consulta->consultarDatos(array('id', 'usuario', 'asignado'), 'usuario', '', '', '');
+        $usuarios = array();
+        while ($aux = $test->fetch_row()) {
+          array_push($usuarios, $aux);
+        }
+
     ?>
     <title>VALURQ_SRL</title>
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
@@ -74,17 +82,26 @@
           <td><label for="">Correo</label></td>
           <td><input type="email" name="correo" id="correo" value="" placeholder="Ingrese su usuario de correo" class="campos-ingreso"></td>
         </tr>
+        <?php
+            //if($id==0){
+                echo '<tr>
+                  <td><label for="">Contraseña</label></td>
+                  <td><input type="password" name="pass" id="pass" value="" placeholder="Ingrese su contraseña" class="campos-ingreso" ></td>
+                </tr>
+                <tr>
+                  <td><label for="">Confirmación de contraseña</label></td>
+                  <td><input type="password" name="passC" id="passC" value="" placeholder="Ingrese su contraseña de nuevo" class="campos-ingreso" ></td>
+                </tr>';
+            //}
+        ?>
         <tr>
-          <td><label for="">Contraseña</label></td>
-          <td><input type="password" name="pass" id="pass" value="" placeholder="Ingrese su contraseña" class="campos-ingreso"></td>
-        </tr>
-        <tr>
-          <td><label for="">Confirmacion de contraseña</label></td>
-          <td><input type="password" name="passC" id="passC" value="" placeholder="Ingrese su contraseña de nuevo" class="campos-ingreso"></td>
-        </tr>
-        <tr>
-          <td><label for="">Observacion</label></td>
+          <td><label for="">Observación</label></td>
           <td><textarea name="observacion" id='observacion' class='campos-ingreso'></textarea> </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="hidden" name="asignado" id="asignado">
+          </td>
         </tr>
       </tbody>
     </table>
@@ -122,28 +139,35 @@
         $apellido=$_POST['apellido'];
         $cargo=$_POST['cargo'];
         $mail=$_POST['correo'];
-        $pass=$_POST['pass'];
-        $pass=$_POST['pass'];
         $obs=$_POST['observacion'];
+        $asignado = (!empty($_POST['asignado']) ) ? $_POST['asignado'] : 'NO';
         $creador="UsuarioLogin" ;
         $idForm= $_POST['Idformulario'];
-        $campos = array( 'usuario','perfil_id','nombre','apellido','cargo','obs','mail','creador' );
-        $valores="'".$usuario."','".$perfil."','".$nombre."','".$apellido."','".$cargo."','".$obs."','".$mail."','".$creador."'";
-        if((isset($pass))){
+        $campos = array( 'usuario','perfil_id','nombre','apellido','cargo','obs','mail','asignado','creador' );
+        $valores="'".$usuario."','".$perfil."','".$nombre."','".$apellido."','".$cargo."','".$obs."','".$mail."','".$asignado."', '".$creador."'";
+        if((isset($_POST['pass']))&&($_POST['pass']!="")){
             array_push($campos,'pass');
-            $valores.=",'".md5($pass)."'";
+            $valores.=",'".md5($_POST['pass'])."'";
         }
         /*
         VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
         if(isset($idForm)&&($idForm!=0)){
             $consulta->modificarDato('usuario',$campos,$valores,'id',$idForm);
+            $consulta->modificarDatoQ('vendedor', ['dsc_vendedor', 'apellido', 'mail'], [$nombre, $apellido, $mail], 'usuario_id', $idForm);
+            $consulta->modificarDatoQ('manager', ['nombrefull', 'apellido'], [$nombre, $apellido], 'usuario_id', $idForm);
+            $consulta->modificarDatoQ('brokers', ['dsc_broker', 'apellido', 'mail'], [$nombre, $apellido, $mail], 'usuario_id', $idForm);
         }else{
             $consulta->insertarDato('usuario',$campos,$valores);
         }
     }
 ?>
 <script type="text/javascript">
+
+  let usuarios = JSON.parse('<?php echo json_encode($usuarios) ?>');
+  let idForm = '<?php echo $id ?>';
+  console.log(usuarios);
+  console.log(idForm);
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
@@ -151,17 +175,43 @@
         if($("#usuario").val()==""){
             popup('Advertencia','Es necesario ingresar el usuario!!') ;
             return false ;
-        }else if($("#nombre").val()==""){
+        }
+        else if($("#nombre").val()==""){
             popup('Advertencia','Es necesario ingresar el nombre!!') ;
             return false ;
-        }else if($("#apellido").val()==""){
+        }
+        else if($("#apellido").val()==""){
             popup('Advertencia','Es necesario ingresar el apellido!!') ;
             return false ;
-        }else if(($("#correo").val()=="")||((($("#correo").val()).indexOf("@"))==-1)){
+        }
+        else if(($("#correo").val()=="")||((($("#correo").val()).indexOf("@"))==-1)){
             popup('Advertencia','Es necesario ingresar el correo!!') ;
             return false ;
-        }else {
-            return true
+        }
+        /*else if($("#idformulario").val()==0){
+            if(($("#pass").val() != $("#passC").val())) {
+                popup('Advertencia','Es necesario que las contraseñas coincidan!!') ;
+                return false ;
+            }
+        }*/
+        else if(idForm == 0){
+          for(let user of usuarios){
+            if(user[1] == $("#usuario").val()){
+              popup('Advertencia','Ya existe este usuario, por favor, ingrese otro!!') ;
+              return false ;
+            }
+          }
+        }
+        else if(idForm != 0){
+          for(let user of usuarios){
+            if( (user[1] == $("#usuario").val()) && (user[0] != idForm) ){
+              popup('Advertencia','Ya existe este usuario, por favor, ingrese otro!!') ;
+              return false ;
+            }
+          }
+        }
+        else {
+            return true;
         }
 
 	}

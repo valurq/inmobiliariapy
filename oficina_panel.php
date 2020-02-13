@@ -6,8 +6,8 @@
       include("Parametros/verificarConexion.php");
 
   // DATOS
-  $cabecera=['Oficina', 'Ciudad', 'RUC', 'Manager', 'Email', 'F. Contrato', 'Tipo', 'C. Remax', 'C. Legacy', 'F. Inicio Cobro'];
-  $campos=['dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'dsc_manager', 'mail', 'fe_contrato', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde'];
+  $cabecera=['Oficina', 'Ciudad', 'RUC', 'Manager', 'Email', 'F. Contrato', 'Tipo', 'C. RE/MAX', 'C. Legacy', 'F. Inicio Cobro'];
+  $campos=['id','dsc_oficina', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)', 'ruc', 'dsc_manager', 'mail', 'fe_contrato', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde'];
 
 
 ?>
@@ -54,7 +54,7 @@
             <br><br>
             <!--campo buscador en el panel -->
             <!-- oficina: la tabla, dsc_oficina: el campo a buscar -->
-            <input type="text" name="buscador" id="buscador" placeholder="Buscar por oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', 'estado', 'ACTIVO')">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por oficina" onkeyup="buscarTablaPanelesQ(campos, this.value ,'oficina','dsc_oficina', ['estado','tipo'], ['ACTIVO','RE/MAX'])">
 
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE OFICINAS</B></font>
@@ -62,14 +62,19 @@
 
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='oficina_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('oficina_contrato_form.php')">
-            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick='cambiarEstado()'>
+            <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles', () => {cambiarEstado()})">
         </div>
 
         <div class="mostrar-tabla">
+          <table id='tablaPanel' cellspacing='0' style='width:100%'>
             <?php
-             $consultas->crearTabla($cabecera,$campos,'oficina', 'estado', 'ACTIVO');
+              $consulta->crearCabeceraTabla($cabecera);
+              $datos=$consulta->consultarDatosQ($campos,'oficina','',['estado','tipo'],['ACTIVO','RE/MAX']);
+              $consulta->crearContenidoTabla($datos);
+             //$consultas->crearTabla($cabecera,$campos,'oficina', 'estado', 'ACTIVO');
 
             ?>
+          </table>
         </div>
 
         <script type="text/javascript">
@@ -81,7 +86,7 @@
                    //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
                    $.post("Parametros/modificarDatos.php", {campos: new Array('estado'), tabla: 'oficina', valores: new Array('INACTIVO'), campoCondicion: 'id', valorCondicion: sel}, function(msg) {
                        console.log(msg);
-                       if(msg==1){
+                       if(msg==0){
                            document.getElementById('seleccionado').value="";
                            location.reload();
                        }else{
@@ -104,7 +109,7 @@
                  });
             }
 
-            
+
         </script>
     </body>
 

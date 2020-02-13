@@ -28,7 +28,7 @@
             @$cantidadMetas=$cantidadMetas->fetch_array(MYSQLI_NUM);
             @$cantidadMetas=$cantidadMetas[0];
 
-            $campos=array( 'dsc_oficina', 'ruc', '(SELECT nombrefull FROM manager WHERE oficina_id = '.$id.' limit 1)', 'direccion','(SELECT dsc_broker FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
+            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion','(SELECT CONCAT(dsc_broker, " ",apellido) FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -162,18 +162,20 @@ target="_blank" method="POST" id='form_meta'>
         <td><label for="">Num. Celular</label></td>
         <td><input type="text" name="celular" id="celular" value="" placeholder="Ingrese numero del celular" class="campos-ingreso"></td>
 
-        <td><label for="">Tipo</label></td>
-        <td>
+        <td hidden="hidden"><label for="">Tipo</label></td>
+        <td hidden="hidden">
           <?php
-            $inserta_Datos->DesplegableElegidoFijo(@$resultado[11],'tipo',array('REMAX','OTROS'));
+            $inserta_Datos->DesplegableElegidoFijo(@$resultado[11],'tipo',array('RE/MAX'));
           ?>
         </td>
 
+        <td><label for="">Código REMAX legacy</label></td>
+        <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
 
       </tr>
       <tr>
-        <td><label for="">Código REMAX legacy</label></td>
-        <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
+        <td><label for="">Primer cobro del fee</label></td>
+        <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
 
         <td><label for="">Código REMAX</label></td>
         <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional REMAX" class="campos-ingreso"></td>
@@ -182,8 +184,6 @@ target="_blank" method="POST" id='form_meta'>
       </tr>
       <tr>
 
-        <td><label for="">Primer cobro del fee</label></td>
-        <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
 
       </tr>
       <tr>

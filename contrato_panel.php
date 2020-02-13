@@ -92,7 +92,7 @@ if (!@$_POST['idOfi']) {
 
             <?php
                 if ($oficina == "") {
-                    echo "<input type='text' name='buscador' id='buscador' onkeyup='buscarTablaPanelesQ(campos, this.value ,".'"contratos"'.",".'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id)"'.", ".'"(SELECT estado FROM oficina WHERE id = oficina_id)"'.", ".'"ACTIVO"'.")'>";
+                    echo "<input type='text' name='buscador' id='buscador' placeholder='Buscar por oficina' onkeyup='buscarTablaPanelesQ(campos, this.value ,".'"contratos"'.",".'"(SELECT dsc_oficina FROM oficina WHERE id = oficina_id)"'.", ".'"(SELECT estado FROM oficina WHERE id = oficina_id)"'.", ".'"ACTIVO"'.")'>";
                 }
             ?>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>

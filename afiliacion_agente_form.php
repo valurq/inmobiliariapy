@@ -80,7 +80,7 @@
         <td> <input type="date" name="fe_pago" id="fe_pago" value=""  readonly class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Numero comprobante</label></td>
+        <td><label for="">Número comprobante</label></td>
         <td> <input type="text" name="nro_comprob" id="nro_comprob" value="" readonly class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -128,7 +128,7 @@
         $nro_comprob =trim($_POST['nro_comprob']);
         $concepto =trim($_POST['concepto']);
         $idForm=$_POST['Idformulario'];
-      $creador    ="UsuarioLogin";
+        $creador    =$_SESSION['usuario'];
         $campos=array('vendedor_id','moneda_id','fe_vto','importe','saldo','estado','fe_pago','nro_comprob','concepto','creador' );
         $valores="'".$vendedor_id."','".$moneda_id."','".$fe_vto."','".$importe."','".$saldo."','".$estado."','".$fe_pago."','".$nro_comprob."','".$concepto."','".$creador."'";
         //echo "$valores";

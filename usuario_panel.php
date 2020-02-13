@@ -7,8 +7,8 @@ include("Parametros/verificarConexion.php");
 // ========================================================================
 //Seteo de cabecera y campos en el mismo orden para tomar de la $tabla
 // ========================================================================
-$cabecera=['Usuario','Nombre','Apellido','Cargo','Perfil','F. Creacion'];
-$campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion'];
+$cabecera=['Usuario','Nombre','Apellido','Cargo','Perfil','F. Creación', '¿Esta asignado?'];
+$campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion', 'asignado'];
 
 ?>
 <html lang="en" dir="ltr">
@@ -25,7 +25,7 @@ $campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE
 
       <script type="text/javascript">
       // para busqueda en paneles
-          var campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion'];
+          var campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE id=perfil_id)','fecreacion', 'asignado'];
       </script>
 
         <meta charset="utf-8">
@@ -56,6 +56,7 @@ $campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='usuario_form.php';" value="Nuevo">
             <input type="button" class="boton_panel" name="Editar" value="Editar" onclick="editar('usuario_form.php')" >
             <input type="button" class="boton_panel" name="Eliminar" value="Eliminar" onclick="popupC('Advertencia','Esta seguro de que desea eliminar? los cambios son irreversibles',function (){eliminar('usuario')},'usuario')" >
+            <!-- <input type="button" class="boton_panel" name="Asignado" value="Cambiar asignacion" onclick="popupC('Advertencia','Esta seguro de que desea modificar la asignacion?', () => {cambiarEstado()})"> -->
         </div>
 
         <div class="mostrar-tabla">
@@ -63,5 +64,23 @@ $campos=['usuario','nombre','apellido','cargo','(SELECT perfil FROM perfil WHERE
         </div>
 
     </body>
-
+    <script>
+      /*function cambiarEstado() {
+        var sel=document.getElementById('seleccionado').value;
+         if((sel=="")||(sel==' ')||(sel==0)){
+             popup('Advertencia',"DEBE SELECCIONAR UN ELEMENTO PARA PODER MODIFICARLO");
+         }else {
+             //metodo,url destino, nombre parametros y valores a enviar, nombre con el que recibe la consulta
+             $.post("Parametros/modificarDatos.php", {campos: new Array('asignado'), tabla: 'usuario', valores: new Array('NO'), campoCondicion: 'id', valorCondicion: sel}, function(msg) {
+                 console.log(msg);
+                 if(msg==0){
+                     document.getElementById('seleccionado').value="";
+                     location.reload();
+                 }else{
+                     popup('Error',"ERROR EN LA MODIFICACION DEL REGISTRO");
+                 }
+              });
+         }
+      }*/
+    </script>
 </html>

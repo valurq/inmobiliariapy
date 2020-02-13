@@ -56,7 +56,7 @@
         <td><input type="text" name="grupo" id="grupo" value="" placeholder="Ingrese nombre de grupo" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Observacion</label></td>
+        <td><label for="">Observación</label></td>
         <td><textarea name="observacion" id="observacion" value=""  class="campos-ingreso"></textarea><br></td>
       </tr>
     </tbody>
@@ -92,7 +92,7 @@ if (isset($_POST['grupo'])) {
         $grupo =trim($_POST['grupo']);
         $obs = trim($_POST['observacion']);
         $idForm=$_POST['Idformulario'];
-        $creador    ="UsuarioLogin";
+        $creador    =$_SESION['usuario'];
         $campos = array( 'descripcion','obs' );
         $valores="'".$grupo."','".$obs."'";
         /*

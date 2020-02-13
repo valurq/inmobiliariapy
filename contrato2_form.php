@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <script src="http://momentjs.com/downloads/moment.min.js"></script>
     <?php
         /*
         SECCION PARA OBTENER VALORES NECESARIOS PARA LA MODIFICACION DE REGISTROS
@@ -18,19 +19,25 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=array('vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'duracion', 'oficina_id', 'moneda_id');
+            $campos=array( 'moneda_id','oficina_id', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'duracion');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
 
             $resultado=$inserta_Datos->consultarDatos($campos,'contratos',"","id",$id );
             $resultado=$resultado->fetch_array(MYSQLI_NUM);
-            $oficina=$resultado[7];
+            $oficina=$resultado[1];
+
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'duracion');
+            $camposIdForm=array('moneda', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes', 'duracion');
         }
+        $fecha_inicial=$inserta_Datos->consultarDatos(array('cobro_fee_desde'),'oficina',"","id",$oficina );
+        $fecha_inicial=$fecha_inicial->fetch_array(MYSQLI_NUM);
+        
+        $nombre_oficina=$inserta_Datos->consultarDatos(array('dsc_oficina'),'oficina',"","id",$oficina );
+        $nombre_oficina=$nombre_oficina->fetch_array(MYSQLI_NUM);
     ?>
 
 
@@ -97,14 +104,10 @@
         </style>
 </head>
 <body style="background-color:white">
-  <h2>CONTRATO</h2>
+  <h2>CONTRATO <?php echo "DE LA OFICINA $nombre_oficina[0]"; ?></h2>
   <!-- DISEÑO DEL FORMULARIO, CAMPOS -->
 
-<div>
-  <form action="contrato_panel.php" method="POST" id='form_contrato'>
-    <input type="hidden" name='idOfi'  value=<?php echo $oficina;?>>
-  </form>
-
+<div id="section1">
   <form name="CATEGORIA" method="POST" onsubmit="return verificar()" style="margin:0px" >
     <!-- Campo oculto para controlar EDICION DEL REGISTRO -->
     <input type="hidden" name="Idformulario" id='Idformulario' value=<?php echo $id;?>>
@@ -116,39 +119,37 @@
           <td>
               <?php
             //name, campoId, campoDescripcion, tabla
-              if(!(count($resultado)>0)){
-               $inserta_Datos->crearMenuDesplegable('moneda','id','dsc_moneda','moneda');
-              }else{
-                  $inserta_Datos->DesplegableElegido(@$resultado[8],'moneda','id','dsc_moneda','moneda');
-              }
+              $inserta_Datos->crearMenuDesplegable('moneda', 'id', 'dsc_moneda', 'moneda');
             ?>
           </td>
         </tr>
         <tr>
             <td><label for="">Vigencia hasta</label></td>
-            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" onchange ="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
+            <td><input type="date" name="vigencia_hasta" id="vigencia_hasta" min="<?php echo $fecha_inicial[0] ?>" onchange ="agregarAnho(this.value);" placeholder="Ingrese la fecha de vigencia" class="campos-ingreso"></td>
         </tr>
         <tr>
-              <td><label for="">Duración</label></td>
-              <td><input type="number" name="duracion" id="duracion" step="any" readonly placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
-          </tr>
-
+            <td><label for="">Duración (en años)</label></td>
+            <td><input type="number" name="duracion" id="duracion" min="0" readonly step="any" readonly placeholder="Ingrese la duración del contrato" class="campos-ingreso"></td>
+        </tr>
         <tr>
             <td><label for="">Porcentaje a pagar sobre operaciones</label></td>
-            <td><input type="number" name="fee_operaciones" id="fee_operaciones" step="any" placeholder="Ingrese el porcentaje" class="campos-ingreso"></td>
+            <td><input type="number" name="fee_operaciones" id="fee_operaciones" min="0" step="any" placeholder="Ingrese el porcentaje" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Mora por día</label></td>
-            <td><input type="number" name="mora_dia" id="mora_dia" step="any" placeholder="Ingrese el monto de la mora" class="campos-ingreso"></td>
+            <td><input type="text" name="mora_dia" id="mora_dia" step="any" data-type="currency" maxlength="12" placeholder="Ingrese el monto de la mora" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"></td>
         </tr>
         <tr>
             <td><label for="">Interés</label></td>
-            <td><input type="number" name="interes" id="interes" step="any" placeholder="Ingrese el porcentaje de interés" class="campos-ingreso"></td>
+            <td><input type="number" name="interes" id="interes" step="any" min="0" placeholder="Ingrese el porcentaje de interés" class="campos-ingreso"></td>
         </tr>
         <tr>
             <td><label for="">Estado</label></td>
             <td>
-              <?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[3],'estado',array('inactivo','vigente'))?>
+              <select name="estado" id="estado" class="campos-ingreso">
+                  <option value="vigente">vigente</option>
+                  <option value="inactivo">inactivo</option>
+              </select>
             </td>
         </tr>
         <tr>
@@ -157,10 +158,10 @@
         </tr>
       </tbody>
     </table>
-  <!-- moneda,tipo,simbolo -->
+    <!-- moneda,tipo,simbolo -->
     <!-- BOTONES -->
     <input name="guardar" type="button" value="Guardar" class="boton-formulario guardar" onclick="verificar();">
-    <input name="volver" type="button" value="Volver" onclick="document.getElementById('form_contrato').submit();"  class="boton-formulario">
+    <input name="volver" type="button" value="Volver" onclick = "window.close();"  class="boton-formulario">
   </form>
 </div>
 
@@ -171,15 +172,17 @@
       <table>
         <tbody id="tableInput">
           <tr>
-            <td><span><b>AÑO</b></span></td>
+            <td><span><b>DESDE</b></span></td>
+            <td><span><b>HASTA</b></span></td>
             <td><span><b>FEE ADM.</b></span></td>
             <td><span><b>FEE MK.</b></span></td>
             <td><span><b></b></span></td>
           </tr>
           <tr>
-            <td><input type="number" name="ano" id="ano" readonly style="width: 80px;" /></td>
-            <td><input type="number" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" /></td>
-            <td><input type="number" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" /></td>
+            <td><input type="date" name="desde" id="desde"  style="width: 130px;" /></td>
+            <td><input type="date" name="hasta" id="hasta"  style="width: 130px;" /></td>
+            <td><input type="text" data-type="currency" maxlength="12" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"/></td>
+            <td><input type="text" data-type="currency" maxlength="12" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"/></td>
             <td><img src="Imagenes/addIcon.jpg" width='25px' height='25px' alt="Añadir" title="Añadir" onclick="contarVeces();"/></td>
           </tr>
         </tbody>
@@ -196,38 +199,87 @@
     let date = new Date();
     let anho = date.getFullYear();
     let anhoAux = 0;
-    let vigencia = 0;
     let table = document.getElementById('tableAux');
     $tableAux = $('#tableAux');
     let tabla = [];
+    let fecha_inicial = moment("<?php echo $fecha_inicial[0] ?>");
+    let fecha_actual = moment().format('YYYY-MM-DD');
+    let bandera = undefined;
 
     function agregarAnho(fecha) {
-      document.getElementById('ano').value = anho;
+      bandera = false;
+      let fecha_vigencia = moment(document.getElementById('vigencia_hasta').value);
+      document.getElementById('fee_adm').value = "";
+      document.getElementById('fee_mk').value = "";
+      document.getElementById('desde').value = "";
+      document.getElementById('hasta').value = "";
+
+      document.getElementById('desde').setAttribute('min', fecha_inicial.format('YYYY-MM-DD'));
+      document.getElementById('desde').value = fecha_inicial.format('YYYY-MM-DD');
+      document.getElementById('hasta').setAttribute('min', moment(document.getElementById('desde').value).format('YYYY-MM-DD'));
+      document.getElementById('hasta').setAttribute('max', fecha_vigencia.format('YYYY-MM-DD'));
       let ano = [];
       for (let i = 0; i < 4; i++) {
         ano += fecha[i];
       }
       anhoAux = ano;
-      vigencia = document.getElementById('duracion').value = ((anhoAux - anho) < 0) ? 0 : (anhoAux - anho);
-      contarVeces.numero = 0;
+      document.getElementById('duracion').value = fecha_vigencia.diff(fecha_actual, 'years');
 
       $('#tableAux tr').remove();
       tabla = [];
     }
 
     function contarVeces(){
-      if(contarVeces.numero <= vigencia){
-        ++contarVeces.numero;
-        addRow();
+      let fecha_desde = moment(document.getElementById('desde').value);
+      let fecha_hasta = moment(document.getElementById('hasta').value);
+
+      if(!bandera){
+
+        let fecha_vigencia = moment(document.getElementById('vigencia_hasta').value);
+        
+
+        if(fecha_hasta.diff(fecha_desde, 'days') >= 0){
+          if ( (document.getElementById('fee_adm').value == "") && (document.getElementById('fee_mk').value == "") ) {
+            popup('Advertencia','Es necesario ingresar al menos un valor!!') ;
+          } else {
+            if(document.getElementById('fee_adm').value == "")
+              document.getElementById('fee_adm').value = 0;
+
+            if(document.getElementById('fee_mk').value == "")
+              document.getElementById('fee_mk').value = 0;
+
+            ++contarVeces.numero;
+
+            if(fecha_vigencia.diff(fecha_hasta, 'days') == 0)
+              bandera = true;
+            addRow();
+          }
+          
+        }else {
+          popup('Advertencia','La fecha desde no puede ser mayor a la fecha hasta!!') ;
+        }
+        
+      }else{
+        popup('Advertencia','Ya ha cargado todos los registros!!') ;
       }
     }
 
     function addRow(){
+      let fecha = moment(document.getElementById('hasta').value);
       let row = document.createElement('tr');
       let data = document.createElement('td');
-      let ano = document.getElementById('ano').value;
-      let text = document.createTextNode(ano);
+      let desde = document.getElementById('desde').value;
+      let text = document.createTextNode(desde);
       data.appendChild(text);
+      data.style.width = "25%";
+      row.appendChild(data);
+      table.appendChild(row);
+
+      data = document.createElement('td');
+      let hasta = document.getElementById('hasta').value;
+      text = document.createTextNode(hasta);
+      data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
@@ -235,6 +287,7 @@
       let fee_adm = document.getElementById('fee_adm').value;
       text = document.createTextNode(fee_adm);
       data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
@@ -242,23 +295,28 @@
       let fee_mk = document.getElementById('fee_mk').value;
       text = document.createTextNode(fee_mk);
       data.appendChild(text);
+      data.style.width = "25%";
       row.appendChild(data);
       table.appendChild(row);
 
-      tabla.push(new Array(document.getElementById('ano').value, document.getElementById('fee_adm').value, document.getElementById('fee_mk').value));
+      tabla.push(new Array(document.getElementById('desde').value, document.getElementById('hasta').value, document.getElementById('fee_adm').value, document.getElementById('fee_mk').value));
 
       document.getElementById('fee_adm').value = "";
       document.getElementById('fee_mk').value = "";
-      document.getElementById('ano').value = anho + contarVeces.numero;
+      document.getElementById('desde').value = fecha.add(1, 'days').format('YYYY-MM-DD');
+      document.getElementById('desde').setAttribute('min', fecha.format('YYYY-MM-DD'));
+      document.getElementById('hasta').value = "";
+      document.getElementById('hasta').setAttribute('min', fecha.add(0, 'days').format('YYYY-MM-DD'));
+      //document.getElementById('ano').value = anho + contarVeces.numero;
     }
 </script>
 
 </body>
 
 <?php
-/*
-    LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
-*/
+    /*
+        LLAMADA A FUNCION JS CORRESPONDIENTE A CARGAR DATOS EN LOS CAMPOS DEL FORMULARIO HTML
+    */
     if(($id!=0 )){
         /*
             CONVERTIR LOS ARRAY A UN STRING PARA PODER ENVIAR POR PARAMETRO A LA FUNCION JS
@@ -266,43 +324,53 @@
         $valores=implode(",",$resultado);
         $camposIdForm=implode(",",$camposIdForm);
         //LLAMADA A LA FUNCION JS
-        echo 
-        '<script>
-          cargarCampos("'.$camposIdForm.'","'.$valores.'");
-        </script>';
+        echo '<script>cargarCampos("'.$camposIdForm.'","'.$valores.'")</script>';
     }
 
 ?>
 <script type="text/javascript">
+  $( () => {
+    formatoMoneda($("input[data-type='currency']"));
+  });
+
 
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-    if(document.getElementById('vigencia_hasta').value ==""){
-         popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
-         return false ;
-     }else if($("#fee_operaciones").value ==""){
-         popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
-         return false ;
-     }else{
-         insertar();
-     }
+      let fecha1 = moment("<?php echo $fecha_inicial[0] ?>");
+      let fecha2 = moment(document.getElementById('vigencia_hasta').value);
+         if(document.getElementById('vigencia_hasta').value ==""){
+             popup('Advertencia','Es necesario ingresar una fecha de vigencia!!') ;
+             return false ;
+         }else if ( fecha1.diff(fecha2, 'days') > 0 ){
+            popup('Advertencia','La fecha de la vigencia es incorrecta!!') ;
+             return false ;
+         }
+         else if($("#fee_operaciones").value ==""){
+             popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
+             return false ;
+         }else if (!bandera) {
+            popup('Advertencia','Es necesario ingresar todos los registros de Cobros por Contrato!!') ;
+             return false ;
+         }
+         else{
+             insertar();
+         }
   }
 
   function insertar(){
-    var ofi = "<?php echo $oficina ?>";
-    console.log(ofi);
-
-    $.post("Parametros/modificarDatosQ.php",{campos: new Array('estado'),tabla:'contratos',valores: new Array('inactivo'),campoCondicion: 'oficina_id', valorCondicion: ofi}, function(res) {
-      console.log(res);
-    });
-
     var campos = ['moneda_id','oficina_id', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes','duracion', 'creador'];
-    var valores = [$('#moneda').val(), $('#idOfi').val(), $('#vigencia_hasta').val(), $('#fee_operaciones').val(), $('#obs').val(), $('#estado').val(), $('#mora_dia').val(), $('#interes').val(), $('#duracion').val(), "creador"];
+    var mora = $('#mora_dia').val().replace(/,/g, '');
+    var valores = [$('#moneda').val(), $('#idOfi').val(), $('#vigencia_hasta').val(), $('#fee_operaciones').val(), $('#obs').val(), $('#estado').val(), mora, $('#interes').val(), $('#duracion').val(), "creador"];
 
-    //console.log(valores);
+    console.log(valores);
+    
+    modificarDatos('contratos', ['estado'], ['inactivo'], 'oficina_id', $('#idOfi').val());
+
     insertarDatos(campos, 'contratos', valores);
+
+
 
     $.post("Parametros/obtenerDatosQ.php",{campos:['id'],tabla:'contratos',campoCondicion:campos,valores:valores}, function(resultado) {
                 console.log(resultado+" prueba");
@@ -316,12 +384,14 @@
   }
 
    function detalleCarga(){
-        var camposDetalle=['anho','fee_administrativo', 'fondo_marketing','contratos_id'];
+        var camposDetalle=['desde','hasta','fee_administrativo', 'fondo_marketing','contratos_id'];
         var id=$('#Idformulario').val();
         //alert(id);
 
         for (var filaReal of tabla) {
             var filas=filaReal.slice();
+            filas[2] = filas[2].replace(/,/g, '');
+            filas[3] = filas[3].replace(/,/g, '');
             filas.push(id);
             console.log(filas);
             insertarDatos(camposDetalle, 'variacion_anual', filas);

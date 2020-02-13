@@ -6,7 +6,7 @@
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Moneda','Importe Desde', 'Importe Hasta', 'Comision'];
+$cabecera=['Moneda','Importe Desde', 'Importe Hasta', 'Comisión'];
 $campos=['(SELECT dsc_moneda FROM moneda WHERE id = moneda_id)','importe_desde', 'importe_hasta', 'comision'];
 
 

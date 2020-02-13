@@ -58,7 +58,7 @@
         <td><input type="number" name="por_feeregional" id="por_feeregional" value="" step="any" placeholder="Ingrese el fee" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Cant. Dias antes del Vencimiento</label></td>
+        <td><label for="">Cant. Días antes del Vencimiento</label></td>
         <td><input type="number" name="candias_vto" id="candias_vto" value="" placeholder="Ingrese la cantidad de dias" class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -70,7 +70,7 @@
         <td><input type="number" name="fee_marketing" id="fee_marketing" value="" step="any" placeholder="Ingrese el fee" class="campos-ingreso"><br></td>
       </tr>
       <tr>
-        <td><label for="">Afiliacion</label></td>
+        <td><label for="">Afiliación</label></td>
         <td><input type="number" name="afiliacion" id="afiliacion" value="" step="any" placeholder="Ingrese el monto a pagar" class="campos-ingreso"><br></td>
       </tr>
       <tr>
@@ -174,7 +174,7 @@ if (isset($_POST['por_feeregional'])) {
         $mail_autentica =trim($_POST['mail_autentica']);
         $adjunto_ext =trim($_POST['adjunto_ext']);
         $adjunto_tam =trim($_POST['adjunto_tam']) * 1000000;
-        
+
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
         $campos = array('por_feeregional','candias_vto','fee_adm','fee_marketing','afiliacion','alq_residencial','alq_comercial','alq_temporal','mail_ti','mail_host','mail_puerto','mail_usuario','mail_pass','mail_desde','mail_from','mail_autentica','adjunto_ext','adjunto_tam','creador' );
@@ -193,7 +193,11 @@ if (isset($_POST['por_feeregional'])) {
 }
 ?>
 <script type="text/javascript">
-	
+
+  $(() => {
+    document.getElementById('adjunto_tam').value = document.getElementById('adjunto_tam').value / 1000000;
+  });
+
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================

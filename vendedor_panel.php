@@ -6,8 +6,8 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Fecha de Ingreso Py','Vendedor','Codigo Denver','Numero de documento','Categoria','Tipo'];
-$campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo'];
+$cabecera=['Fecha de Ingreso Py','Nombre', 'Apellido', 'Usuario' ,'Oficina', 'Código Denver','Número de documento','Categoría','Tipo'];
+$campos=['fe_ingreso_py','dsc_vendedor', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)', 'cod_denver','nro_doc','categoria','tipo'];
 
 
 ?>
@@ -23,9 +23,10 @@ $campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo
       </script>
         <script type="text/javascript" src="Js/funciones.js"></script>
 
+
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo'];
+            var campos=['fe_ingreso_py','dsc_vendedor', 'apellido', '(SELECT usuario FROM usuario WHERE id=usuario_id)','(SELECT dsc_oficina FROM oficina WHERE id=oficina_id)', 'cod_denver','nro_doc','categoria','tipo'];
         </script>
 
         <meta charset="utf-8">
@@ -53,9 +54,9 @@ $campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'vendedor','dsc_vendedor')">
+            <input style="width: 15%;" type="text" name="buscador" id="buscador" placeholder="Buscar por nombre del agente" onkeyup="buscarTablaPaneles(campos, this.value ,'vendedor','CONCAT(dsc_vendedor, apellido, (SELECT dsc_oficina FROM oficina WHERE id=oficina_id))')">
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; width:224px; height:22px; z-index:1">
-                <font color="#808080" class="ws12"><B>PANEL DE VENDEDOR</B></font>
+                <font color="#808080" class="ws12"><B>PANEL DE AGENTES</B></font>
             </div>
 
             <input type="button" class="boton_panel" name="Nuevo" onclick = "location='vendedor_form.php';" value="Nuevo">
@@ -73,6 +74,7 @@ $campos=['fe_ingreso_py','dsc_vendedor','cod_denver','nro_doc','categoria','tipo
         </div>
     </body>
     <script type="text/javascript">
+        
       function eliminarVendedor(id){
         var doc = obtenerDatos((['count(*)'],'dco_detalle','vendedor_id',id));
         if (doc > 0) {

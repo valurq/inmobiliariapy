@@ -81,7 +81,7 @@
         <td><label for="">Fecha Pago</label></td>
         <td> <input type="date" name="fe_pago" id="fe_pago" value=""  readonly class="campos-ingreso"></td>
 
-        <td><label for="">Numero comprobante</label></td>
+        <td><label for="">Número comprobante</label></td>
         <td> <input type="text" name="nro_comprob" id="nro_comprob" value="" readonly class="campos-ingreso"></td>
       </tr>
       <tr>
@@ -109,12 +109,12 @@
           <td> <label for="">Forma de pago</label> </td>
           <td> <?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[2],'forma_pago',array('Efectivo','Tranferencia','Cheque','Compensacion'))?> </td>
 
-          <td> <label for="">Numero de comprobante</label> </td>
+          <td> <label for="">Número de comprobante</label> </td>
           <td> <input type="text" name="nro_comprob" id="nro_comprob" placeholder="Ingrese el nro de comprobante" value="" class="campos-ingreso"> </td>
         </tr>
       </tr>
       <tr class='cheque'>
-        <td> <label for="">Cheque numero</label> </td>
+        <td> <label for="">Cheque número</label> </td>
         <td> <input type="text" name="ch_nro" id="ch_nro" placeholder="Ingrese el numero del cheque" value="" class="campos-ingreso"> </td>
       </tr>
       <tr class='cheque'>
@@ -122,10 +122,10 @@
         <td> <input type="text" name="ch_banco" id="ch_banco" placeholder="Ingrese el nombre del Banco" value="" class="campos-ingreso"> </td>
       </tr>
       <tr>
-        <td> <label for="">Numero de recibo</label> </td>
+        <td> <label for="">Número de recibo</label> </td>
         <td> <input type="text" name="nro_recibo" id="nro_recibo" placeholder="Ingrese el nro de recibo" value="" class="campos-ingreso"> </td>
 
-        <td> <label for="">Cotizacion</label> </td>
+        <td> <label for="">Cotización</label> </td>
         <td> <input type="text" name="cotizacion" id="cotizacion" placeholder="Ingrese la cotizacion" value="" class="campos-ingreso" value=""> </td>
       </tr>
       <tr>
