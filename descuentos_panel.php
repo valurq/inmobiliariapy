@@ -6,8 +6,8 @@ session_start();
     include("Parametros/verificarConexion.php");
 
 // DATOS
-$cabecera=['Fecha','Estado','Conceptos','Importe','Fecha de Uso'];
-$campos=['fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= conceptos_id)','importe','fecha_uso'];
+$cabecera=['Agente', 'Fecha','Estado','Conceptos','Importe','Fecha de Uso'];
+$campos=['(SELECT dsc_vendedor FROM vendedor WHERE id = vendedor_id)' ,'fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= conceptos_id)','importe','fecha_uso'];
 //$campos = ['fecha','estado','conceptos_id','obs'];
 
 
@@ -26,7 +26,7 @@ $campos=['fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= concept
 
         <script type="text/javascript">
         // para busqueda en paneles
-            var campos=['fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= conceptos_id)','importe','fecha_uso'];
+            var campos=['(SELECT dsc_vendedor FROM vendedor WHERE id = vendedor_id)' ,'fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= conceptos_id)','importe','fecha_uso'];
         </script>
 
         <meta charset="utf-8">
@@ -54,7 +54,7 @@ $campos=['fecha','estado','(SELECT dsc_concepto FROM conceptos WHERE id= concept
 
             <br><br>
             <!--campo buscador en el panel -->
-            <input type="text" name="buscador" id="buscador" onkeyup="buscarTablaPaneles(campos, this.value ,'descuentos','(SELECT dsc_concepto FROM conceptos WHERE id= conceptos_id)')">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar por agente" onkeyup="buscarTablaPaneles(campos, this.value ,'descuentos','(SELECT dsc_vendedor FROM vendedor WHERE id = vendedor_id)')">
             <div class="wpmd" id="text1" style="position:absolute; overflow:hidden; left:10px; top:10px; height:22px; z-index:1">
                 <font color="#808080" class="ws12"><B>PANEL DE DESCUENTOS</B></font>
             </div>

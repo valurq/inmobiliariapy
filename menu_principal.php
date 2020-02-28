@@ -6,6 +6,9 @@
     $consulta= new Consultas();
     include("Parametros/verificarConexion.php");
     $perfil=$_SESSION['perfil'];
+
+    $nombreUsuario = $consulta->consultarDatosQ(['nombre ','apellido'], 'usuario', '','id', $_SESSION['idUsu']);
+    $nombreUsuario = $nombreUsuario->fetch_array(MYSQLI_NUM);
  ?>
     <head>
         <script>
@@ -20,10 +23,10 @@
 
         <script type="text/javascript" src="Js/funciones.js"></script>
 
-
         <link rel="stylesheet" href="CSS/menu.css">
         <meta charset="utf-8">
         <title>SGD-VALURQ SRL</title>
+
     </head>
 
     <body style="">
@@ -33,44 +36,58 @@
         <form target='frame-trabajo' id='miPerfil' action="perfil_info.php" method="post">
             <input type="hidden" name="seleccionado" value=<?php echo $_SESSION['idUsu'];?>>
         </form>
-        <div class="menu-contenedor">
-            <div class="lateral-izquierdo">
-                <div id="logo"></div>
-                <div id="menu-items">
-                    <?php   $cont=0; $menu=crearMenuAgrupador($perfil);?>
 
+        <div class="cabecera">
+                <div id="logo">
+                    <img src="Imagenes/letra_remax.svg" width="230" height="100">
                 </div>
-                <div id='desarrollo'>
-                    <div id='texto'>Desarrollado por Valurq </div><div id='logo-valurq'></div>
+
+                <div id="titulo">GESTION DE OPERACIONES</div>
+                
+                <div class="dropdown">
+                    <button class="btndrop">
+                       <span><?php echo $nombreUsuario[0].'<br />'.$nombreUsuario[1].' &#x25BC' ?></span>
+
+                       <div class="dropdownContent">
+                            <a href="#" onclick="document.getElementById('miPerfil').submit();accionConf()">Mi perfil</a>    
+                            <a href="#" onclick="">Acerca de</a>
+                            <a href="#" onclick="abrirIframe('contrasenha_form.php');accionConf()">Cambiar contraseña</a>
+                            <a href="#" onclick="cerrarSesion()">Cerrar sesión</a>
+                       </div>
+                    </button>
                 </div>
+        </div> 
+
+        <div class="content">
+            <div class="lateral">
+
+                <ul class="lista">
+                        <?php   $cont=0; $menu=crearMenuAgrupador($perfil);?>
+                </ul>
+
+                <div class="footer">
+                    <div id='texto'>Desarrollado por Valurq </div>
+                </div>
+
             </div>
-            <div class="superior">
-                <div id="titulo-sistema">GESTION DE OPERACIONES</div>
-                <div id="usuario" onclick="accionConf()">
-                    <div id='usuario-ico'>
-                    </div>
-                </div>
-                <div class="opciones" id='opciones'>
-                    <table style="width:100%">
-                        <tr class='opciones-conf' onclick="document.getElementById('miPerfil').submit();accionConf()"><td>Mi perfil</td></tr>
-                        <tr class='opciones-conf'><td>Acerca de</td></tr>
-                        <tr class='opciones-conf' onclick="abrirIframe('contrasenha_form.php');accionConf()"><td>Cambiar Contraseña</td></tr>
-                        <tr class='opciones-conf' onclick="cerrarSesion()"><td>Cerrar Sesión</td></tr>
-                    </tr>
-                </table>
-                </div>
-            </div>
-            <div class="area-trabajo">
-                <iframe src="" frameborder="0" name="frame-trabajo" id="frame-trabajo"></iframe>
+                
+            <div class="workArea">
+                <iframe src="" frameborder="0" name="frame-trabajo" id="frame-trabajo" width="560" height="315" scrolling="auto" allowfullscreen></iframe>
             </div>
         </div>
 
-
     </body>
     <script type="text/javascript">
-        function abrirSubMenu(grupo){
+        let nombre
+
+        function abrirSubMenu(grupo, etiqueta){
             document.getElementById('grupoSel').value=grupo;
             document.getElementById('form-menu').submit();
+
+            if(document.getElementsByClassName('current')[0]){
+                document.getElementsByClassName('current')[0].setAttribute('class', '');
+            }
+            etiqueta.parentElement.className = 'current';
         }
         function accionConf(){
             var obj=document.getElementById('opciones');
@@ -92,6 +109,7 @@
             window.open(url,"frame-trabajo");
         }
     </script>
+
     <?php
         function crearMenuAgrupador($perfil){
             global $consulta;
@@ -110,10 +128,7 @@
             $resultado=$consulta->conexion->query($sql);
 
             while ($fila=mysqli_fetch_array($resultado)) {
-                    echo "<div id='b+".$cont."' class='menu-opcion ' onclick='abrirSubMenu(".$fila[1].")'>
-                            <div class='titulo-opcion' id='d+".$cont."' >$fila[0] </div>
-                        </div>
-                    ";
+                    echo "<li><a data-hover='$fila[0]' onclick='abrirSubMenu(".$fila[1].", this)'>$fila[0] </a></li>";
                     $cont++;
             }
         }

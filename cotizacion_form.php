@@ -68,11 +68,11 @@
       </tr>
       <tr>
         <td><label for="">Compra</label></td>
-        <td><input type="text" name="compra" id="compra" value="" placeholder="Ingrese la cotizacion compra" class="campos-ingreso"><br></td>
+        <td><input type="text" data-type="currency" maxlength="12" name="compra" id="compra" value="" placeholder="Ingrese la cotizacion compra" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"><br></td>
       </tr>
       <tr>
         <td><label for="">Venta</label></td>
-        <td><input type="text" name="venta" id="venta" value="" placeholder="Ingrese la cotizacion venta" class="campos-ingreso"><br></td>
+        <td><input type="text" data-type="currency" name="venta" id="venta" value="" placeholder="Ingrese la cotizacion venta" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"><br></td>
       </tr>
     </tbody>
   </table>
@@ -107,8 +107,8 @@ if (isset($_POST['moneda'])) {
     if(isset($_POST['moneda'])){
         $moneda =trim($_POST['moneda']);
         $fecha   =trim($_POST['fecha']);
-        $compra =trim($_POST['compra']);
-        $venta =trim($_POST['venta']);
+        $compra =$inserta_Datos->transformarMonto(trim($_POST['compra']));
+        $venta =$inserta_Datos->transformarMonto(trim($_POST['venta']));
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
         $campos = array( 'moneda_id','fecha','cotiz_compra','cotiz_venta','creador' );
@@ -127,7 +127,12 @@ if (isset($_POST['moneda'])) {
 ?>
 <script type="text/javascript">
 
-
+  $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================

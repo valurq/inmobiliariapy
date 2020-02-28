@@ -62,7 +62,7 @@
       </tr>
       <tr>
         <td><label for="">Oficina</label></td>
-        <td><input list="ofiLista" id="oficinaLista" name="propiedades" autocomplete="off" onkeyup="buscarLista(['dsc_oficina'], this.value,'oficina', 'dsc_oficina', 'ofiLista', 'oficina')" class="campos-ingreso">
+        <td><input list="ofiLista" id="oficinaLista" name="propiedades" autocomplete="off" onkeyup="buscarListaQ(['dsc_oficina'], this.value,'oficina', 'dsc_oficina', 'ofiLista', 'oficina', 'estado', 'ACTIVO')" class="campos-ingreso" placeholder="Ingrese el nombre de la oficina">
         <datalist id="ofiLista">
           <option value=""></option>
         </datalist>
@@ -70,7 +70,7 @@
       </tr>
       <tr>
         <td><label for="">Importe</label></td>
-        <td><input type="number" name="importe" id="importe" value="" step="any" placeholder="Ingrese su importe" class="campos-ingreso"></td>
+        <td><input type="text" data-type="currency" name="importe" id="importe" value="" step="any" placeholder="Ingrese su importe" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"></td>
       </tr>
       <tr>
         <td><label for="">Concepto</label></td>
@@ -121,7 +121,7 @@ if (isset($_POST['moneda'])) {
     if(isset($_POST['moneda'])){
         $moneda =trim($_POST['moneda']);
         $oficina =trim($_POST['oficina']);
-        $importe =trim($_POST['importe']);
+        $importe =$inserta_Datos->transformarMonto(trim($_POST['importe']));
         $concepto =trim($_POST['concepto']);
         $numero_nc =trim($_POST['numero_nc']);
         $fecha =trim($_POST['fecha']);
@@ -145,6 +145,13 @@ if (isset($_POST['moneda'])) {
 }
 ?>
 <script type="text/javascript">
+  
+  $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
 
 
 //======================================================================

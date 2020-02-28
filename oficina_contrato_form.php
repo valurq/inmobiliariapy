@@ -28,7 +28,7 @@
             @$cantidadMetas=$cantidadMetas->fetch_array(MYSQLI_NUM);
             @$cantidadMetas=$cantidadMetas[0];
 
-            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion','(SELECT CONCAT(dsc_broker, " ",apellido) FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon','pais_id','ciudad_id');
+            $campos=array( 'dsc_oficina', 'ruc', 'dsc_manager', 'direccion','(SELECT CONCAT(dsc_broker, " ",apellido) FROM brokers WHERE oficina_id = '.$id.' limit 1)' ,'mail', 'fe_contrato', 'telefono1', 'telefono2', 'tel_movil', 'obs', 'tipo', 'cod_remax', 'cod_remaxlegacy', 'cobro_fee_desde','razon', '(SELECT dsc_pais FROM pais WHERE id = pais_id)','pais_id', '(SELECT dsc_ciudad FROM ciudad WHERE id = ciudad_id)','ciudad_id');
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -37,7 +37,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('oficina','ruc','manager','direccion', 'broker','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde','razon');
+            $camposIdForm=array('oficina','ruc','manager','direccion', 'broker','email','fe_contrato','tel1','tel2','celular','obs','tipo', 'cod_remax','cod_remaxlegacy','cobro_fee_desde','razon', 'pais_lista', 'pais_id', 'ciudad_lista', 'ciudad_id');
 
             $tipoOficina = $resultado[11];
         }
@@ -99,14 +99,10 @@ target="_blank" method="POST" id='form_meta'>
       <tr>
           <td><label for="">País</label></td>
           <td>
-            <?php
-            //name, campoId, campoDescripcion, tabla
-              if(!(count($resultado)>0)){
-                  $inserta_Datos->crearMenuDesplegable('pais', 'id', 'dsc_pais', 'pais');
-              }else{
-                  $inserta_Datos->DesplegableElegido(@$resultado[16],'pais','id','dsc_pais','pais');
-              }
-            ?>
+            <input list="pais" id="pais_lista" name="pais_lista" autocomplete="off" placeholder="Ingrese el nombre del pais" class="campos-ingreso" onkeyup="buscarListaQ(['dsc_pais'], this.value,'pais', 'dsc_pais', 'pais', 'pais_id')" >
+            <datalist id="pais">
+              <option value=""></option>
+            </datalist>
           </td>
 
           <td><label for="">Razón Social</label></td>
@@ -114,22 +110,26 @@ target="_blank" method="POST" id='form_meta'>
             <input type="text" name="razon" id="razon" value="" placeholder="Ingrese la razón social" class="campos-ingreso">
           </td>
 
+          <td>
+            <input type="hidden" name="pais_id" id="pais_id">
+          </td>
+
       </tr>
       <tr>
           <td><label for="">Ciudad</label></td>
           <td>
-            <?php
-              if(!(count($resultado)>0)){
-                  $inserta_Datos->crearMenuDesplegable('ciudad', 'id', 'dsc_ciudad', 'ciudad');
-              }else{
-                  $inserta_Datos->DesplegableElegido(@$resultado[17],'ciudad', 'id', 'dsc_ciudad', 'ciudad');
-              }
-
-            ?>
+            <input list="ciudad" id="ciudad_lista" name="ciudad_lista" autocomplete="off" placeholder="Ingrese el nombre de la ciudad" class="campos-ingreso" onkeyup="buscarListaQ(['dsc_ciudad'], this.value,'ciudad', 'dsc_ciudad', 'ciudad', 'ciudad_id', 'pais_id', document.getElementById('pais_id').value)" >
+            <datalist id="ciudad">
+              <option value=""></option>
+            </datalist>
           </td>
 
-        <td><label for="">Manager</label></td>
-        <td><input type="text" name="manager" id="manager" value=""  readonly placeholder="Ingrese el nombre del manager" class="campos-ingreso"></td>
+          <td><label for="">Manager</label></td>
+          <td><input type="text" name="manager" id="manager" value=""  readonly placeholder="Ingrese el nombre del manager" class="campos-ingreso"></td>
+
+          <td>
+            <input type="hidden" name="ciudad_id" id="ciudad_id">
+          </td>
 
       </tr>
       <tr>
@@ -169,7 +169,7 @@ target="_blank" method="POST" id='form_meta'>
           ?>
         </td>
 
-        <td><label for="">Código REMAX legacy</label></td>
+        <td><label for="">Código RE/MAX legacy</label></td>
         <td><input type="text" name="cod_remaxlegacy" id="cod_remaxlegacy" value="" placeholder="Ingrese el código para el informe a DENVER" class="campos-ingreso"></td>
 
       </tr>
@@ -177,8 +177,8 @@ target="_blank" method="POST" id='form_meta'>
         <td><label for="">Primer cobro del fee</label></td>
         <td><input type="date" name="cobro_fee_desde" id="cobro_fee_desde" value="" placeholder="Ingrese la fecha de inicio del cobro" class="campos-ingreso"></td>
 
-        <td><label for="">Código REMAX</label></td>
-        <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional REMAX" class="campos-ingreso"></td>
+        <td><label for="">Código RE/MAX</label></td>
+        <td><input type="text" name="cod_remax" id="cod_remax" value="" placeholder="Ingrese el código internacional RE/MAX" class="campos-ingreso"></td>
 
 
       </tr>
@@ -238,8 +238,8 @@ if (isset($_POST['oficina'])) {
     if(isset($_POST['oficina'])){
         $oficina =trim($_POST['oficina']);
         $ruc =trim($_POST['ruc']);
-        $pais =trim($_POST['pais']);
-        $ciudad =trim($_POST['ciudad']);
+        $pais =trim($_POST['pais_id']);
+        $ciudad =trim($_POST['ciudad_id']);
         $manager =trim($_POST['manager']);
         $direccion =trim($_POST['direccion']);
         $fe_contrato =trim($_POST['fe_contrato']);
@@ -278,11 +278,38 @@ if (isset($_POST['oficina'])) {
 		if($("#oficina").val()==""){
       popup('Advertencia','Es necesario ingresar el nombre de la oficina!!') ;
       return false ;
+    }else if($("#ruc").val()==""){
+      popup('Advertencia','Es necesario ingresar el ruc de la oficina!!') ;
+      return false ;
+    }else if($("#pais_id").val()==""){
+      popup('Advertencia','Es necesario ingresar el pais al cual pertenece la oficina!!') ;
+      return false ;
+    }else if($("#pais_lista").val()==""){
+      popup('Advertencia','Es necesario ingresar el pais al cual pertenece la oficina!!') ;
+      return false ;
+    }else if($("#ciudad_id").val()==""){
+      popup('Advertencia','Es necesario ingresar la ciudad a la cual pertenece la oficina!!') ;
+      return false ;
+    }else if($("#ciudad_lista").val()==""){
+      popup('Advertencia','Es necesario ingresar la ciudad a la cual pertenece la oficina!!') ;
+      return false ;
     }else if($("#direccion").val()==""){
       popup('Advertencia','Es necesario ingresar la direccion!!') ;
       return false ;
+    }else if($("#fe_contrato").val()==""){
+      popup('Advertencia','Es necesario ingresar la fecha del contrato!!') ;
+      return false ;
     }else if($("#email").val()==""){
       popup('Advertencia','Es necesario ingresar el correo electronico!!') ;
+      return false ;
+    }else if($("#celular").val()==""){
+      popup('Advertencia','Es necesario ingresar el número celular!!') ;
+      return false ;
+    }else if($("#cobro_fee_desde").val()==""){
+      popup('Advertencia','Es necesario ingresar la fecha del primer cobro!!') ;
+      return false ;
+    }else if($("#cod_remax").val()==""){
+      popup('Advertencia','Es necesario ingresar el código RE/MAX!!') ;
       return false ;
     }
   }

@@ -207,15 +207,18 @@
       popup('Advertencia','Es necesario ingresar el usuario del manager!!') ;
       return false ;
     }else if($("#porcentaje_opera").val()==""){
-      popup('Advertencia','Es necesario ingresar la comisión sobre las operaciones!!') ;
+      popup('Advertencia','Es necesario ingresar el porcentaje sobre las operaciones, debe ser un valor entre 0 y 10!!') ;
       return false ;
-    }else if($("#porcentaje_opera").val() > 100 ){
-      popup('Advertencia','El porcentaje de la comisión no puede ser mayor a 100!!') ;
+    }else if($("#porcentaje_opera").val() > 10){
+      popup('Advertencia','El porcentaje sobre las operaciones debe ser menor que 10!!') ;
+      return false ;
+    }else if($("#porcentaje_opera").val() < 0){
+      popup('Advertencia','El porcentaje sobre las operaciones NO debe ser un número negativo!!') ;
       return false ;
     }else if($("#fe_ingreso").val() == "" ){
       popup('Advertencia','Debe ingresar la fecha de ingreso!!') ;
       return false ;
-    }else if (parseInt($("#porcentaje_opera").val())>10) {
+    }else if (parseFloat($("#porcentaje_opera").val()) > 10) {
       popup('Advertencia','Debe ingresar valor menores o iguales a 10!!') ;
       return false ;
     }else{

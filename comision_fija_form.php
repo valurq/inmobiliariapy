@@ -67,15 +67,15 @@
         <tr>
         <tr>
             <td><label for="">Importe desde</label></td>
-            <td><input type="text" data-type="currency" id="importe_desde" name="importe_desde" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" /></td>
+            <td><input type="text" data-type="currency" id="importe_desde" name="importe_desde" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')" /></td>
         </tr>
         <tr>
             <td><label for="">Importe hasta</label></td>
-            <td><input type="text" data-type="currency" id="importe_hasta" name="importe_hasta" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" /></td>
+            <td><input type="text" data-type="currency" id="importe_hasta" name="importe_hasta" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')" /></td>
         </tr>
         <tr>
             <td><label for="">Comisión</label></td>
-            <td><input type="text" data-type="currency" id="comision" name="comision" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" /></td>
+            <td><input type="text" data-type="currency" id="comision" name="comision" maxlength="12" placeholder="Ingrese un monto" class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')" /></td>
         </tr>
     </tbody>
   </table>
@@ -109,11 +109,11 @@ if (isset($_POST['moneda'])) {
     //======================================================================================
     if(isset($_POST['moneda'])){
         $moneda =trim($_POST['moneda']);
-        $importe_desde =implode("",explode(",",trim($_POST['importe_desde'])));
+        $importe_desde = $inserta_Datos->transformarMonto(trim($_POST['importe_desde']));
         //echo $importe_desde;
-        $importe_hasta =implode("",explode(",",trim($_POST['importe_hasta'])));
+        $importe_hasta = $inserta_Datos->transformarMonto(trim($_POST['importe_hasta']));
         //echo $importe_hasta;
-        $comision =implode("",explode(",",trim($_POST['comision'])));
+        $comision = $inserta_Datos->transformarMonto(trim($_POST['comision']));
         $idForm=$_POST['Idformulario'];
         $creador    ="UsuarioLogin";
         $campos = array( 'moneda_id','importe_desde', 'importe_hasta', 'comision', 'creador');
@@ -122,9 +122,9 @@ if (isset($_POST['moneda'])) {
             VERIFICAR SI LOS DATOS SON PARA MODIFICAR UN REGISTRO O CARGAR UNO NUEVO
         */
         if(isset($idForm)&&($idForm!=0)){
-            $inserta_Datos->modificarDato('comision_fija',$campos,$valores,'id',$idForm);
+          $inserta_Datos->modificarDato('comision_fija',$campos,$valores,'id',$idForm);
         }else{
-            $inserta_Datos->insertarDato('comision_fija',$campos,$valores);
+          $inserta_Datos->insertarDato('comision_fija',$campos,$valores);
         }
     }
 }
@@ -132,112 +132,27 @@ if (isset($_POST['moneda'])) {
 
 <script type="text/javascript">
 
-    
+    $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
 
     var desde = "<?php echo (empty($resultado)) ? 0 : $resultado[1]  ?>";
     var hasta = "<?php echo (empty($resultado)) ? 0 : $resultado[2]  ?>";
-    desde = parseInt(desde, 10);
-    hasta = parseInt(hasta, 10);
     
-    $(function() 
-      {
-        formatCurrency($('#importe_desde'));
-        formatCurrency($('#importe_hasta'));
-        formatCurrency($('#comision'));
-      });
-
-    $("input[data-type='currency']").on({
-        keyup: function() {
-          formatCurrency($(this));
-        },
-        blur: function() { 
-          formatCurrency($(this), "blur");
-        }
-    });
-
-
-    function formatNumber(n) {
-      // formatear numero a 1000000 to 1,234,567
-      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }
-
-
-    function formatCurrency(input, blur) {
-      // añade $ al valor, valida el lado decimal
-      // y pone el cursor de nuevo en la posición correcta.
-      
-      // obtener el valor del input
-      var input_val = input.val();
-      
-      // no validar un input vacio
-      if (input_val === "") { return; }
-      // tamaño original
-      var original_len = input_val.length;
-
-      // posicion original del cursor 
-      var caret_pos = input.prop("selectionStart");
-        
-      // comprobar si hay decimales
-      if (input_val.indexOf(".") >= 0) {
-
-        // obtener la posición del primer decimal
-        // esto evita que los múltiples decimales de
-        // siendo introducido
-        var decimal_pos = input_val.indexOf(".");
-
-        // dividir el número por el punto decimal
-        var left_side = input_val.substring(0, decimal_pos);
-        var right_side = input_val.substring(decimal_pos);
-
-        // añadir comas a la izquierda del número
-        left_side = formatNumber(left_side);
-
-        // validar el lado derecho
-        right_side = formatNumber(right_side);
-        
-        // En el blur se asegura de que hay 2 números después del decimal
-        if (blur === "blur") {
-          right_side += "00";
-        }
-        
-        // Limitar a solo 2 decimales
-        right_side = right_side.substring(0, 2);
-
-        // unir el número por .
-        input_val = left_side + "." + right_side;
-
-      } else {
-        // no se ha introducido ningún decimal
-        // añadir comas al número
-        // eliminar todos los no dígitos
-        input_val = formatNumber(input_val);
-        input_val = input_val;
-        
-        // formato final
-        if (blur === "blur") {
-          input_val += ".00";
-        }
-      }
-      
-      // enviar el string actualizado al input
-      input.val(input_val);
-
-      // poner el cursor de nuevo en la posición correcta
-      var updated_len = input_val.length;
-      caret_pos = updated_len - original_len + caret_pos;
-      input[0].setSelectionRange(caret_pos, caret_pos);
-    }
-
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION
 //======================================================================
 	function verificar(){
-        desde = document.getElementById('importe_desde').value;
-        desde = desde.split(',').join('');
-        hasta = document.getElementById('importe_hasta').value;
-        hasta = hasta.split(',').join('');
-        desde = parseFloat(desde);
-        hasta = parseFloat(hasta);
+        desde = $('#importe_desde').val().replace(/\./gi, '');
+        desde = desde.replace(/,/gi, '.');
+        hasta = $('#importe_hasta').val().replace(/\./gi, '');
+        hasta = hasta.replace(/,/gi, '.');
+
+        console.log(`Desde: ${desde}, Hasta: ${hasta}`);
+
 
         if ($("#importe_desde").val()=="") {
           popup('Advertencia','Es necesario ingresar el Importe Desde!!') ;
