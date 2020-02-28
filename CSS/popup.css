@@ -2,7 +2,7 @@
     background-color: white;
     width: 400px;
     height: 150px;
-    position: absolute;
+    position: fixed;
     left: 30%;
     top:30%;
     margin-top:-75px;
@@ -51,7 +51,7 @@
     background-color: white;
     width: 400px;
     height: 150px;
-    position: absolute;
+    position: fixed;
     left: 30%;
     top:30%;
     margin-top:-75px;

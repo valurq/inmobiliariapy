@@ -223,8 +223,15 @@
 <script type="text/javascript">
 
   $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
+
+  /*$( () => {
     formatoMoneda($("input[data-type='currency']"));
-  });
+  });*/
 
   $nombreOfi = "<?php echo $test[0] ?>";
   document.getElementById('titulo').innerHTML += '<br />Oficina: ' + $nombreOfi;
@@ -232,7 +239,9 @@
   var cobros = JSON.parse('<?php  echo json_encode($cobros) ?>');
   let tabla = document.getElementById('tableInput');
 
-  var formato = new Intl.NumberFormat('en-US');
+  var formato = new Intl.NumberFormat('es-PY', {
+    style: 'decimal'
+  });
   
   for(let fila of cobros){
     let tr = document.createElement('tr');

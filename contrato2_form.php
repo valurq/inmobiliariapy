@@ -181,7 +181,7 @@
           <tr>
             <td><input type="date" name="desde" id="desde"  style="width: 130px;" /></td>
             <td><input type="date" name="hasta" id="hasta"  style="width: 130px;" /></td>
-            <td><input type="text" data-type="currency" maxlength="12" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administracioón" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"/></td>
+            <td><input type="text" data-type="currency" maxlength="12" name="fee_adm" id="fee_adm" placeholder="Ingrese el fee de administración" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"/></td>
             <td><input type="text" data-type="currency" maxlength="12" name="fee_mk" id="fee_mk" placeholder="Ingrese el fee de marketing" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"/></td>
             <td><img src="Imagenes/addIcon.jpg" width='25px' height='25px' alt="Añadir" title="Añadir" onclick="contarVeces();"/></td>
           </tr>
@@ -346,9 +346,26 @@
          }else if ( fecha1.diff(fecha2, 'days') > 0 ){
             popup('Advertencia','La fecha de la vigencia es incorrecta!!') ;
              return false ;
-         }
-         else if($("#fee_operaciones").value ==""){
-             popup('Advertencia','Es necesario ingresar un porcentaje sobre operaciones!!') ;
+         }else if($("#fee_operaciones").val() ==""){
+             popup('Advertencia','Es necesario ingresar un valor entre 0 y 50 para el porcentaje de las operaciones!!') ;
+             return false ;
+         }else if($("#fee_operaciones").val() > 50){
+             popup('Advertencia','El porcentaje no puede ser mayor a 50!!') ;
+             return false ;
+         }else if($("#fee_operaciones").val() < 0){
+             popup('Advertencia','El porcentaje no puede ser un número negativo!!') ;
+             return false ;
+         }else if($("#mora_dia").val() == ""){
+             popup('Advertencia','Ingrese un valor para la mora, no debe ser un número negativo!!') ;
+             return false ;
+         }else if($("#interes").val() == ""){
+             popup('Advertencia','Debe ingresar un valor entre 0 y 20 para el interés!!') ;
+             return false ;
+         }else if($("#interes").val() > 20){
+             popup('Advertencia','Debe ingresar un valor entre 0 y 20 para el interés!!') ;
+             return false ;
+         }else if($("#interes").val()< 0){
+             popup('Advertencia','Debe ingresar un valor entre 0 y 20 para el interés!!') ;
              return false ;
          }else if (!bandera) {
             popup('Advertencia','Es necesario ingresar todos los registros de Cobros por Contrato!!') ;
@@ -361,7 +378,8 @@
 
   function insertar(){
     var campos = ['moneda_id','oficina_id', 'vigencia_hasta', 'fee_operaciones', 'obs', 'estado', 'mora_dia', 'interes','duracion', 'creador'];
-    var mora = $('#mora_dia').val().replace(/,/g, '');
+    var mora = $('#mora_dia').val().replace(/\./gi, '');
+    mora = mora.replace(/,/gi, '.');
     var valores = [$('#moneda').val(), $('#idOfi').val(), $('#vigencia_hasta').val(), $('#fee_operaciones').val(), $('#obs').val(), $('#estado').val(), mora, $('#interes').val(), $('#duracion').val(), "creador"];
 
     console.log(valores);
@@ -390,8 +408,10 @@
 
         for (var filaReal of tabla) {
             var filas=filaReal.slice();
-            filas[2] = filas[2].replace(/,/g, '');
-            filas[3] = filas[3].replace(/,/g, '');
+            filas[2] = filas[2].replace(/\./gi, '');
+            filas[2] = filas[2].replace(/,/gi, '.');
+            filas[3] = filas[3].replace(/\./gi, '');
+            filas[3] = filas[3].replace(/,/gi, '.');
             filas.push(id);
             console.log(filas);
             insertarDatos(camposDetalle, 'variacion_anual', filas);

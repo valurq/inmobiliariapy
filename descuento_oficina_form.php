@@ -140,7 +140,7 @@ if (isset($_POST['concepto'])) {
         $concepto =trim($_POST['concepto']);
         $moneda =trim($_POST['moneda']);
         $oficina = trim($_POST['oficina_id']);
-        $importe =implode("",explode(",",trim($_POST['importe'])));
+        $importe =$inserta_Datos->transformarMonto(trim($_POST['importe']));
         $fecha = trim($_POST['fecha']);
         $estado = 'PENDIENTE';
         $obs = trim($_POST['obs']);
@@ -164,10 +164,12 @@ if (isset($_POST['concepto'])) {
 
     document.getElementsByTagName('select')[2].setAttribute('disabled', true);
 
-    $(function()
-      {
-        formatoMoneda($("input[data-type='currency']"));
-      });
+    $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
 
     
 //======================================================================

@@ -92,7 +92,7 @@ if (isset($_POST['grupo'])) {
         $grupo =trim($_POST['grupo']);
         $obs = trim($_POST['observacion']);
         $idForm=$_POST['Idformulario'];
-        $creador    =$_SESION['usuario'];
+        $creador    =$_SESSION['usuario'];
         $campos = array( 'descripcion','obs' );
         $valores="'".$grupo."','".$obs."'";
         /*

@@ -18,7 +18,7 @@
         */
         if(isset($_POST['seleccionado'])){
             $id=$_POST['seleccionado'];
-            $campos=  array( 'fecha','importe','estado','fecha_uso','obs','vendedor_id','moneda_id','conceptos_id' );
+            $campos=  array( 'fecha','importe','estado','fecha_uso','obs', '(SELECT dsc_vendedor FROM vendedor WHERE id = vendedor_id)','vendedor_id','moneda_id','conceptos_id' );
             /*
                 CONSULTAR DATOS CON EL ID PASADO DESDE EL PANEL CORRESPONDIENTE
             */
@@ -27,7 +27,7 @@
             /*
                 CREAR EL VECTOR CON LOS ID CORRESPONDIENTES A CADA CAMPO DEL FORMULARIO HTML DE LA PAGINA
             */
-            $camposIdForm=array('fecha','importe','estado','fecha_uso','obs','vendedor','moneda','conceptos');
+            $camposIdForm=array('fecha','importe','estado','fecha_uso','obs', 'agente_lista','agente_id','moneda','conceptos');
         }
     ?>
 
@@ -56,14 +56,15 @@
         <td><input type="date" name="fecha" id="fecha" value="" class="campos-ingreso"></td>
       </tr>
       <tr>
-        <td><label for="">Vendedor</label></td>
-        <td><?php
-         if(!(count($resultado)>0)){
-             $inserta_Datos->crearMenuDesplegable('vendedor','id','dsc_vendedor','vendedor');
-         }else{
-             $inserta_Datos->DesplegableElegido(@$resultado[5],'vendedor','id','dsc_vendedor','vendedor');
-         }
-         ?></td>
+        <td>Agente</td>
+        <td>
+            <input list="agente" id="agente_lista" name="agente_lista" class="campos-ingreso" autocomplete="off" placeholder="Ingrese el nombre del agente" onkeyup="buscarListaQ(['dsc_vendedor'], this.value, 'vendedor', 'dsc_vendedor', 'agente', 'agente_id', 'estado', 'ACTIVO')">
+            <datalist id="agente">
+              <option value=""></option>
+            </datalist>
+
+            <input type="hidden" name="agente_id" id="agente_id" />
+          </td>
       </tr>
       <tr>
         <td><label for="">Moneda</label></td>
@@ -88,11 +89,11 @@
       </tr>
       <tr>
         <td><label for="">Importe</label></td>
-        <td><input type="text" name="importe" id="importe" value=""  class="campos-ingreso"><br></td>
+        <td><input type="text" data-type="currency" name="importe" id="importe" value=""  class="campos-ingreso" onkeyup="formatoMoneda($(this))" onblur="formatoMoneda($(this), 'blur')"><br></td>
       </tr>
       <tr>
         <td><label for="">Estado</label></td>
-        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[2],'estado',array('Pendiente','Usado'))?></td>
+        <td><?php $inserta_Datos->DesplegableElegidoFijo(@$resultado[2],'estado',array('PENDIENTE','USADO'))?></td>
       </tr>
       <tr>
         <td><label for="">Fecha de Uso</label></td>
@@ -134,10 +135,10 @@ if (isset($_POST['fecha'])) {
     //======================================================================================
     if(isset($_POST['fecha'])){
         $fecha =trim($_POST['fecha']);
-        $vendedor   =$_POST['vendedor'];
+        $vendedor   =$_POST['agente_id'];
         $moneda =$_POST['moneda'];
         $conceptos =$_POST['conceptos'];
-        $importe =trim($_POST['importe']);
+        $importe =$inserta_Datos->transformarMonto(trim($_POST['importe']));
         $estado =trim($_POST['estado']);
         $fecha_uso =trim($_POST['fecha_uso']);
         $obs =trim($_POST['obs']);
@@ -157,7 +158,13 @@ if (isset($_POST['fecha'])) {
 }
 ?>
 <script type="text/javascript">
-
+  
+  $( () => {
+     let inputs = document.querySelectorAll("input[data-type='currency']");
+     for (index of inputs) {
+        index.value = new Intl.NumberFormat('es-PY', {style: 'decimal'}).format(index.value);
+     }
+    });
 
 //======================================================================
 // FUNCION QUE VALIDA EL FORMULARIO Y LUEGO ENVIA LOS DATOS A GRABACION

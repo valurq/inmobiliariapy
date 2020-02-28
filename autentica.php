@@ -1,3 +1,4 @@
+
 <?php
 
   include("Parametros/conexion.php");
@@ -16,6 +17,8 @@
 
     $campos=array('id','perfil_id','usuario','pass');
 
+    print_r($_POST);
+
     /*        CONSULTAR DATOS CON EL usuario PASADO DESDE EL LOGIN    */
 
     $resultado=$inserta_Datos->consultarDatos($campos,'usuario',"","usuario",$user );
@@ -33,12 +36,14 @@
             $_SESSION['perfil']=$resultado[1];
             $_SESSION['pass']=$resultado[3];
             $_SESSION['contra']=$resultado[3];
+            echo '<script>window.location.assign("menu_principal.php")</script>';
         }else{
             $respuesta = 'errorPass' ;
-
+            echo '<script>window.location.assign("login2.php?error=1")</script>';
         }
       }else {
             $respuesta = 'errorUser' ;
+            echo '<script>window.location.assign("login2.php?error=2")</script>';
       }
 
       echo $respuesta ;
