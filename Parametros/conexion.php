@@ -77,7 +77,7 @@ class Consultas extends Conexion{
         return $this->conexion->query($query);
     }
     function consultarDatosQ($campos,$tabla,$orden="",$campoCondicion="",$valorCondicion=""){
-	 /*
+	       /*
             METODO PARA PODER OBTENER DATOS DE UNA TABLA ESPECIFICADA
             $objetoConsultas->consultarDatos(<Array de campos a consultar>,<tabla de la bd>,<Metodo de ordenar>,<condicion para la consulta>)
             Ej: $objetoConsultas->consultarDatos(['id','descripcion','categorias','order by id DESC']);
@@ -132,8 +132,8 @@ class Consultas extends Conexion{
                 $query.="&& ".$campoC." = '".$valorC."' ";
             }
         }
-	if($orden!=''){
-            $query.=$orden;
+    	if($orden!=''){
+                $query.=$orden;
         }
         //echo $query;
         return $this->conexion->query($query);
@@ -169,6 +169,7 @@ public function buscarDatoCustom($campos,$tabla,$where){
             $consulta->insertarDato('remision_enviada',['campo1','campo2','campo3'],"'valor1','valor2','valor3'");
             NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
         */
+        $valores=strtoupper($valores);
         //echo "INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")";
         return $this->conexion->query("INSERT INTO ".$tabla." ( ".(implode(",", $campos))." ) VALUES (".$valores.")");
 
@@ -179,9 +180,9 @@ public function buscarDatoCustom($campos,$tabla,$where){
         $campos=explode(',',implode($campos,','));
         $resultado="";
         for($i=0;$i<count($campos)-1;$i++){
-            $resultado.= "".$campos[$i]."=".$datos[$i]." , ";
+            $resultado.= "".$campos[$i]."=".strtoupper($datos[$i])." , ";
         }
-        $resultado.= "".$campos[$i]."=".$datos[$i]." ";
+        $resultado.= "".$campos[$i]."=".strtoupper($datos[$i])." ";
         return $resultado;
     }
     public function modificarDato($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
@@ -192,16 +193,16 @@ public function buscarDatoCustom($campos,$tabla,$where){
                 NOTA : los valores tienen que estar en un string, en el mismo orden que se pasaron los campos
             */
             //$this->crearPaqueteModificacion($campos,$valores);
-            //echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
+            echo"UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'";
         return $this->conexion->query("UPDATE ".$tabla." SET ".$this->crearPaqueteModificacion($campos,$valores)." WHERE ".$campoIdentificador." = '".$valorIdentificador."'");
 
     }
     private function crearPaqueteModificacionQ($campos,$valores){
         $resultado="";
         for($i=0;$i<count($campos)-1;$i++){
-            $resultado.= "".$campos[$i]."='".$valores[$i]."' , ";
+            $resultado.= "".$campos[$i]."='".strtoupper($valores[$i])."' , ";
         }
-        $resultado.= "".$campos[$i]."='".$valores[$i]."' ";
+        $resultado.= "".$campos[$i]."='".strtoupper($valores[$i])."' ";
         return $resultado;
     }
     public function modificarDatoQ($tabla,$campos,$valores,$campoIdentificador,$valorIdentificador){
@@ -414,7 +415,7 @@ public function buscarDatoCustom($campos,$tabla,$where){
     	return $this->conexion->error;
     }
     public static function transformarMonto($valor){
-        return str_replace(',','',$numero);
+        return str_replace(',', '.', str_replace('.','',$valor));
     }
 }
 
