@@ -135,7 +135,8 @@
             "totalm2" => "TotalArea", "fecha_alta" => "OrigListingDate",
             "fecha_vto" => "ExpiryDate", "dsc_inmueble" => "DescriptionText",
             "captacion_com" => "ComTotalPct", "estado" => "PropertyStatus",
-            "listingstatus" => "ListingStatus", "code" => "ListingStatus"
+            "listingstatus" => "ListingStatus", "code" => "ListingStatus",
+            "transaction_type" => "TransactionType"
         );
 
         //En este array se guardan los nombres de los tags (como indice) y el nombre de su atributo a 
@@ -144,7 +145,8 @@
         $attrs = array(
             "CurrentListingCurrency" => "CurrentListingCurrency",
             "PropertyStatus" => "PropertyStatus",
-            "ListingStatus" => "ListingStatus"        
+            "ListingStatus" => "ListingStatus",
+            "TransactionType" => "TransactionType"        
         );
 
         //Se cargaran como campos los que esten definidos en el array de tags

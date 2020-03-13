@@ -3,7 +3,7 @@
      INICIALIZACIONES VARIAS
      ===========================*/
     date_default_timezone_set("America/Asuncion");
-    require "../Parametros/conexion.php";
+    require "Parametros/conexion.php";
     $consultas = new Consultas();
     $tabla = "propiedades"; //tabla en la que insertar los registros resultantes
     $currentDate = date("Y_m_d__H_i_s", time()); //para nombrar directorios
@@ -35,26 +35,26 @@
         //obtencion de los XML a cargar
         if(gettype($totalXML)!="boolean"){
             foreach($totalXML as $XML){
+                foreach($leidosXML as $leido){
+                    if($leido == $XML){
+                        continue;
+                    }
+                }
                 $espropiedad = strpos($XML, "Properties_114001");
                 $esFull = strpos($XML, "_Full.xml");
                 $esDtd = strpos($XML, ".dtd");
-                foreach($leidosXML as $leido){
-                    if($leido==$XML and $espropiedad !== false and $esFull !==false){
-                        array_push($nuevosXML, $XML);
-                    }
-                    if($esDtd){
-                        $dtd = $XML;
-                    }
-                }            
+                if ($espropiedad !== false and $esFull !== false) {
+                    array_push($nuevosXML, $XML);
+                }
+                if ($esDtd) {
+                    $dtd = $XML;
+                }         
             }
         }else{
             fwrite($log, "ALERTA: No hay ficheros procesados en la base de datos" . PHP_EOL);
         }
 
         fwrite($log, "INFORME: Se ha determinado los/el xml/s a leer en tiempo: " . date("Y-m-d H:i:s") . PHP_EOL);
-
-        var_dump($nuevosXML);
-
         /*===================================================================================
         DESCARGA DE LOS FICHEROS XML SEGUN LOS NOMBRES ALMACENADOS ANTERIORMENTE 
         =====================================================================================*/
